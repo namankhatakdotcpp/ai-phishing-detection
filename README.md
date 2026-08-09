@@ -77,5 +77,45 @@ python -m phishshield.models.train_baseline \
     --llm-generated data/generated/llm_phishing_v1.jsonl
 ```
 
-Phases 4–7 (mitigation experiment, LLM-judge module, demo API + extension,
-report assets) are not yet started.
+**Minimal LLM-judge (Phase 5 pulled forward) complete**: a mocked, rule-based
+judge (`phishshield.judge.judge`) turns extracted structured features into a
+"Risk Score: N% — reasons..." verdict — deterministic, no real LLM calls,
+swappable for a real API later. Built ahead of schedule because Phase 4's
+fusion ablation needs a judge score. Still open from the original Phase 5
+scope: logging every feature-dict/verdict pair for reproducibility.
+
+**Phase 4 complete**: mitigation experiment
+(`phishshield.models.mitigation.run_mitigation_experiment`) trains a
+"before" model on legacy data only and an "after" model with a fraction of
+the LLM-generated partition folded in, evaluating both on the same
+untouched held-out sets. Also ablates classifier-only vs.
+classifier+judge-fusion (`phishshield.models.fusion.fuse_scores`) on the
+mitigated model. Note: in this toy dev environment the mocked LLM-generated
+templates share structural features (password field, external form action)
+with the hand-crafted legacy fixtures, so the "before" model already
+generalizes well to them — the Phase 3/4 headline gap is expected to be
+much more pronounced once run against real downloaded PhishTank/OpenPhish
+data and a less feature-similar generation approach.
+
+```
+src/phishshield/
+  data/       schema, loaders, generation (mocked LLM), splits, pipeline
+  features/   URL and HTML feature extractors
+  judge/      mocked structured risk-explanation judge
+  models/     classifier, evaluation harness, fusion, mitigation experiment,
+              plotting, train_baseline / run_mitigation CLIs
+tests/        unit tests + fixtures (tests/fixtures/)
+```
+
+Run the Phase 4 experiment (same local dataset requirements as Phase 3):
+
+```bash
+python -m phishshield.models.run_mitigation \
+    --phishtank data/raw/verified_online.csv \
+    --openphish data/raw/openphish_feed.txt \
+    --tranco data/raw/tranco_top1m.csv \
+    --llm-generated data/generated/llm_phishing_v1.jsonl
+```
+
+Phases 6–7 (demo API + extension, report assets) are not yet started.
+Phase 5's reproducibility logging is also still open (see above).

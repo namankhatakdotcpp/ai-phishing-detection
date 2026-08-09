@@ -93,14 +93,22 @@ phishshield/
   legacy held-out set vs. LLM-generated set. Headline plot: performance
   drop legacy → LLM-generated.
 
-### Phase 4 — Mitigation experiment
-- Re-train with a portion of LLM-generated data folded into training.
-- Ablation: classifier-only vs. classifier+judge fusion.
-
-### Phase 5 — LLM-judge module (mocked)
+### Phase 5 (pulled forward) — minimal LLM-judge module (mocked)
 - Given structured features (not raw HTML), produce a structured risk
-  explanation (score + bullet reasons) via a stubbed call, matching the
-  "Risk Score: 91% — reasons..." format. Swappable for a real API later.
+  explanation (score + bullet reasons) via a deterministic rule engine
+  standing in for a real LLM call, matching the "Risk Score: 91% —
+  reasons..." format. Swappable for a real API later — built ahead of
+  schedule because Phase 4's fusion ablation needs a judge score to fuse.
+  Still open from the original Phase 5 scope: logging every "prompt"
+  (feature dict)/"response" (verdict) pair used in evaluation for
+  reproducibility — not yet wired into the mitigation experiment.
+
+### Phase 4 — Mitigation experiment
+- Re-train with a portion of LLM-generated data folded into training;
+  evaluate before/after on the same held-out sets (legacy_test untouched,
+  LLM-generated remainder after folding).
+- Ablation: classifier-only vs. classifier+judge score fusion, evaluated on
+  the mitigated ("after") model.
 
 ### Phase 6 — Demo API + extension
 - FastAPI `/analyze` endpoint; Manifest V3 extension over the curated demo
