@@ -15,6 +15,7 @@ data/processed/*
 
 reports/*.png
 reports/*.csv
+reports/*.jsonl
 !reports/.gitkeep
 
 .env

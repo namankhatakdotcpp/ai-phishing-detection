@@ -1,9 +1,10 @@
+import json
 from pathlib import Path
 
 from phishshield.data.pipeline import build_feature_dataframe
 from phishshield.data.schema import Sample, Source
 from phishshield.features.pipeline import extract_features
-from phishshield.judge.judge import _RULES, judge_dataframe, judge_features
+from phishshield.judge.judge import _RULES, judge_dataframe, judge_features, save_judge_log
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -100,3 +101,53 @@ def test_judge_dataframe_returns_aligned_0_to_1_scores():
     assert list(scores.index) == list(df.index)
     assert scores.between(0, 1).all()
     assert scores.iloc[0] > scores.iloc[1]  # phishing row scores higher than benign row
+
+
+def _two_row_df():
+    phishing_html = (FIXTURES / "phishing_paypal_clone.html").read_text()
+    benign_html = (FIXTURES / "benign_example.html").read_text()
+    samples = [
+        Sample(
+            url="https://paypal-secure-login.verify-account.xyz/login",
+            label=1,
+            source=Source.PHISHTANK,
+            html=phishing_html,
+        ),
+        Sample(url="https://example.com/", label=0, source=Source.TRANCO, html=benign_html),
+    ]
+    return build_feature_dataframe(samples)
+
+
+def test_judge_dataframe_log_is_none_by_default_and_optional():
+    df = _two_row_df()
+    scores = judge_dataframe(df)  # no `log` kwarg -> must not raise
+    assert len(scores) == 2
+
+
+def test_judge_dataframe_logs_one_record_per_row():
+    df = _two_row_df()
+    log: list = []
+
+    scores = judge_dataframe(df, log=log)
+
+    assert len(log) == len(df)
+    for (idx, row), record in zip(df.iterrows(), log):
+        assert record["index"] == idx
+        assert isinstance(record["features"], dict)
+        assert record["risk_score"] == round(scores.loc[idx] * 100)
+        assert record["risk_band"] in ("low", "medium", "high")
+        assert isinstance(record["reasons"], list) and record["reasons"]
+
+
+def test_save_judge_log_round_trips_as_jsonl(tmp_path):
+    df = _two_row_df()
+    log: list = []
+    judge_dataframe(df, log=log)
+    out_path = tmp_path / "judge_log.jsonl"
+
+    save_judge_log(log, out_path)
+
+    lines = out_path.read_text().strip().splitlines()
+    assert len(lines) == len(log)
+    for line, expected in zip(lines, log):
+        assert json.loads(line) == expected

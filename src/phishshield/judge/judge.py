@@ -13,7 +13,9 @@ feature dict, returning the same `JudgeVerdict` shape.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Callable
 
 import pandas as pd
@@ -111,12 +113,39 @@ def judge_features(features: dict) -> JudgeVerdict:
     return JudgeVerdict(risk_score=risk_score, risk_band=_risk_band(risk_score), reasons=reasons)
 
 
-def judge_dataframe(df: pd.DataFrame) -> pd.Series:
+def judge_dataframe(df: pd.DataFrame, log: list[dict] | None = None) -> pd.Series:
     """Score every row of a feature dataframe. Returns a `judge_score`
     Series aligned to `df.index`, on a 0-1 scale so it's directly
     comparable to/fusable with classifier probabilities.
+
+    If `log` is given (a list), one record per row is appended to it:
+    `{"index": ..., "features": ..., "risk_score": ..., "risk_band": ...,
+    "reasons": ...}` — the "prompt"/"response" pair for that row, in the
+    sense a real LLM call would take `features` as its prompt input and
+    return the verdict fields as its response. Pass the same list across
+    multiple calls to build up one combined evaluation log; persist it
+    with `save_judge_log`.
     """
     cols = feature_columns(df)
-    scores = df[cols].apply(lambda row: judge_features(row.to_dict()).risk_score / 100, axis=1)
-    scores.name = "judge_score"
-    return scores
+    scores = []
+    for idx, row in df[cols].iterrows():
+        features = row.to_dict()
+        verdict = judge_features(features)
+        scores.append(verdict.risk_score / 100)
+        if log is not None:
+            log.append({"index": idx, "features": features, **asdict(verdict)})
+
+    return pd.Series(scores, index=df.index, name="judge_score")
+
+
+def save_judge_log(log: list[dict], path: str | Path) -> None:
+    """Persist a judge log (as built by `judge_dataframe`'s `log` param) as
+    JSONL, one record per line, for Phase 5's reproducibility requirement:
+    every feature-dict/verdict pair used during an evaluation run should be
+    inspectable afterward.
+    """
+    out_path = Path(path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with out_path.open("w", encoding="utf-8") as f:
+        for record in log:
+            f.write(json.dumps(record) + "\n")
