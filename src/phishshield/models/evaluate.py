@@ -14,33 +14,44 @@ from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_
 from phishshield.models.classifier import predict_scores
 
 
-def evaluate(model: HistGradientBoostingClassifier, df: pd.DataFrame, threshold: float = 0.5) -> dict:
-    """Compute classification metrics for `model` on `df`.
+def evaluate_scores(y_true: pd.Series, scores: pd.Series, threshold: float = 0.5) -> dict:
+    """Compute classification metrics from a phishing-probability score
+    Series against ground-truth labels.
 
-    Returns a dict with `n_samples`, `precision`, `recall`, `f1`, `fpr`.
-    Raises ValueError if `df` is empty. Single-class partitions are valid
-    input (the LLM-generated holdout is phishing-only by construction —
-    see Phase 2) and simply leave whichever metric is structurally
-    undefined for that class mix as NaN (e.g. FPR has no meaning without
-    any true negatives).
+    This is the shared core both classifier-only evaluation and
+    classifier+judge fusion evaluation (Phase 4) go through, so a
+    fused score is scored identically to a raw classifier score. Returns a
+    dict with `n_samples`, `precision`, `recall`, `f1`, `fpr`. Raises
+    ValueError if `y_true` is empty. Single-class inputs are valid (the
+    LLM-generated holdout is phishing-only by construction — see Phase 2)
+    and leave whichever metric is structurally undefined for that class mix
+    as NaN (e.g. FPR has no meaning without any true negatives).
     """
-    if df.empty:
-        raise ValueError("df must be non-empty")
+    if len(y_true) == 0:
+        raise ValueError("y_true must be non-empty")
 
-    scores = predict_scores(model, df)
     preds = (scores >= threshold).astype(int)
-    y_true = df["label"]
 
     tn, fp, fn, tp = confusion_matrix(y_true, preds, labels=[0, 1]).ravel()
     fpr = fp / (fp + tn) if (fp + tn) > 0 else float("nan")
 
     return {
-        "n_samples": len(df),
+        "n_samples": len(y_true),
         "precision": precision_score(y_true, preds, zero_division=0),
         "recall": recall_score(y_true, preds, zero_division=0),
         "f1": f1_score(y_true, preds, zero_division=0),
         "fpr": fpr,
     }
+
+
+def evaluate(model: HistGradientBoostingClassifier, df: pd.DataFrame, threshold: float = 0.5) -> dict:
+    """Compute classification metrics for `model` on `df`. See
+    `evaluate_scores` for the metric definitions and edge-case behavior.
+    """
+    if df.empty:
+        raise ValueError("df must be non-empty")
+    scores = predict_scores(model, df)
+    return evaluate_scores(df["label"], scores, threshold=threshold)
 
 
 def compare_partitions(

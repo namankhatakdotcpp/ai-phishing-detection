@@ -2,8 +2,22 @@ import pandas as pd
 import pytest
 
 from phishshield.models.classifier import train_classifier
-from phishshield.models.evaluate import compare_partitions, evaluate
+from phishshield.models.evaluate import compare_partitions, evaluate, evaluate_scores
 from tests.test_classifier import _separable_df
+
+
+def test_evaluate_scores_matches_evaluate_on_a_raw_classifier_score():
+    train_df = _separable_df(seed=1)
+    test_df = _separable_df(seed=2)
+    model = train_classifier(train_df)
+
+    from phishshield.models.classifier import predict_scores
+
+    scores = predict_scores(model, test_df)
+    direct_metrics = evaluate_scores(test_df["label"], scores)
+    via_evaluate = evaluate(model, test_df)
+
+    assert direct_metrics == via_evaluate
 
 
 def test_evaluate_rejects_empty_df():
