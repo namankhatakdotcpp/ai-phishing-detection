@@ -29,13 +29,24 @@ pytest
 feature extraction, dataset loaders (PhishTank/OpenPhish/Tranco), and a
 leakage-free feature pipeline, with unit tests over hand-crafted fixtures.
 
+**Phase 2 complete**: mocked LLM-generated phishing dataset (templated, no
+real API calls — see `phishshield.data.generation` for the ethical/scope
+constraint), persisted to gitignored `data/generated/`, plus a
+train/legacy-test/LLM-holdout split helper that keeps the LLM-generated
+partition out of training until Phase 4 explicitly folds a fraction in.
+
 ```
 src/phishshield/
-  data/       schema, loaders, feature-dataframe pipeline
+  data/       schema, loaders, generation (mocked LLM), splits, pipeline
   features/   URL and HTML feature extractors
 tests/        unit tests + fixtures (tests/fixtures/)
 ```
 
-Phases 2–7 (LLM-generated dataset, baseline classifier, mitigation
-experiment, LLM-judge module, demo API + extension, report assets) are not
-yet started.
+Regenerate the LLM-phishing partition with:
+
+```bash
+python -m phishshield.data.generate_llm_dataset
+```
+
+Phases 3–7 (baseline classifier, mitigation experiment, LLM-judge module,
+demo API + extension, report assets) are not yet started.
