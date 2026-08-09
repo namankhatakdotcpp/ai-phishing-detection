@@ -151,7 +151,14 @@ phishshield/
   `AnthropicLureClient` (`claude-opus-5`, `ANTHROPIC_API_KEY`, `pip
   install -e ".[llm]"`). `build_lure_client(provider, model, effort)`
   dispatches between them; the CLI's `--provider` flag selects (default
-  `gemini`).
+  `gemini`). `--model` overrides the default per-provider model string if
+  a newer one becomes the recommended free-tier default later.
+- **Disclosure**: the default provider (Gemini) is used at the free tier,
+  and Google may use free-tier traffic to improve their products (unlike
+  the paid tier). The prompts/responses sent are short synthetic
+  lure-copy requests for this research dataset only — no real user data,
+  no PII — but this is worth stating plainly in the course report's
+  methodology section rather than leaving it undisclosed.
 - CLI (`generate_llm_dataset.py`): `--live` opts into real calls (default
   off); `--dry-run` prints the sample count, API call count, and a labeled
   cost ESTIMATE with **no network calls and no credentials required**

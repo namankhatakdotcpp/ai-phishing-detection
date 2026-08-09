@@ -210,6 +210,13 @@ effort)`:
 | `gemini` (default) | `GeminiLureClient` | `gemini-2.5-flash` | `GEMINI_API_KEY` / `GOOGLE_API_KEY` (free tier) | `pip install -e ".[gemini]"` |
 | `anthropic` | `AnthropicLureClient` | `claude-opus-5` | `ANTHROPIC_API_KEY` | `pip install -e ".[llm]"` |
 
+**Disclosure**: at the free tier, Google may use Gemini traffic to
+improve their products (unlike the paid tier). What's sent is short
+synthetic lure-copy requests for this research dataset only — no real
+user data — but say so plainly in the report's methodology section.
+`--model` overrides the default if a newer free-tier-recommended model
+supersedes `gemini-2.5-flash` later.
+
 **Credential handling — never paste a key into a chat/agent session or a
 CLI argument.** Both land the raw secret in a transcript, shell history,
 or `ps aux`. Copy `.env.example` to `.env` (gitignored) and fill in the
