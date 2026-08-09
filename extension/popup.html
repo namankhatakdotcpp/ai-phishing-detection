@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>PhishShield AI (Demo)</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <h1>PhishShield AI <span class="badge">research demo</span></h1>
+  <p class="disclaimer">
+    Scores a curated set of sample pages against a local backend.
+    This demo does not read or scan the page you're currently on.
+  </p>
+
+  <label for="sample-select">Demo sample</label>
+  <select id="sample-select"></select>
+
+  <button id="analyze-btn" type="button">Analyze</button>
+
+  <div id="status"></div>
+
+  <div id="result" class="hidden">
+    <div class="risk-header">
+      <span id="risk-score" class="risk-score"></span>
+      <span id="risk-band" class="risk-band"></span>
+    </div>
+    <ul id="reasons"></ul>
+    <div class="scores-detail">
+      <span id="classifier-score"></span>
+      <span id="judge-score"></span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
