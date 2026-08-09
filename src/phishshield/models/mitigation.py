@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -36,6 +37,8 @@ class MitigationResult:
     ablation: pd.DataFrame
     before_model: HistGradientBoostingClassifier
     after_model: HistGradientBoostingClassifier
+    legacy_test_df: pd.DataFrame
+    llm_holdout_df: Optional[pd.DataFrame]
 
 
 def run_mitigation_experiment(
@@ -110,4 +113,6 @@ def run_mitigation_experiment(
         ablation=ablation,
         before_model=before_model,
         after_model=after_model,
+        legacy_test_df=legacy_test_df,
+        llm_holdout_df=llm_remainder_df,
     )
