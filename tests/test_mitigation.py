@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -86,3 +87,39 @@ def test_fold_fraction_1_drops_llm_partition_from_eval_gracefully():
     assert "llm_holdout_remainder" not in set(result.before_after["partition"])
     assert "llm_holdout_remainder" not in set(result.ablation["partition"])
     assert set(result.before_after["partition"]) == {"legacy_test"}
+
+
+def test_judge_log_path_writes_one_record_per_ablation_row(tmp_path):
+    legacy = _legacy_pool()
+    llm_samples = generate_llm_phishing_dataset()
+    log_path = tmp_path / "judge_log.jsonl"
+
+    result = run_mitigation_experiment(
+        legacy, llm_samples, fold_fraction=0.5, seed=1, judge_log_path=log_path
+    )
+
+    assert log_path.exists()
+    lines = log_path.read_text().strip().splitlines()
+    records = [json.loads(line) for line in lines]
+
+    # the judge is called once per partition in the ablation loop, so the
+    # log should have exactly one record per row across those partitions
+    partition_sizes = result.ablation.drop_duplicates("partition").set_index("partition")[
+        "n_samples"
+    ]
+    assert len(records) == partition_sizes.sum()
+
+    assert {r["partition"] for r in records} == set(partition_sizes.index)
+    for r in records:
+        assert "features" in r and isinstance(r["features"], dict)
+        assert "risk_score" in r and "risk_band" in r and "reasons" in r
+
+
+def test_judge_log_path_none_skips_logging(tmp_path):
+    legacy = _legacy_pool()
+    llm_samples = generate_llm_phishing_dataset()
+
+    # must not raise or create any file when logging isn't requested
+    run_mitigation_experiment(legacy, llm_samples, fold_fraction=0.5, seed=1, judge_log_path=None)
+
+    assert list(tmp_path.iterdir()) == []

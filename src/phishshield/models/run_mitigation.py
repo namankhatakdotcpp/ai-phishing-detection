@@ -25,6 +25,7 @@ DEFAULT_BEFORE_AFTER_CSV = "reports/phase4_before_after.csv"
 DEFAULT_ABLATION_CSV = "reports/phase4_ablation.csv"
 DEFAULT_BEFORE_AFTER_PLOT = "reports/phase4_before_after_recall.png"
 DEFAULT_ABLATION_PLOT = "reports/phase4_ablation_recall.png"
+DEFAULT_JUDGE_LOG = "reports/phase4_judge_log.jsonl"
 
 
 def main() -> None:
@@ -38,6 +39,7 @@ def main() -> None:
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--alpha", type=float, default=0.5, help="classifier weight in fusion")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--judge-log", default=DEFAULT_JUDGE_LOG, help="path to write the judge's evaluation log (JSONL); pass '' to skip")
     args = parser.parse_args()
 
     legacy_samples = (
@@ -54,6 +56,7 @@ def main() -> None:
         test_size=args.test_size,
         seed=args.seed,
         alpha=args.alpha,
+        judge_log_path=args.judge_log or None,
     )
 
     print("=== before/after retraining ===")
@@ -74,10 +77,10 @@ def main() -> None:
         out_path=DEFAULT_ABLATION_PLOT,
         title="Recall: classifier-only vs. classifier+judge fusion",
     )
-    print(
-        f"\nwrote {DEFAULT_BEFORE_AFTER_CSV}, {DEFAULT_ABLATION_CSV}, "
-        f"{DEFAULT_BEFORE_AFTER_PLOT}, {DEFAULT_ABLATION_PLOT}"
-    )
+    written = [DEFAULT_BEFORE_AFTER_CSV, DEFAULT_ABLATION_CSV, DEFAULT_BEFORE_AFTER_PLOT, DEFAULT_ABLATION_PLOT]
+    if args.judge_log:
+        written.append(args.judge_log)
+    print(f"\nwrote {', '.join(written)}")
 
 
 if __name__ == "__main__":
