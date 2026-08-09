@@ -1,5 +1,5 @@
-"""Real LLM client for Phase 8: generates the persuasive lure copy for the
-LLM-generated phishing partition via the Anthropic API.
+"""Real LLM clients for Phase 8: generate the persuasive lure copy for the
+LLM-generated phishing partition via a real API — Anthropic or Gemini.
 
 ETHICAL / SCOPE CONSTRAINT: same as `phishshield.data.generation` — output
 is a local research artifact only, under gitignored `data/generated/`,
@@ -13,16 +13,23 @@ engineering content an attacker would tailor per campaign, and the part
 this project's detection-gap claim is actually about. The surrounding page
 skeleton (password field, external form action, script tag) stays
 deterministic, the same as the mocked generator, so every sample — mocked
-or live — exercises the Phase 1 feature extractors identically and results
-stay comparable across a mock/live re-run.
+or live, whichever provider — exercises the Phase 1 feature extractors
+identically and results stay comparable across a re-run.
+
+Only offline dataset generation calls a real LLM. The live `/analyze` path
+(`phishshield.judge.judge`) stays the deterministic rule engine — see
+PROJECT_BRIEF.md's Phase 8+ decisions.
 """
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 
-DEFAULT_MODEL = "claude-opus-5"
-DEFAULT_EFFORT = "low"  # short, scoped, non-reasoning-heavy generation task
+ANTHROPIC_DEFAULT_MODEL = "claude-opus-5"
+ANTHROPIC_DEFAULT_EFFORT = "low"  # short, scoped, non-reasoning-heavy generation task
+
+GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"  # free-tier eligible at time of writing; pass --model to override
 
 _SYSTEM_PROMPT = (
     "You are helping generate a local, offline benchmark dataset for academic "
@@ -73,7 +80,7 @@ class AnthropicLureClient:
     (`ANTHROPIC_API_KEY`, or an `ant auth login` profile).
     """
 
-    def __init__(self, model: str = DEFAULT_MODEL, effort: str = DEFAULT_EFFORT):
+    def __init__(self, model: str = ANTHROPIC_DEFAULT_MODEL, effort: str = ANTHROPIC_DEFAULT_EFFORT):
         import anthropic  # deferred: only required in --live mode
 
         self._client = anthropic.Anthropic()
@@ -97,8 +104,55 @@ class AnthropicLureClient:
                 f"{getattr(response.stop_details, 'explanation', None)}"
             )
 
-        import json
-
         text = next(block.text for block in response.content if block.type == "text")
         data = json.loads(text)
         return LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+
+
+class GeminiLureClient:
+    """Thin wrapper around the Gemini API (`google-genai`) for lure-copy
+    generation.
+
+    Constructing this requires the `google-genai` package (`pip install -e
+    ".[gemini]"`) and an API key resolved by the SDK's default client
+    (`GEMINI_API_KEY` or `GOOGLE_API_KEY` env var — get a free-tier key at
+    https://aistudio.google.com/apikey).
+    """
+
+    def __init__(self, model: str = GEMINI_DEFAULT_MODEL, effort: str | None = None):
+        from google import genai  # deferred: only required in --live mode
+
+        self._genai = genai
+        self._client = genai.Client()
+        self.model = model
+        self.effort = effort  # accepted for CLI symmetry with Anthropic; unused by Gemini
+
+    def generate_lure(self, brand_display: str, tone: str) -> LureCopy:
+        from google.genai import types
+
+        response = self._client.models.generate_content(
+            model=self.model,
+            contents=_build_prompt(brand_display, tone),
+            config=types.GenerateContentConfig(
+                system_instruction=_SYSTEM_PROMPT,
+                response_mime_type="application/json",
+                response_schema=_LURE_SCHEMA,
+            ),
+        )
+        if not response.text:
+            raise RuntimeError(
+                f"Gemini returned no content for brand={brand_display!r} "
+                f"(possibly blocked — check response.prompt_feedback)"
+            )
+
+        data = json.loads(response.text)
+        return LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+
+
+def build_lure_client(provider: str, model: str, effort: str):
+    """Construct the lure client for `provider` ("anthropic" | "gemini")."""
+    if provider == "anthropic":
+        return AnthropicLureClient(model=model, effort=effort)
+    if provider == "gemini":
+        return GeminiLureClient(model=model, effort=effort)
+    raise ValueError(f"unknown provider: {provider!r} (expected 'anthropic' or 'gemini')")
