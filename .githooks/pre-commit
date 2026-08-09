@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Blocks a commit if it looks like a real API key/secret snuck into a
+# tracked file. Motivated by a real incident: a Gemini key was typed into
+# .env.example (tracked) instead of .env (gitignored) — this hook is the
+# backstop for that exact mistake, checked before the value can enter git
+# history, not just noticed after the fact.
+#
+# Enable with:  git config core.hooksPath .githooks
+set -euo pipefail
+
+fail=0
+secret_pattern='[A-Za-z0-9_]*(API_KEY|TOKEN|SECRET)[A-Za-z0-9_]*[[:space:]]*[:=][[:space:]]*["'\''"]?[A-Za-z0-9._-]{20,}'
+
+# 1. .env.example specifically must never carry a real value — every
+#    KEY=/TOKEN=/SECRET= line must be empty after the "=".
+if git diff --cached --name-only | grep -qx ".env.example"; then
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^[A-Z0-9_]*(KEY|TOKEN|SECRET)=..+$ ]]; then
+      echo "pre-commit: .env.example has a non-empty secret value: ${line%%=*}=<redacted>"
+      fail=1
+    fi
+  done < <(git show ":.env.example" 2>/dev/null || true)
+fi
+
+# 2. Generic sweep: any other staged file containing a KEY=/TOKEN=/SECRET=
+#    assignment with a long value is treated as a likely real secret.
+#    (.env itself is gitignored and can never be staged, so it's never
+#    checked here — nothing to redact from this hook's own output.)
+while IFS= read -r file; do
+  [ -n "$file" ] || continue
+  [ "$file" = ".env.example" ] && continue  # handled precisely above
+  if git show ":$file" 2>/dev/null | grep -Eq "$secret_pattern"; then
+    echo "pre-commit: possible secret in staged file: $file (line redacted — review manually)"
+    fail=1
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if [ "$fail" -ne 0 ]; then
+  echo ""
+  echo "Commit blocked. If this is a false positive, review the flagged"
+  echo "file(s) and re-stage once confirmed clean. If it's real, move the"
+  echo "value into .env (gitignored) and rotate the key if it was ever"
+  echo "visible outside your editor (e.g. printed in a terminal/tool output)."
+  exit 1
+fi
+
+exit 0
