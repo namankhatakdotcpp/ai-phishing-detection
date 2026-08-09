@@ -39,7 +39,9 @@ say so explicitly in the report).
 
 ## 3. Tech stack
 
-- **Data/ML**: Python, pandas, scikit-learn + XGBoost (baseline classifier),
+- **Data/ML**: Python, pandas, scikit-learn `HistGradientBoostingClassifier`
+  (baseline classifier — swapped in for XGBoost to avoid a `libomp` native
+  dependency that isn't available in every dev environment),
   BeautifulSoup (HTML feature extraction), matplotlib/seaborn (eval plots).
 - **LLM-judge module**: mocked for the deadline — structured stub responses
   matching the shape a real LLM call would return, swappable later.
