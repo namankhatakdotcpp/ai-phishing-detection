@@ -162,6 +162,14 @@ phishshield/
   are skipped by default (no matching API key env var set) so the normal
   test suite never spends money or touches the network; run explicitly
   with a key set.
+- **Credential handling**: keys are never passed as CLI arguments or typed
+  into a chat/agent session — both leak into transcripts, shell history,
+  or `ps aux`. `.env.example` documents the two supported env vars; the
+  user copies it to gitignored `.env` and fills it in directly (not by
+  asking an agent to write the value into a command). `llm_client.py`
+  loads `.env` via `python-dotenv`; `describe_env_key(provider)` confirms
+  presence with a masked prefix/suffix only, and the CLI prints that
+  check (never the key) before every `--live` run.
 - **Not yet done**: no real generation has actually been run in this
   environment — no credentials for either provider have been available
   here so far. Recommended sequence once a key is available: `--live
