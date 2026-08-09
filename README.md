@@ -190,3 +190,33 @@ Generate the report assets (illustrative, no downloaded data needed):
 ```bash
 python -m phishshield.models.build_report_assets
 ```
+
+**Phase 8 in progress**: `phishshield.data.llm_client.AnthropicLureClient`
+wires a real Anthropic API call in for the persuasive lure copy (title +
+paragraph) per (brand, tone) pair — the part of the generated phishing
+page an attacker would actually tailor, and the part the project's
+"robustness against LLM-generated phishing" claim is about. The page
+skeleton (password field, external form action, script) stays
+deterministic either way, so mock and live output stay structurally
+comparable. `generate_llm_phishing_dataset()` keeps its existing
+signature — pass `llm_client=None` (default, free, deterministic) or an
+`AnthropicLureClient` (real calls, cached per brand+tone pair — 12 calls
+for the full 48-sample grid). **Not yet run for real** — no
+`ANTHROPIC_API_KEY` / `ant auth login` credentials are available in this
+environment. `--dry-run` shows the cost estimate with no network calls
+needed:
+
+```bash
+pip install -e ".[llm]"
+python -m phishshield.data.generate_llm_dataset --dry-run
+# model: claude-opus-5  effort: low
+# total samples: 48 (full grid: 48)
+# unique lure-copy API calls (cached per brand+tone pair): 12
+# cost estimate: ~$0.14 (rough, padded estimate, not a billing guarantee)
+
+# once ANTHROPIC_API_KEY is set:
+python -m phishshield.data.generate_llm_dataset --live --max-samples 48
+```
+
+Phases 9–15 (real dataset ingestion, four-way eval matrix, deploy, Chrome
+Web Store launch assets, report/demo-video finalization) are not started.

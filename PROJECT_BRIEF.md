@@ -131,6 +131,33 @@ phishshield/
   the report's real headline numbers. Accepts
   `--phishtank`/`--openphish`/`--tranco` to run on real data instead.
 
+### Phase 8 — Real LLM wiring for dataset generation
+- `phishshield.data.llm_client.AnthropicLureClient` makes real Anthropic API
+  calls (default `claude-opus-5`, `effort="low"` — a short, non-reasoning-
+  heavy generation task) to write the persuasive lure copy (title + one
+  paragraph) for each (brand, tone) pair. The page skeleton (password
+  field, external form action/script, hidden element) stays deterministic
+  either way, so mock and live samples exercise the Phase 1 feature
+  extractors identically.
+- `generate_llm_phishing_dataset(seed, llm_client=None, max_samples=None)`
+  keeps its interface stable: mock (default, `llm_client=None`, free) vs.
+  live (pass an `AnthropicLureClient`) only changes where the lure copy
+  comes from. Lure calls are cached per (brand, tone) pair — 12 calls for
+  the full 48-sample grid, not 48.
+- CLI (`generate_llm_dataset.py`): `--live` opts into real calls (default
+  off); `--dry-run` prints the sample count, API call count, and a labeled
+  cost ESTIMATE with **no network calls and no credentials required**;
+  `--max-samples` hard-caps both the dataset size and the live call count.
+- Live smoke test (`tests/live/test_real_generation.py`) is skipped by
+  default (`ANTHROPIC_API_KEY` unset) so the normal test suite never
+  spends money; run explicitly with a key set.
+- **Not yet done**: no real generation has actually been run in this
+  environment — no `ANTHROPIC_API_KEY` / `ant auth login` credentials are
+  available here. The dry-run estimate for the full 48-sample grid at
+  `claude-opus-5`/`low` effort is ~$0.14 (rough, padded estimate — see
+  the CLI's `--dry-run` output). Running it for real, and then re-running
+  Phases 3/4/7 against the real-generated partition, is the next step.
+
 ## 6. What "done" looks like
 
 A reproducible pipeline, a working local demo, and a `reports/` folder with
