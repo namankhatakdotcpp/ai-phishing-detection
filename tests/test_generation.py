@@ -4,6 +4,7 @@ from phishshield.data.generation import (
     BRANDS,
     OBFUSCATIONS,
     TONES,
+    count_unique_lure_calls,
     generate_llm_phishing_dataset,
     save_samples_jsonl,
 )
@@ -56,6 +57,30 @@ def test_generated_samples_flow_through_phase1_pipeline():
     # phishing-shaped templates should trip the password/form-action signals
     assert (df["num_password_fields"] >= 1).all()
     assert (df["has_external_form_action"] == 1).all()
+
+
+def test_max_samples_truncates_grid_in_order():
+    full = generate_llm_phishing_dataset()
+    truncated = generate_llm_phishing_dataset(max_samples=5)
+    assert len(truncated) == 5
+    assert [s.url for s in truncated] == [s.url for s in full[:5]]
+
+
+def test_max_samples_none_generates_full_grid():
+    samples = generate_llm_phishing_dataset(max_samples=None)
+    assert len(samples) == len(BRANDS) * len(TONES) * len(OBFUSCATIONS)
+
+
+def test_count_unique_lure_calls_full_grid():
+    assert count_unique_lure_calls() == len(BRANDS) * len(TONES)
+
+
+def test_count_unique_lure_calls_scales_down_with_max_samples():
+    # 1 sample still needs 1 lure call; a full obfuscation block (4 samples)
+    # for one (brand, tone) pair still needs only 1 call
+    assert count_unique_lure_calls(max_samples=1) == 1
+    assert count_unique_lure_calls(max_samples=len(OBFUSCATIONS)) == 1
+    assert count_unique_lure_calls(max_samples=len(OBFUSCATIONS) + 1) == 2
 
 
 def test_save_and_load_round_trip(tmp_path):
