@@ -91,7 +91,7 @@ class JudgeVerdict:
     reasons: list[str]
 
 
-def _risk_band(risk_score: int) -> str:
+def risk_band(risk_score: int) -> str:
     if risk_score >= HIGH_RISK_THRESHOLD:
         return "high"
     if risk_score >= MEDIUM_RISK_THRESHOLD:
@@ -110,7 +110,7 @@ def judge_features(features: dict) -> JudgeVerdict:
     if not reasons:
         reasons = [_NO_FINDINGS_REASON]
 
-    return JudgeVerdict(risk_score=risk_score, risk_band=_risk_band(risk_score), reasons=reasons)
+    return JudgeVerdict(risk_score=risk_score, risk_band=risk_band(risk_score), reasons=reasons)
 
 
 def judge_dataframe(df: pd.DataFrame, log: list[dict] | None = None) -> pd.Series:
