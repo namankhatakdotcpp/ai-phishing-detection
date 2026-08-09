@@ -112,8 +112,14 @@ phishshield/
   the mitigated ("after") model.
 
 ### Phase 6 — Demo API + extension
-- FastAPI `/analyze` endpoint; Manifest V3 extension over the curated demo
-  set only.
+- FastAPI `/analyze` + `/demo-samples` endpoints, backed by a
+  self-contained demo classifier (trained from in-repo synthetic patterns
+  + the mocked LLM-generated set — not the real Phase 3/4 result) fused
+  with the Phase 5 judge, matching the pitch's "Risk Score: N% —
+  reasons..." format.
+- Manifest V3 popup extension over the curated demo set only — no
+  `activeTab`/`scripting` permission, `host_permissions` scoped to
+  `localhost:8000`, never reads the page the user is on.
 
 ### Phase 7 — Report assets
 - Dataset stats, eval tables, ablation table, qualitative examples.

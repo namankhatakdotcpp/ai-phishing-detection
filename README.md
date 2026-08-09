@@ -121,4 +121,36 @@ python -m phishshield.models.run_mitigation \
     --llm-generated data/generated/llm_phishing_v1.jsonl
 ```
 
-Phases 6–7 (demo API + extension, report assets) are not yet started.
+**Phase 6 complete**: FastAPI demo backend (`phishshield.api.app`) with
+`GET /demo-samples` and `POST /analyze`, backed by a self-contained demo
+classifier (`phishshield.api.model_store` — trained from in-repo synthetic
+patterns + the mocked LLM-generated set, *not* the real Phase 3/4 result,
+which needs downloaded data this demo doesn't ship with) fused with the
+Phase 5 judge. `/analyze` accepts either a curated `sample_id` or a
+caller-supplied precomputed `features` dict. A Manifest V3 popup extension
+(`extension/`) calls it over the curated demo set only — no
+`activeTab`/`scripting` permission, `host_permissions` scoped to
+`localhost:8000`, and it never reads the page the user is on. Verified
+end-to-end in a browser against the live backend (dropdown populated from
+`/demo-samples`, "Analyze" renders "Risk Score: N% — reasons...").
+
+```
+src/phishshield/
+  api/        FastAPI app, demo classifier, curated demo samples, schemas
+  data/       schema, loaders, generation (mocked LLM), splits, pipeline
+  features/   URL and HTML feature extractors
+  judge/      mocked structured risk-explanation judge
+  models/     classifier, evaluation harness, fusion, mitigation experiment,
+              plotting, train_baseline / run_mitigation CLIs
+extension/    Manifest V3 demo popup (see extension/README.md to run it)
+tests/        unit tests + fixtures (tests/fixtures/)
+```
+
+Run the demo backend, then load `extension/` as an unpacked extension (see
+`extension/README.md`):
+
+```bash
+uvicorn phishshield.api.app:app --port 8000
+```
+
+Phase 7 (report assets) is not yet started.
