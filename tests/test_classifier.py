@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from phishshield.models.classifier import predict_scores, train_classifier
+from phishshield.models.classifier import predict_feature_dict, predict_scores, train_classifier
 
 
 def _separable_df(n=60, seed=0):
@@ -65,3 +65,39 @@ def test_classifier_learns_the_separable_signal():
 
     accuracy = (preds.values == test_df["label"].values).mean()
     assert accuracy > 0.85
+
+
+def test_predict_feature_dict_matches_predict_scores_for_a_full_row():
+    train_df = _separable_df(seed=1)
+    test_df = _separable_df(seed=2)
+    model = train_classifier(train_df)
+
+    cols = [c for c in test_df.columns if c not in ("label", "source", "url")]
+    row_dict = test_df.iloc[0][cols].to_dict()
+
+    single_score = predict_feature_dict(model, row_dict)
+    batch_score = predict_scores(model, test_df).iloc[0]
+
+    assert single_score == pytest.approx(batch_score)
+
+
+def test_predict_feature_dict_fills_missing_keys_with_zero():
+    train_df = _separable_df(seed=1)
+    model = train_classifier(train_df)
+
+    # partial feature dict: missing keys should default to 0, not raise
+    score = predict_feature_dict(model, {"num_password_fields": 3})
+    assert 0.0 <= score <= 1.0
+
+
+def test_predict_feature_dict_ignores_unknown_keys():
+    train_df = _separable_df(seed=1)
+    model = train_classifier(train_df)
+
+    with_extra = predict_feature_dict(
+        model, {"num_password_fields": 3, "has_external_form_action": 1, "totally_unknown_key": 999}
+    )
+    without_extra = predict_feature_dict(
+        model, {"num_password_fields": 3, "has_external_form_action": 1}
+    )
+    assert with_extra == pytest.approx(without_extra)

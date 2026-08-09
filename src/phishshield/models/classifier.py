@@ -48,3 +48,17 @@ def predict_scores(model: HistGradientBoostingClassifier, df: pd.DataFrame) -> p
     cols = feature_columns(df)
     proba = model.predict_proba(df[cols])[:, 1]
     return pd.Series(proba, index=df.index, name="phishing_score")
+
+
+def predict_feature_dict(model: HistGradientBoostingClassifier, features: dict) -> float:
+    """Score a single precomputed feature dict.
+
+    Reindexed to the columns `model` was trained on (`feature_names_in_`,
+    set automatically by sklearn when `fit` sees a DataFrame): missing
+    keys default to 0, extra keys are dropped. This lets API callers pass
+    a partial/precomputed feature set without needing to match the
+    training schema exactly, rather than failing on any column mismatch.
+    """
+    expected_cols = list(model.feature_names_in_)
+    row = pd.DataFrame([features]).reindex(columns=expected_cols, fill_value=0.0)
+    return float(model.predict_proba(row)[0, 1])
