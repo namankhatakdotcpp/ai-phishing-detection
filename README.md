@@ -77,12 +77,14 @@ python -m phishshield.models.train_baseline \
     --llm-generated data/generated/llm_phishing_v1.jsonl
 ```
 
-**Minimal LLM-judge (Phase 5 pulled forward) complete**: a mocked, rule-based
-judge (`phishshield.judge.judge`) turns extracted structured features into a
-"Risk Score: N% — reasons..." verdict — deterministic, no real LLM calls,
-swappable for a real API later. Built ahead of schedule because Phase 4's
-fusion ablation needs a judge score. Still open from the original Phase 5
-scope: logging every feature-dict/verdict pair for reproducibility.
+**Phase 5 complete**: a mocked, rule-based judge (`phishshield.judge.judge`)
+turns extracted structured features into a "Risk Score: N% — reasons..."
+verdict — deterministic, no real LLM calls, swappable for a real API later.
+Built ahead of Phase 4 since the fusion ablation needs a judge score. Every
+feature-dict/verdict pair the judge produces during an evaluation run can be
+logged as JSONL (`judge_dataframe(df, log=...)` + `save_judge_log`), wired
+into the mitigation experiment via `judge_log_path` and tagged by partition,
+for reproducibility.
 
 **Phase 4 complete**: mitigation experiment
 (`phishshield.models.mitigation.run_mitigation_experiment`) trains a
@@ -107,7 +109,9 @@ src/phishshield/
 tests/        unit tests + fixtures (tests/fixtures/)
 ```
 
-Run the Phase 4 experiment (same local dataset requirements as Phase 3):
+Run the Phase 4 experiment (same local dataset requirements as Phase 3;
+writes a judge evaluation log to `reports/phase4_judge_log.jsonl` by
+default — pass `--judge-log ''` to skip):
 
 ```bash
 python -m phishshield.models.run_mitigation \
@@ -118,4 +122,3 @@ python -m phishshield.models.run_mitigation \
 ```
 
 Phases 6–7 (demo API + extension, report assets) are not yet started.
-Phase 5's reproducibility logging is also still open (see above).

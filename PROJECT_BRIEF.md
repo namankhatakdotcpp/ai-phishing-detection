@@ -93,15 +93,16 @@ phishshield/
   legacy held-out set vs. LLM-generated set. Headline plot: performance
   drop legacy → LLM-generated.
 
-### Phase 5 (pulled forward) — minimal LLM-judge module (mocked)
+### Phase 5 — minimal LLM-judge module (mocked) + reproducibility logging
 - Given structured features (not raw HTML), produce a structured risk
   explanation (score + bullet reasons) via a deterministic rule engine
   standing in for a real LLM call, matching the "Risk Score: 91% —
   reasons..." format. Swappable for a real API later — built ahead of
   schedule because Phase 4's fusion ablation needs a judge score to fuse.
-  Still open from the original Phase 5 scope: logging every "prompt"
-  (feature dict)/"response" (verdict) pair used in evaluation for
-  reproducibility — not yet wired into the mitigation experiment.
+- Every "prompt" (feature dict)/"response" (verdict) pair the judge
+  produces during an evaluation run is logged as JSONL
+  (`save_judge_log`), wired into `run_mitigation_experiment` via
+  `judge_log_path` and tagged by partition, for reproducibility.
 
 ### Phase 4 — Mitigation experiment
 - Re-train with a portion of LLM-generated data folded into training;
