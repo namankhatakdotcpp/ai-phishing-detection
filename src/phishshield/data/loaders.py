@@ -9,6 +9,7 @@ from this module.
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 from phishshield.data.schema import Sample, Source
@@ -61,4 +62,31 @@ def load_tranco(csv_path: str | Path, limit: int | None = None) -> list[Sample]:
             if not domain:
                 continue
             samples.append(Sample(url=f"https://{domain}", label=0, source=Source.TRANCO))
+    return samples
+
+
+def load_llm_generated(jsonl_path: str | Path) -> list[Sample]:
+    """Load the local LLM-generated phishing partition written by
+    `phishshield.data.generation.save_samples_jsonl`.
+
+    Only reads from `data/generated/` snapshots already produced by
+    `generate_llm_phishing_dataset` — this loader makes no LLM calls itself.
+    """
+    path = Path(jsonl_path)
+    samples: list[Sample] = []
+    with path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            record = json.loads(line)
+            samples.append(
+                Sample(
+                    url=record["url"],
+                    label=record["label"],
+                    source=Source(record["source"]),
+                    html=record.get("html"),
+                    brand_target=record.get("brand_target"),
+                )
+            )
     return samples
