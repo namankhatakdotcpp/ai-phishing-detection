@@ -42,11 +42,40 @@ src/phishshield/
 tests/        unit tests + fixtures (tests/fixtures/)
 ```
 
+**Phase 3 complete**: baseline gradient-boosted tree classifier
+(`HistGradientBoostingClassifier` — swapped in for XGBoost, whose macOS
+wheels need a `libomp` Homebrew install not available in every dev
+environment) trained on legacy data only, plus an evaluation harness
+reporting precision/recall/F1/FPR per partition and a headline
+legacy-vs-LLM-generated comparison plot. LLM-generated samples are
+phishing-only by construction, so FPR is reported as NaN (not an error) on
+that partition — it has no true negatives to be structurally defined
+against.
+
+```
+src/phishshield/
+  data/       schema, loaders, generation (mocked LLM), splits, pipeline
+  features/   URL and HTML feature extractors
+  models/     classifier, evaluation harness, plotting, train_baseline CLI
+tests/        unit tests + fixtures (tests/fixtures/)
+```
+
 Regenerate the LLM-phishing partition with:
 
 ```bash
 python -m phishshield.data.generate_llm_dataset
 ```
 
-Phases 3–7 (baseline classifier, mitigation experiment, LLM-judge module,
-demo API + extension, report assets) are not yet started.
+Run the Phase 3 experiment (requires PhishTank/OpenPhish/Tranco snapshots
+already downloaded into `data/raw/` — see PROJECT_BRIEF.md, Phase 1):
+
+```bash
+python -m phishshield.models.train_baseline \
+    --phishtank data/raw/verified_online.csv \
+    --openphish data/raw/openphish_feed.txt \
+    --tranco data/raw/tranco_top1m.csv \
+    --llm-generated data/generated/llm_phishing_v1.jsonl
+```
+
+Phases 4–7 (mitigation experiment, LLM-judge module, demo API + extension,
+report assets) are not yet started.
