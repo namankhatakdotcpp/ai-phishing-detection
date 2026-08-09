@@ -15,6 +15,7 @@ This is a research prototype, not a production security product.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+git config core.hooksPath .githooks   # blocks committing a real secret into a tracked file
 ```
 
 ## Running tests

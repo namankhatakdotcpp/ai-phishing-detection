@@ -176,7 +176,13 @@ phishshield/
   asking an agent to write the value into a command). `llm_client.py`
   loads `.env` via `python-dotenv`; `describe_env_key(provider)` confirms
   presence with a masked prefix/suffix only, and the CLI prints that
-  check (never the key) before every `--live` run.
+  check (never the key) before every `--live` run. A tracked
+  `.githooks/pre-commit` hook (`git config core.hooksPath .githooks`)
+  blocks any commit where `.env.example` carries a non-empty secret value
+  or another staged file matches a KEY=/TOKEN=/SECRET= pattern — added
+  after a real incident where a key was typed into `.env.example` instead
+  of `.env`; the hook is the backstop for that exact mistake, checked
+  before commit rather than caught after the fact.
 - **Not yet done**: no real generation has actually been run in this
   environment — no credentials for either provider have been available
   here so far. Recommended sequence once a key is available: `--live
