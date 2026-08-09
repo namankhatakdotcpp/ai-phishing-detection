@@ -17,5 +17,9 @@ reports/*.png
 reports/*.csv
 reports/*.jsonl
 !reports/.gitkeep
+# Phase 7's illustrative report assets are committed as the course
+# deliverable (see PROJECT_BRIEF.md, Phase 7) — unlike phase3_/phase4_
+# outputs, which are only produced by running against real downloaded data.
+!reports/phase7_*
 
 .env
