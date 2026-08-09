@@ -136,10 +136,11 @@ def main() -> None:
 
     llm_client = None
     if args.live:
-        from phishshield.data.llm_client import build_lure_client
+        from phishshield.data.llm_client import build_lure_client, describe_env_key
 
-        llm_client = build_lure_client(args.provider, model=args.model, effort=args.effort)
         print(f"=== LIVE mode: calling {args.provider}/{args.model} for lure copy ===")
+        print(f"credential check: {describe_env_key(args.provider)}")  # masked — never the full key
+        llm_client = build_lure_client(args.provider, model=args.model, effort=args.effort)
 
     samples = generate_llm_phishing_dataset(seed=args.seed, llm_client=llm_client, max_samples=args.max_samples)
     save_samples_jsonl(samples, args.out)
