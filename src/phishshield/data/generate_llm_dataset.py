@@ -8,8 +8,11 @@ Usage (cost estimate only — no network calls, no API key needed):
     python -m phishshield.data.generate_llm_dataset --dry-run --max-samples 100
 
 Usage (Phase 8, real API calls — costs money, requires credentials):
-    pip install -e ".[llm]"
-    python -m phishshield.data.generate_llm_dataset --live --max-samples 48
+    pip install -e ".[gemini]"      # default provider — GEMINI_API_KEY / GOOGLE_API_KEY
+    python -m phishshield.data.generate_llm_dataset --live --max-samples 4   # canary first
+
+    pip install -e ".[llm]"         # --provider anthropic — ANTHROPIC_API_KEY
+    python -m phishshield.data.generate_llm_dataset --live --provider anthropic --max-samples 4
 
 See `phishshield.data.generation` for the ethical/scope constraint this
 module operates under (local-only output, gitignored `data/generated/`).
@@ -27,22 +30,41 @@ from phishshield.data.generation import (
     generate_llm_phishing_dataset,
     save_samples_jsonl,
 )
+from phishshield.data.llm_client import (
+    ANTHROPIC_DEFAULT_EFFORT,
+    ANTHROPIC_DEFAULT_MODEL,
+    GEMINI_DEFAULT_MODEL,
+)
 
 DEFAULT_OUT = "data/generated/llm_phishing_v1.jsonl"
+DEFAULT_PROVIDER = "gemini"
 
 # Rough, deliberately padded per-call token estimate for --dry-run: a short
 # structured-output request (system + brand/tone prompt in, {title, lure_copy}
-# JSON out), padded to account for adaptive thinking on effort="low". This is
-# an ESTIMATE for budget sanity-checking, not a billing guarantee — actual
-# usage depends on the live model's response.
+# JSON out). This is an ESTIMATE for budget sanity-checking, not a billing
+# guarantee — actual usage depends on the live model's response.
 _EST_INPUT_TOKENS_PER_CALL = 250
 _EST_OUTPUT_TOKENS_PER_CALL = 400
 
 _MODEL_PRICING_PER_MTOK = {
-    # (input $/MTok, output $/MTok) — first-party Claude API rates
+    # (input $/MTok, output $/MTok). Anthropic: first-party Claude API rates.
+    # Gemini: paid-tier rates as a conservative fallback — the free tier
+    # (used by default here) covers this volume at $0, subject to rate
+    # limits; verify current pricing/limits at ai.google.dev/pricing.
     "claude-opus-5": (5.00, 25.00),
     "claude-sonnet-5": (3.00, 15.00),
     "claude-haiku-4-5": (1.00, 5.00),
+    "gemini-2.5-flash": (0.30, 2.50),
+    "gemini-2.5-flash-lite": (0.10, 0.40),
+}
+
+_DEFAULT_MODEL_BY_PROVIDER = {
+    "anthropic": ANTHROPIC_DEFAULT_MODEL,
+    "gemini": GEMINI_DEFAULT_MODEL,
+}
+_DEFAULT_EFFORT_BY_PROVIDER = {
+    "anthropic": ANTHROPIC_DEFAULT_EFFORT,
+    "gemini": None,  # Gemini has no effort parameter
 }
 
 
@@ -63,18 +85,20 @@ def _print_dry_run(args: argparse.Namespace) -> None:
     cost = _estimate_cost_usd(args.model, num_calls)
 
     print("=== dry run: no API calls made, no credentials required ===")
-    print(f"model: {args.model}  effort: {args.effort}")
+    print(f"provider: {args.provider}  model: {args.model}  effort: {args.effort}")
     print(f"total samples: {total_samples} (full grid: {full_grid})")
     print(f"unique lure-copy API calls (cached per brand+tone pair): {num_calls}")
     if cost is None:
         print(f"cost estimate: unknown model, no pricing on file for {args.model!r}")
     else:
+        note = " — likely $0 on the free tier, subject to rate limits" if args.provider == "gemini" else ""
         print(
-            f"cost estimate: ~${cost:.4f} "
+            f"cost estimate (paid-tier rates): ~${cost:.4f}{note} "
             f"(ESTIMATE only, assumes ~{_EST_INPUT_TOKENS_PER_CALL} input + "
             f"~{_EST_OUTPUT_TOKENS_PER_CALL} output tokens/call — not a billing guarantee)"
         )
     print("\nRe-run with --live (and no --dry-run) to actually spend this budget.")
+    print("Recommended: try --live --max-samples 4 first and read the output before the full grid.")
 
 
 def main() -> None:
@@ -87,15 +111,24 @@ def main() -> None:
     )
     parser.add_argument(
         "--live", action="store_true",
-        help="Call the real Anthropic API for lure copy instead of using mock templates. Costs money.",
+        help="Call a real LLM API for lure copy instead of using mock templates. Costs money (or free-tier quota).",
     )
-    parser.add_argument("--model", default="claude-opus-5", help="Model for --live mode")
-    parser.add_argument("--effort", default="low", help="output_config.effort for --live mode")
+    parser.add_argument(
+        "--provider", choices=["anthropic", "gemini"], default=DEFAULT_PROVIDER,
+        help=f"LLM provider for --live mode (default: {DEFAULT_PROVIDER})",
+    )
+    parser.add_argument("--model", default=None, help="Model for --live mode (default depends on --provider)")
+    parser.add_argument("--effort", default=None, help="output_config.effort, Anthropic only (default: low)")
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Print the estimated sample count / API call count / cost and exit. No network calls.",
     )
     args = parser.parse_args()
+
+    if args.model is None:
+        args.model = _DEFAULT_MODEL_BY_PROVIDER[args.provider]
+    if args.effort is None:
+        args.effort = _DEFAULT_EFFORT_BY_PROVIDER[args.provider]
 
     if args.dry_run:
         _print_dry_run(args)
@@ -103,10 +136,10 @@ def main() -> None:
 
     llm_client = None
     if args.live:
-        from phishshield.data.llm_client import AnthropicLureClient
+        from phishshield.data.llm_client import build_lure_client
 
-        llm_client = AnthropicLureClient(model=args.model, effort=args.effort)
-        print(f"=== LIVE mode: calling {args.model} for lure copy (this costs money) ===")
+        llm_client = build_lure_client(args.provider, model=args.model, effort=args.effort)
+        print(f"=== LIVE mode: calling {args.provider}/{args.model} for lure copy ===")
 
     samples = generate_llm_phishing_dataset(seed=args.seed, llm_client=llm_client, max_samples=args.max_samples)
     save_samples_jsonl(samples, args.out)

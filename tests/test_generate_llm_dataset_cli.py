@@ -29,15 +29,24 @@ def test_estimate_cost_usd_unknown_model_returns_none():
 
 
 def test_print_dry_run_does_not_raise(capsys):
-    args = argparse.Namespace(model="claude-opus-5", effort="low", max_samples=None)
+    args = argparse.Namespace(provider="anthropic", model="claude-opus-5", effort="low", max_samples=None)
     _print_dry_run(args)
     out = capsys.readouterr().out
     assert "dry run" in out
     assert "no API calls made" in out
 
 
-def test_dry_run_cli_exits_cleanly_with_no_network_and_no_key(monkeypatch):
+def test_print_dry_run_gemini_notes_free_tier(capsys):
+    args = argparse.Namespace(provider="gemini", model="gemini-2.5-flash", effort=None, max_samples=None)
+    _print_dry_run(args)
+    out = capsys.readouterr().out
+    assert "free tier" in out
+
+
+def test_dry_run_cli_defaults_to_gemini_provider_with_no_network_and_no_key(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     result = subprocess.run(
         [sys.executable, "-m", "phishshield.data.generate_llm_dataset", "--dry-run", "--max-samples", "5"],
         capture_output=True,
@@ -46,4 +55,18 @@ def test_dry_run_cli_exits_cleanly_with_no_network_and_no_key(monkeypatch):
     )
     assert result.returncode == 0
     assert "dry run" in result.stdout
+    assert "provider: gemini" in result.stdout
     assert "unique lure-copy API calls" in result.stdout
+
+
+def test_dry_run_cli_anthropic_provider(monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    result = subprocess.run(
+        [sys.executable, "-m", "phishshield.data.generate_llm_dataset", "--dry-run", "--provider", "anthropic"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0
+    assert "provider: anthropic" in result.stdout
+    assert "model: claude-opus-5" in result.stdout
