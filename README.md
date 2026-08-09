@@ -191,30 +191,39 @@ Generate the report assets (illustrative, no downloaded data needed):
 python -m phishshield.models.build_report_assets
 ```
 
-**Phase 8 in progress**: `phishshield.data.llm_client.AnthropicLureClient`
-wires a real Anthropic API call in for the persuasive lure copy (title +
-paragraph) per (brand, tone) pair — the part of the generated phishing
-page an attacker would actually tailor, and the part the project's
-"robustness against LLM-generated phishing" claim is about. The page
-skeleton (password field, external form action, script) stays
-deterministic either way, so mock and live output stay structurally
-comparable. `generate_llm_phishing_dataset()` keeps its existing
-signature — pass `llm_client=None` (default, free, deterministic) or an
-`AnthropicLureClient` (real calls, cached per brand+tone pair — 12 calls
-for the full 48-sample grid). **Not yet run for real** — no
-`ANTHROPIC_API_KEY` / `ant auth login` credentials are available in this
-environment. `--dry-run` shows the cost estimate with no network calls
-needed:
+**Phase 8 in progress**: `phishshield.data.llm_client` wires a real LLM
+call in for the persuasive lure copy (title + paragraph) per (brand, tone)
+pair — the part of the generated phishing page an attacker would actually
+tailor, and the part the project's "robustness against LLM-generated
+phishing" claim is about. The page skeleton (password field, external
+form action, script) stays deterministic either way, so mock and live
+output stay structurally comparable. `generate_llm_phishing_dataset()`
+keeps its existing signature — pass `llm_client=None` (default, free,
+deterministic) or a real client (cached per brand+tone pair — 12 calls
+for the full 48-sample grid).
+
+Two providers, one interface — `build_lure_client(provider, model,
+effort)`:
+
+| Provider | Client | Default model | Key | Install |
+|---|---|---|---|---|
+| `gemini` (default) | `GeminiLureClient` | `gemini-2.5-flash` | `GEMINI_API_KEY` / `GOOGLE_API_KEY` (free tier) | `pip install -e ".[gemini]"` |
+| `anthropic` | `AnthropicLureClient` | `claude-opus-5` | `ANTHROPIC_API_KEY` | `pip install -e ".[llm]"` |
+
+**Not yet run for real** — no credentials for either provider have been
+available in this environment. `--dry-run` shows the cost estimate with
+no network calls needed:
 
 ```bash
-pip install -e ".[llm]"
+pip install -e ".[gemini]"
 python -m phishshield.data.generate_llm_dataset --dry-run
-# model: claude-opus-5  effort: low
+# provider: gemini  model: gemini-2.5-flash  effort: None
 # total samples: 48 (full grid: 48)
 # unique lure-copy API calls (cached per brand+tone pair): 12
-# cost estimate: ~$0.14 (rough, padded estimate, not a billing guarantee)
+# cost estimate (paid-tier rates): ~$0.01 — likely $0 on the free tier
 
-# once ANTHROPIC_API_KEY is set:
+# once GEMINI_API_KEY is set — canary first, read the output, then the full grid:
+python -m phishshield.data.generate_llm_dataset --live --max-samples 4
 python -m phishshield.data.generate_llm_dataset --live --max-samples 48
 ```
 

@@ -141,22 +141,35 @@ phishshield/
   extractors identically.
 - `generate_llm_phishing_dataset(seed, llm_client=None, max_samples=None)`
   keeps its interface stable: mock (default, `llm_client=None`, free) vs.
-  live (pass an `AnthropicLureClient`) only changes where the lure copy
-  comes from. Lure calls are cached per (brand, tone) pair — 12 calls for
-  the full 48-sample grid, not 48.
+  live (pass any client implementing `generate_lure(brand, tone) ->
+  LureCopy`) only changes where the lure copy comes from. Lure calls are
+  cached per (brand, tone) pair — 12 calls for the full 48-sample grid,
+  not 48.
+- Two providers behind one interface (`phishshield.data.llm_client`):
+  `GeminiLureClient` (default — `gemini-2.5-flash`, free tier via
+  `GEMINI_API_KEY`/`GOOGLE_API_KEY`, `pip install -e ".[gemini]"`) and
+  `AnthropicLureClient` (`claude-opus-5`, `ANTHROPIC_API_KEY`, `pip
+  install -e ".[llm]"`). `build_lure_client(provider, model, effort)`
+  dispatches between them; the CLI's `--provider` flag selects (default
+  `gemini`).
 - CLI (`generate_llm_dataset.py`): `--live` opts into real calls (default
   off); `--dry-run` prints the sample count, API call count, and a labeled
-  cost ESTIMATE with **no network calls and no credentials required**;
-  `--max-samples` hard-caps both the dataset size and the live call count.
-- Live smoke test (`tests/live/test_real_generation.py`) is skipped by
-  default (`ANTHROPIC_API_KEY` unset) so the normal test suite never
-  spends money; run explicitly with a key set.
+  cost ESTIMATE with **no network calls and no credentials required**
+  (Gemini estimate is paid-tier rates with a note that free-tier usage is
+  likely $0, subject to rate limits); `--max-samples` hard-caps both the
+  dataset size and the live call count.
+- Live smoke tests (`tests/live/test_real_generation_{anthropic,gemini}.py`)
+  are skipped by default (no matching API key env var set) so the normal
+  test suite never spends money or touches the network; run explicitly
+  with a key set.
 - **Not yet done**: no real generation has actually been run in this
-  environment — no `ANTHROPIC_API_KEY` / `ant auth login` credentials are
-  available here. The dry-run estimate for the full 48-sample grid at
-  `claude-opus-5`/`low` effort is ~$0.14 (rough, padded estimate — see
-  the CLI's `--dry-run` output). Running it for real, and then re-running
-  Phases 3/4/7 against the real-generated partition, is the next step.
+  environment — no credentials for either provider have been available
+  here so far. Recommended sequence once a key is available: `--live
+  --max-samples 4` first (one brand × two tones) and read the actual
+  generated lure text before trusting it, *then* the full 48-sample grid
+  if it reads as varied/realistic rather than templated. Running it for
+  real, and then re-running Phases 3/4/7 against the real-generated
+  partition, is the next step.
 
 ## 6. What "done" looks like
 
