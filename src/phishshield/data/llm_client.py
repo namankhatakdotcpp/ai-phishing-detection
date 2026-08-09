@@ -19,17 +19,49 @@ identically and results stay comparable across a re-run.
 Only offline dataset generation calls a real LLM. The live `/analyze` path
 (`phishshield.judge.judge`) stays the deterministic rule engine — see
 PROJECT_BRIEF.md's Phase 8+ decisions.
+
+CREDENTIAL HANDLING: API keys are read from the environment (optionally via
+a local, gitignored `.env` file loaded below) — never pass a key as a CLI
+argument or type it into a chat/agent session, both of which land the raw
+secret in a transcript, shell history, or `ps aux`. Use `describe_env_key()`
+to check presence/format without ever printing the full value.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
+
+try:
+    from dotenv import load_dotenv  # optional: pip install -e ".[llm]" or ".[gemini]"
+
+    load_dotenv()  # reads a local .env into os.environ if present; no-op otherwise
+except ImportError:
+    pass
 
 ANTHROPIC_DEFAULT_MODEL = "claude-opus-5"
 ANTHROPIC_DEFAULT_EFFORT = "low"  # short, scoped, non-reasoning-heavy generation task
 
 GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"  # free-tier eligible at time of writing; pass --model to override
+
+_ENV_KEYS_BY_PROVIDER = {
+    "anthropic": ("ANTHROPIC_API_KEY",),
+    "gemini": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
+}
+
+
+def describe_env_key(provider: str) -> str:
+    """Report whether credentials for `provider` are present, masked — for
+    confirming setup in logs/CLI output without ever revealing the secret.
+    """
+    for env_var in _ENV_KEYS_BY_PROVIDER.get(provider, ()):
+        value = os.environ.get(env_var)
+        if value:
+            masked = f"{value[:6]}...{value[-4:]}" if len(value) > 12 else "<set>"
+            return f"{env_var} is set ({masked})"
+    checked = " / ".join(_ENV_KEYS_BY_PROVIDER.get(provider, ()))
+    return f"no credentials found for {provider!r} (checked {checked})"
 
 _SYSTEM_PROMPT = (
     "You are helping generate a local, offline benchmark dataset for academic "
