@@ -153,4 +153,40 @@ Run the demo backend, then load `extension/` as an unpacked extension (see
 uvicorn phishshield.api.app:app --port 8000
 ```
 
-Phase 7 (report assets) is not yet started.
+**Phase 7 complete**: `phishshield.models.build_report_assets` generates
+every report asset into `reports/` — dataset stats, the Phase 3
+legacy-vs-LLM eval table + plot, the Phase 4 before/after + ablation
+tables + plots, a judge evaluation log, and a qualitative-examples
+markdown (one legacy phishing sample correctly caught, one LLM-generated
+sample the baseline model misses but the mitigated model catches). Runs
+by default on `phishshield.data.synthetic`'s self-contained legacy pool
+(more varied than the fixture-based pool Phase 4's own tests use — 6
+brands, several exfil domains) with no downloaded data required, and
+labels its output "illustrative" throughout so it's never mistaken for
+the real result. Interestingly, this richer synthetic pool *does* show a
+partial legacy→LLM gap the earlier Phase 4 note didn't (before-model
+recall on the LLM holdout drops to 0.875, closed to 1.0 after folding in
+LLM-generated training data) — a small preview of the effect real
+downloaded data should show more strongly. Pass
+`--phishtank`/`--openphish`/`--tranco` (all three together) to run on real
+data instead.
+
+```
+src/phishshield/
+  api/        FastAPI app, demo classifier, curated demo samples, schemas
+  data/       schema, loaders, generation (mocked LLM), synthetic legacy
+              pool, splits, pipeline, dataset stats
+  features/   URL and HTML feature extractors
+  judge/      mocked structured risk-explanation judge
+  models/     classifier, evaluation harness, fusion, mitigation
+              experiment, qualitative examples, plotting,
+              train_baseline / run_mitigation / build_report_assets CLIs
+extension/    Manifest V3 demo popup (see extension/README.md to run it)
+tests/        unit tests + fixtures (tests/fixtures/)
+```
+
+Generate the report assets (illustrative, no downloaded data needed):
+
+```bash
+python -m phishshield.models.build_report_assets
+```

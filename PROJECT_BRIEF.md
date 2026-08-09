@@ -122,7 +122,14 @@ phishshield/
   `localhost:8000`, never reads the page the user is on.
 
 ### Phase 7 — Report assets
-- Dataset stats, eval tables, ablation table, qualitative examples.
+- `build_report_assets` generates dataset stats, the Phase 3 eval table,
+  the Phase 4 before/after + ablation tables, and two qualitative examples
+  (one legacy phishing correctly caught, one LLM-generated sample the
+  baseline misses but the mitigated model catches) into `reports/`.
+- Defaults to `phishshield.data.synthetic`'s self-contained legacy pool so
+  it runs with no downloaded data — clearly labeled as illustrative, not
+  the report's real headline numbers. Accepts
+  `--phishtank`/`--openphish`/`--tranco` to run on real data instead.
 
 ## 6. What "done" looks like
 
