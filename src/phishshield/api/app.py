@@ -18,7 +18,8 @@ from phishshield.features.pipeline import extract_features
 from phishshield.judge.judge import judge_features, risk_band
 from phishshield.models.classifier import predict_feature_dict
 
-FUSION_ALPHA = 0.5  # classifier weight; matches the Phase 4 ablation default
+FUSION_ALPHA = 0.7  # classifier weight; matches mitigation.run_mitigation_experiment's
+# default (see its docstring) -- 0.5 was found to collapse recall on real-world data
 
 app = FastAPI(
     title="PhishShield AI demo API",
