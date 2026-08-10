@@ -1,58 +1,169 @@
 reddit_home|https://www.reddit.com/|8393|ok
 stackoverflow_q|https://stackoverflow.com/questions/tagged/python|0|HTTP Error 403: Forbidden
-google_home|https://www.google.com/|84832|ok
-apple_home|https://www.apple.com/|253927|ok
-microsoft_home|https://www.microsoft.com/en-us|201253|ok
-github_home|https://github.com/|500000|ok
 python_docs|https://docs.python.org/3/|19434|ok
-youtube_home|https://www.youtube.com/|500000|ok
-mdn_js|https://developer.mozilla.org/en-US/docs/Web/JavaScript|202147|ok
+github_home|https://github.com/|500000|ok
+apple_home|https://www.apple.com/|253927|ok
+google_home|https://www.google.com/|84762|ok
+microsoft_home|https://www.microsoft.com/en-us|201253|ok
+linkedin_home|https://www.linkedin.com/|141509|ok
 mdn_home|https://developer.mozilla.org/en-US/|121373|ok
 stackoverflow_home|https://stackoverflow.com/|0|HTTP Error 403: Forbidden
-paypal_home|https://www.paypal.com/|200562|ok
+youtube_home|https://www.youtube.com/|500000|ok
 google_search|https://www.google.com/search?q=phishing+detection|0|HTTP Error 429: Too Many Requests
 github_repo|https://github.com/torvalds/linux|318280|ok
-linkedin_home|https://www.linkedin.com/|141469|ok
-wikipedia_phishing|https://en.wikipedia.org/wiki/Phishing|500000|ok
-wikipedia_python|https://en.wikipedia.org/wiki/Python_(programming_language)|500000|ok
-reuters|https://www.reuters.com/|0|HTTP Error 401: HTTP Forbidden
 iitd|https://home.iitd.ac.in/|281830|ok
-amazon_home|https://www.amazon.com/|500000|ok
-wikipedia_org|https://www.wikipedia.org/|120361|ok
-github_issues|https://github.com/facebook/react/issues|319300|ok
-harvard|https://www.harvard.edu/|146088|ok
-facebook|https://www.facebook.com/|445688|ok
-cnn|https://www.cnn.com/|500000|ok
-mit|https://www.mit.edu/|47820|ok
+wikipedia_phishing|https://en.wikipedia.org/wiki/Phishing|500000|ok
+bbc_news|https://www.bbc.com/news|360643|ok
+mdn_js|https://developer.mozilla.org/en-US/docs/Web/JavaScript|202147|ok
+wikipedia_python|https://en.wikipedia.org/wiki/Python_(programming_language)|500000|ok
+paypal_home|https://www.paypal.com/|203723|ok
+reuters|https://www.reuters.com/|0|HTTP Error 401: HTTP Forbidden
 nytimes|https://www.nytimes.com/|500000|ok
-spotify|https://www.spotify.com/|301069|ok
+mit|https://www.mit.edu/|47820|ok
+cnn|https://www.cnn.com/|500000|ok
+harvard|https://www.harvard.edu/|146088|ok
+github_issues|https://github.com/facebook/react/issues|319028|ok
+wikipedia_org|https://www.wikipedia.org/|120361|ok
+npmjs|https://www.npmjs.com/|0|HTTP Error 403: Forbidden
+amazon_home|https://www.amazon.com/|500000|ok
+medium|https://medium.com/|0|HTTP Error 403: Forbidden
 pypi|https://pypi.org/|22977|ok
 quora|https://www.quora.com/|0|HTTP Error 403: Forbidden
-npmjs|https://www.npmjs.com/|0|HTTP Error 403: Forbidden
-instagram|https://www.instagram.com/|393495|ok
-twitter_x|https://twitter.com/|34234|ok
-medium|https://medium.com/|0|HTTP Error 403: Forbidden
+facebook|https://www.facebook.com/|446753|ok
 zoom|https://zoom.us/|263562|ok
+twitter_x|https://twitter.com/|34233|ok
+spotify|https://www.spotify.com/|301069|ok
 atlassian|https://www.atlassian.com/|500000|ok
 coinbase|https://www.coinbase.com/|0|HTTP Error 403: Forbidden
-salesforce|https://www.salesforce.com/|500000|ok
 iitb|https://www.iitb.ac.in/|308311|ok
-bbc_news|https://www.bbc.com/news|360643|ok
-walmart|https://www.walmart.com/|500000|ok
+walmart|https://www.walmart.com/|405690|ok
+salesforce|https://www.salesforce.com/|500000|ok
+dropbox_home|https://www.dropbox.com/|500000|ok
+ebay|https://www.ebay.com/|13445|ok
 netflix_home|https://www.netflix.com/|500000|ok
-stanford|https://www.stanford.edu/|500000|ok
-ebay|https://www.ebay.com/|500000|ok
-slack|https://slack.com/|258654|ok
-office|https://www.office.com/|79|ok
-chase_bank|https://www.chase.com/|339221|ok
 icloud|https://www.icloud.com/|30950|ok
-dropbox_home|https://www.dropbox.com/|149514|ok
-readthedocs|https://readthedocs.org/|34786|ok
-target|https://www.target.com/|377795|ok
+slack|https://slack.com/|258691|ok
 docusign|https://www.docusign.com/|500000|ok
-wellsfargo|https://www.wellsfargo.com/|125044|ok
+office|https://www.office.com/|79|ok
+github_login|https://github.com/login|47041|ok
+chase_bank|https://www.chase.com/|339224|ok
+paypal_signin|https://www.paypal.com/signin|0|HTTP Error 403: Forbidden
+reddit_login|https://www.reddit.com/login/|8399|ok
+gitlab_login|https://gitlab.com/users/sign_in|0|HTTP Error 403: Forbidden
+stanford|https://www.stanford.edu/|500000|ok
 bankofamerica|https://www.bankofamerica.com/|317954|ok
-outlook|https://outlook.com/|0|HTTP Error 417: Expectation Failed
-protonmail|https://proton.me/mail|336151|ok
+amazon_signin|https://www.amazon.com/ap/signin|0|HTTP Error 404: Not Found
+readthedocs|https://readthedocs.org/|34786|ok
+atlassian_login|https://id.atlassian.com/login|0|status=202
+npmjs_login|https://www.npmjs.com/login|0|HTTP Error 403: Forbidden
+target|https://www.target.com/|377099|ok
+microsoft_login|https://login.microsoftonline.com/|49845|ok
+quora_login|https://www.quora.com/|0|HTTP Error 403: Forbidden
+zoom_signin|https://zoom.us/signin|155812|ok
+stackoverflow_login|https://stackoverflow.com/users/login|83320|ok
+linkedin_login|https://www.linkedin.com/login|500000|ok
+slack_signin|https://slack.com/signin|0|HTTP Error 403: Forbidden
+wellsfargo|https://www.wellsfargo.com/|125043|ok
+google_accounts|https://accounts.google.com/|500000|ok
+protonmail|https://proton.me/mail|321190|ok
+wsj|https://www.wsj.com/|0|HTTP Error 401: HTTP Forbidden
+guardian|https://www.theguardian.com/international|500000|ok
+bitbucket_login|https://bitbucket.org/account/signin/|0|status=202
+shopify_login|https://www.shopify.com/login|0|HTTP Error 403: Forbidden
+dropbox_login|https://www.dropbox.com/login|78334|ok
+bloomberg|https://www.bloomberg.com/|0|HTTP Error 403: Forbidden
+adobe_login|https://auth.services.adobe.com/en_US/index.html|172681|ok
+techcrunch|https://techcrunch.com/|453317|ok
+theverge|https://www.theverge.com/|500000|ok
+aljazeera|https://www.aljazeera.com/|415153|ok
+hindustantimes|https://www.hindustantimes.com/|500000|ok
+wordpress_login|https://wordpress.com/log-in|155401|ok
+iitm|https://www.iitm.ac.in/|178363|ok
+timesofindia|https://timesofindia.indiatimes.com/|500000|ok
+wired|https://www.wired.com/|500000|ok
+salesforce_login|https://login.salesforce.com/|12397|ok
 adobe_home|https://www.adobe.com/|0|The read operation timed out
+instagram|https://www.instagram.com/|393591|ok
+ox_ac_uk|https://www.ox.ac.uk/|0|HTTP Error 403: Forbidden
+berkeley|https://www.berkeley.edu/|74925|ok
+arstechnica|https://arstechnica.com/|0|status=202
+forbes|https://www.forbes.com/|500000|ok
+iisc|https://www.iisc.ac.in/|125752|ok
+khanacademy|https://www.khanacademy.org/|3038|ok
+cambridge|https://www.cam.ac.uk/|111002|ok
+rust_docs|https://doc.rust-lang.org/book/|22496|ok
+caltech|https://www.caltech.edu/|415223|ok
+edx|https://www.edx.org/|500000|ok
+indianexpress|https://indianexpress.com/|500000|ok
+npr|https://www.npr.org/|500000|ok
+coursera|https://www.coursera.org/|500000|ok
+stackoverflow_q2|https://stackoverflow.com/questions/tagged/javascript|0|HTTP Error 403: Forbidden
+nodejs_docs|https://nodejs.org/en/docs|18550|ok
+react_docs|https://react.dev/learn|265160|ok
+aws_docs|https://docs.aws.amazon.com/|432926|ok
+reddit_subreddit|https://www.reddit.com/r/programming/|8407|ok
+djangoproject|https://docs.djangoproject.com/en/5.0/|52960|ok
+golang_docs|https://go.dev/doc/|47637|ok
+w3schools|https://www.w3schools.com/html/|243996|ok
+amazon_product|https://www.amazon.com/dp/B08N5WRWNW|0|HTTP Error 404: Not Found
+iitk|https://www.iitk.ac.in/|155171|ok
+outlook|https://outlook.com/|0|HTTP Error 417: Expectation Failed
+youtube_watch|https://www.youtube.com/watch?v=dQw4w9WgXcQ|500000|ok
+ebay_listing|https://www.ebay.com/sch/i.html?_nkw=laptop|0|HTTP Error 403: Forbidden
+kubernetes_docs|https://kubernetes.io/docs/home/|487080|ok
+github_actions_docs|https://docs.github.com/en/actions|435597|ok
+iitkgp|https://www.iitkgp.ac.in/|363030|ok
+google_maps|https://www.google.com/maps|210610|ok
+devto|https://dev.to/|286235|ok
+hackernews|https://news.ycombinator.com/|34980|ok
+spotify_search|https://open.spotify.com/search|163114|ok
 bestbuy|https://www.bestbuy.com/|0|The read operation timed out
+apple_support|https://support.apple.com/|130088|ok
+wikipedia_search|https://en.wikipedia.org/w/index.php?search=machine+learning|500000|ok
+freecodecamp|https://www.freecodecamp.org/news/|106595|ok
+walmart_search|https://www.walmart.com/search?q=laptop|15195|ok
+airbnb|https://www.airbnb.com/|837|ok
+linkedin_jobs|https://www.linkedin.com/jobs/|132946|ok
+twitter_search|https://twitter.com/search?q=phishing|274130|ok
+uber|https://www.uber.com/|0|HTTP Error 406: Not Acceptable
+canva|https://www.canva.com/|0|HTTP Error 403: Forbidden
+cmu|https://www.cmu.edu/|101124|ok
+figma|https://www.figma.com/|500000|ok
+google_docs|https://docs.google.com/document/u/0/|479966|ok
+google_drive|https://drive.google.com/|500000|ok
+trello|https://trello.com/|495484|ok
+indeed|https://www.indeed.com/|0|HTTP Error 403: Forbidden
+doordash|https://www.doordash.com/|0|HTTP Error 403: Forbidden
+notion|https://www.notion.so/|247906|ok
+glassdoor|https://www.glassdoor.com/index.htm|0|HTTP Error 403: Forbidden
+expedia|https://www.expedia.com/|0|HTTP Error 429: Too Many Requests
+booking|https://www.booking.com/|0|status=202
+shopify_home|https://www.shopify.com/|423004|ok
+github_pr|https://github.com/facebook/react/pulls|329836|ok
+vimeo|https://vimeo.com/|500000|ok
+asana|https://asana.com/|500000|ok
+etsy|https://www.etsy.com/|0|HTTP Error 403: Forbidden
+tripadvisor|https://www.tripadvisor.com/|0|HTTP Error 403: Forbidden
+microsoft_support|https://support.microsoft.com/en-us|109169|ok
+digitalocean|https://www.digitalocean.com/|286016|ok
+tumblr|https://www.tumblr.com/|119547|ok
+cloudflare|https://www.cloudflare.com/|500000|ok
+venmo|https://venmo.com/|270599|ok
+heroku|https://www.heroku.com/|426519|ok
+square|https://squareup.com/us/en|500000|ok
+vercel|https://vercel.com/|500000|ok
+squarespace|https://www.squarespace.com/|500000|ok
+washingtonpost|https://www.washingtonpost.com/|0|The read operation timed out
+twitch|https://www.twitch.tv/|196756|ok
+icicibank|https://www.icicibank.com/|500000|ok
+fidelity|https://www.fidelity.com/|0|HTTP Error 403: Forbidden
+sbi|https://sbi.co.in/|4297|ok
+wix|https://www.wix.com/|500000|ok
+stripe|https://stripe.com/|500000|ok
+etrade|https://us.etrade.com/home|223471|ok
+hdfcbank|https://www.hdfcbank.com/|500000|ok
+pinterest|https://www.pinterest.com/|500000|ok
+robinhood|https://robinhood.com/us/en/|292769|ok
+hsbc|https://www.hsbc.com/|147622|ok
+schwab|https://www.schwab.com/|483147|ok
+citibank|https://www.citibank.com/|232760|ok

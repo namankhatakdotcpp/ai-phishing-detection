@@ -1,0 +1,41 @@
+kickstarter_login|https://www.kickstarter.com/login|0|HTTP Error 403: Forbidden
+udemy_login|https://www.udemy.com/join/login-popup/|0|HTTP Error 403: Forbidden
+hubspot_login|https://app.hubspot.com/login|50605|no_password_field
+patreon_login|https://www.patreon.com/login|0|HTTP Error 403: Forbidden
+ziprecruiter_login|https://www.ziprecruiter.com/login|0|HTTP Error 403: Forbidden
+yelp_login|https://www.yelp.com/login|0|HTTP Error 403: Forbidden
+clickup_login|https://app.clickup.com/login|116645|no_password_field
+grammarly_login|https://www.grammarly.com/signin|300000|no_password_field
+discord_login|https://discord.com/login|44143|no_password_field
+zillow_login|https://www.zillow.com/user/acct/login/|0|HTTP Error 308: Permanent Redirect
+okta_login|https://www.okta.com/login/|22219|no_password_field
+quizlet_login|https://quizlet.com/login|0|HTTP Error 403: Forbidden
+duolingo_login|https://www.duolingo.com/|11250|no_password_field
+chegg_login|https://www.chegg.com/login|0|HTTP Error 503: Service Temporarily Unavailable
+wise_login|https://wise.com/login|97944|no_password_field
+upwork_login|https://www.upwork.com/ab/account-security/login|0|HTTP Error 403: Forbidden
+monday_login|https://auth.monday.com/login|247262|no_password_field
+mailchimp_login|https://login.mailchimp.com/|300000|no_password_field
+sendgrid_login|https://login.sendgrid.com/login|10809|no_password_field
+sourceforge_login|https://sourceforge.net/auth/|42776|ok
+envato_login|https://account.envato.com/sign_in|8004|no_password_field
+freelancer_login|https://www.freelancer.com/login|300000|no_password_field
+todoist_login|https://todoist.com/auth/login|24327|no_password_field
+eventbrite_login|https://www.eventbrite.com/signin/|42423|no_password_field
+themeforest_login|https://themeforest.net/sign_in|93327|no_password_field
+fiverr_login|https://www.fiverr.com/login|300000|no_password_field
+basecamp_login|https://basecamp.com/login|4435|ok
+bluehost_login|https://my.bluehost.com/hosting/login|0|HTTP Error 403: Forbidden
+hostgator_login|https://portal.hostgator.com/login|0|HTTP Error 403: Forbidden
+typeform_login|https://admin.typeform.com/login|3021|no_password_field
+mailgun_login|https://login.mailgun.com/login/|40253|ok
+bitwarden_login|https://vault.bitwarden.com/#/login|23090|no_password_field
+godaddy_login|https://sso.godaddy.com/|300000|no_password_field
+zendesk_login|https://www.zendesk.com/login/|154179|no_password_field
+intercom_login|https://app.intercom.com/|25193|ok
+namecheap_login|https://www.namecheap.com/myaccount/login/|117465|ok
+surveymonkey_login|https://www.surveymonkey.com/user/sign-in/|11917|no_password_field
+evernote_login|https://www.evernote.com/Login.action|12693|no_password_field
+lastpass_login|https://lastpass.com/|300000|no_password_field
+twilio_login|https://login.twilio.com/|300000|no_password_field
+canva_alt_login|https://www.canva.cn/login|0|HTTP Error 403: Forbidden

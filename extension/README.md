@@ -86,13 +86,15 @@ popup disables the button and says so rather than silently failing.
 
 - **FPR on real data is real, not hidden**: a real evaluation against 46
   real major websites (Google, GitHub, Wikipedia, MDN, banks, etc. --
-  `reports/FINAL_REPORT.md` Section 3.7) found a **13.0% false-positive
-  rate** on the current model, including several clearly benign,
-  reputable pages landing HIGH. Expect occasional SUSPICIOUS/HIGH
-  verdicts on genuinely benign pages -- this is a real, unresolved,
-  diagnosed limitation (at least one cause: legitimate login pages are
-  underrepresented in benign training data), not smoothed over here.
-  **Not deployment-ready.**
+  `reports/FINAL_REPORT.md` Section 3.7) found a 13.0% false-positive
+  rate. `reports/FINAL_REPORT.md` Section 3.8 then fixed one diagnosed
+  cause (legitimate login pages were underrepresented in benign training
+  data) and rescaled the evaluation to 130 real pages: **6.2% FPR at
+  n=130** on the current model (`sha256[:12]=2f5af5d0affb`), verified to
+  cost nothing in phishing recall. Expect occasional SUSPICIOUS/HIGH
+  verdicts on genuinely benign pages -- two other diagnosed causes
+  (URL special characters, combination-driven scores on docs/issue
+  pages) remain open, not smoothed over here. **Not deployment-ready.**
 - **Local backend only**: `API_BASE` in `popup.js` points at
   `127.0.0.1:8000`. Pointing it at a deployed HTTPS backend, adding
   request rate limiting, and locking down CORS (`api/app.py` currently

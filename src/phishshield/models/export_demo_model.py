@@ -52,6 +52,11 @@ def main() -> None:
     parser.add_argument("--tranco", required=True)
     parser.add_argument("--tranco-limit", type=int, default=5000)
     parser.add_argument("--tranco-html", default=None, help="optional JSONL from fetch_tranco_html.py")
+    parser.add_argument(
+        "--extra-benign-html", action="append", default=[],
+        help="optional additional benign-labeled JSONL (same schema as --tranco-html) to append "
+        "as-is, e.g. data/generated/benign_login_pages.jsonl -- repeatable",
+    )
     parser.add_argument("--llm-generated", required=True)
     parser.add_argument("--out", default=DEFAULT_OUT)
     args = parser.parse_args()
@@ -68,6 +73,8 @@ def main() -> None:
         ] + html_samples
 
     legacy_samples = load_phishtank(args.phishtank) + load_openphish(args.openphish) + tranco_samples
+    for extra_path in args.extra_benign_html:
+        legacy_samples += load_llm_generated(extra_path)
     llm_samples = load_llm_generated(args.llm_generated)
     all_samples = legacy_samples + llm_samples
 

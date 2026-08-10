@@ -7,11 +7,14 @@ secrets, and clicking deploy are yours to do (see
 
 **Separate, more important gate**: the infrastructure below being ready
 does not mean the model is. A real evaluation against 46 real major
-websites found 13.0% FPR (`reports/FINAL_REPORT.md` Section 3.7) —
-meaningfully improved from earlier states, but not resolved, with at
-least one diagnosed, unfixed cause (`num_password_fields` on legitimate
-login pages). Do not deploy based on this file alone; check Section 3.7
-and the Limitations section first.
+websites found 13.0% FPR (`reports/FINAL_REPORT.md` Section 3.7); a
+subsequent fix for the diagnosed `num_password_fields` cause and a
+rescale to 130 real pages (Section 3.8) brought that to **6.2% FPR at
+n=130**, with no measured phishing-recall cost — meaningfully improved,
+but still not resolved (two other diagnosed causes remain open, and
+live Chrome validation has never been run — see Section 8.1's explicit
+DO NOT DEPLOY gate). Do not deploy based on this file alone; check
+Section 3.8 and the Limitations section first.
 
 ## Option A: Render (Blueprint, `render.yaml` already in this repo)
 

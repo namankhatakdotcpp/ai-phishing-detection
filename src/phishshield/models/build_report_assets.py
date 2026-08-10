@@ -69,6 +69,13 @@ def _load_legacy_samples(args: argparse.Namespace) -> tuple[list, str]:
             ] + html_samples
             mode = f"real (+ {len(html_samples)} Tranco samples with fetched benign HTML)"
         samples = load_phishtank(args.phishtank) + load_openphish(args.openphish) + tranco_samples
+        extra_n = 0
+        for extra_path in args.extra_benign_html:
+            extra_samples = load_llm_generated(extra_path)
+            samples += extra_samples
+            extra_n += len(extra_samples)
+        if extra_n:
+            mode += f" (+ {extra_n} extra benign HTML samples)"
         return samples, mode
 
     return build_synthetic_legacy_pool(n_each=args.synthetic_n), "synthetic (illustrative only)"
@@ -190,6 +197,11 @@ def main() -> None:
         "--tranco-html", default=None,
         help="optional JSONL of Tranco samples with fetched benign HTML (see fetch_tranco_html.py); "
         "merged into --tranco by URL, replacing the html=None versions of those domains",
+    )
+    parser.add_argument(
+        "--extra-benign-html", action="append", default=[],
+        help="optional additional benign-labeled JSONL (same schema as --tranco-html) to append "
+        "as-is, e.g. data/generated/benign_login_pages.jsonl -- repeatable",
     )
     parser.add_argument("--llm-generated", default=None, help="path to a saved JSONL partition; regenerates if omitted")
     parser.add_argument("--synthetic-n", type=int, default=40, help="samples per class for the synthetic legacy pool")

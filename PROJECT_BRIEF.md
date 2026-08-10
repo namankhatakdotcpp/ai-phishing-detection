@@ -391,15 +391,20 @@ phishshield/
   - **Correction (2026-08-11, later the same day)**: the numbers above
     (99.94% precision / 99.50% recall / 0.8% FPR) were later found to be
     substantially an artifact of two real bugs in `load_tranco()` — see
-    `reports/FINAL_REPORT.md` Sections 3.5-3.7 for the full, current,
+    `reports/FINAL_REPORT.md` Sections 3.5-3.8 for the full, current,
     corrected account. Kept here unedited as a historical record of what
     was believed true at the time, per this project's stated norm of
     adding a correction rather than silently rewriting past entries.
     **Current, real numbers as of the last commit**: real, live
     hard-negative testing against 46 real major websites (Google,
-    GitHub, Wikipedia, MDN, banks, etc.) found **13.0% FPR**, not 0% —
-    meaningfully improved from the original state (where nearly every
-    major site scored HIGH), but not resolved. **The project is not
+    GitHub, Wikipedia, MDN, banks, etc.) found 13.0% FPR, not 0%.
+    Section 3.8 then fixed one diagnosed cause (real login pages
+    underrepresented in benign training data) and rescaled the
+    evaluation to 130 real pages: **6.2% FPR at n=130**, with the fix
+    verified to cost nothing in phishing recall on the model that
+    actually ships. Meaningfully improved from the original state
+    (where nearly every major site scored HIGH), but not resolved — two
+    other diagnosed causes remain open. **The project is not
     deployment-ready.** `reports/FINAL_REPORT.md` is the authoritative,
     up-to-date source for all headline numbers; treat any number in this
     section as historical unless corroborated there.

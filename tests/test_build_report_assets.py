@@ -12,6 +12,7 @@ def _default_args(**overrides):
         tranco=None,
         tranco_limit=5000,
         tranco_html=None,
+        extra_benign_html=[],
         llm_generated=None,
         synthetic_n=10,
         fold_fraction=0.5,
