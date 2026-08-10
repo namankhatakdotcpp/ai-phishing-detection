@@ -5,7 +5,10 @@ ETHICAL / SCOPE CONSTRAINT: same as `phishshield.data.generation` — output
 is a local research artifact only, under gitignored `data/generated/`,
 never hosted or sent anywhere else. This module makes real, billed API
 calls; it is opt-in (`--live` on the CLI) and never runs by default in
-tests or CI.
+tests or CI. Every call and its raw response is appended to a local
+manifest (`data/generated/generation_manifest.jsonl` by default, itself
+gitignored) for methodology reproducibility — enough to answer "did
+accuracy drop specifically on the `reward` tone?" during error analysis.
 
 Design note: the LLM writes only the customer-facing persuasive text (page
 title + lure paragraph) for a given brand/tone — the actual social-
@@ -30,8 +33,12 @@ to check presence/format without ever printing the full value.
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
 
 try:
     from dotenv import load_dotenv  # optional: pip install -e ".[llm]" or ".[gemini]"
@@ -40,10 +47,15 @@ try:
 except ImportError:
     pass
 
+logger = logging.getLogger(__name__)
+
 ANTHROPIC_DEFAULT_MODEL = "claude-opus-5"
 ANTHROPIC_DEFAULT_EFFORT = "low"  # short, scoped, non-reasoning-heavy generation task
 
 GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"  # free-tier eligible at time of writing; pass --model to override
+
+DEFAULT_MANIFEST_PATH = Path("data/generated/generation_manifest.jsonl")
+DEFAULT_MAX_RETRIES = 3  # exponential backoff: 2s, 4s, 8s between attempts
 
 _ENV_KEYS_BY_PROVIDER = {
     "anthropic": ("ANTHROPIC_API_KEY",),
@@ -62,6 +74,7 @@ def describe_env_key(provider: str) -> str:
             return f"{env_var} is set ({masked})"
     checked = " / ".join(_ENV_KEYS_BY_PROVIDER.get(provider, ()))
     return f"no credentials found for {provider!r} (checked {checked})"
+
 
 _SYSTEM_PROMPT = (
     "You are helping generate a local, offline benchmark dataset for academic "
@@ -85,6 +98,33 @@ _LURE_SCHEMA = {
     "additionalProperties": False,
 }
 
+# One entry per tone key used in generation.py's TONES tuple. Keep this in
+# sync with generation.py's _TONE_COPY/_TONE_PATH dicts — every tone in
+# TONES needs a matching entry here (live) and there (mock fallback).
+_TONE_INSTRUCTIONS = {
+    "urgent": (
+        "urgent — implies an imminent negative consequence (account "
+        "suspension, lockout) unless the user acts within a short deadline"
+    ),
+    "formal": "formal — a routine, low-pressure security-review notice",
+    "reward": (
+        "reward — implies the user has a prize, refund, or benefit "
+        "waiting, contingent on 'confirming' their account"
+    ),
+    "security_alert": (
+        "security alert — claims suspicious sign-in activity was "
+        "detected and asks the user to verify it was them"
+    ),
+    "invoice": (
+        "invoice — references a pending or overdue payment/invoice "
+        "that requires the user to log in to review"
+    ),
+    "delivery": (
+        "delivery — claims a package delivery failed or requires an "
+        "address/payment confirmation"
+    ),
+}
+
 
 @dataclass(frozen=True)
 class LureCopy:
@@ -92,16 +132,58 @@ class LureCopy:
     lure_copy: str
 
 
+class LureGenerationError(RuntimeError):
+    """Raised when an API call or response parsing fails after retries."""
+
+
 def _build_prompt(brand_display: str, tone: str) -> str:
-    tone_hint = {
-        "urgent": "urgent, warning of imminent account suspension",
-        "formal": "formal, framed as a routine security review",
-    }.get(tone, tone)
+    tone_hint = _TONE_INSTRUCTIONS.get(tone, tone)
     return (
         f"Write the page title and a short lure paragraph for a phishing "
         f"login page impersonating {brand_display}. Tone: {tone_hint}. "
         f"Keep the paragraph to 1-2 sentences, plausible and realistic."
     )
+
+
+def _append_manifest(
+    manifest_path: Path, provider: str, model: str, brand_display: str, tone: str,
+    prompt: str, raw_response: str, attempt: int,
+) -> None:
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "timestamp": time.time(),
+        "provider": provider,
+        "model": model,
+        "brand": brand_display,
+        "tone": tone,
+        "attempt": attempt,
+        "prompt": prompt,
+        "raw_response": raw_response,
+    }
+    with manifest_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record) + "\n")
+
+
+def _with_retries(fn, description: str, max_retries: int):
+    """Call `fn()`, retrying on any exception with exponential backoff
+    (2s, 4s, 8s, ...) up to `max_retries` attempts. Returns (result,
+    attempt_number) so callers can log which attempt succeeded.
+
+    Deliberately re-raises as `LureGenerationError` rather than degrading
+    silently — a pair that fails after retries should abort the run, not
+    produce a sample mislabeled as live-generated when it's actually a
+    parsing failure or a persistent API error.
+    """
+    last_error: Optional[BaseException] = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            return fn(), attempt
+        except Exception as exc:  # noqa: BLE001 - intentionally broad, see docstring
+            last_error = exc
+            logger.warning("%s attempt %d/%d failed: %s", description, attempt, max_retries, exc)
+            if attempt < max_retries:
+                time.sleep(2**attempt)
+    raise LureGenerationError(f"{description} failed after {max_retries} attempts") from last_error
 
 
 class AnthropicLureClient:
@@ -112,33 +194,51 @@ class AnthropicLureClient:
     (`ANTHROPIC_API_KEY`, or an `ant auth login` profile).
     """
 
-    def __init__(self, model: str = ANTHROPIC_DEFAULT_MODEL, effort: str = ANTHROPIC_DEFAULT_EFFORT):
+    def __init__(
+        self,
+        model: str = ANTHROPIC_DEFAULT_MODEL,
+        effort: str = ANTHROPIC_DEFAULT_EFFORT,
+        manifest_path: Path = DEFAULT_MANIFEST_PATH,
+        max_retries: int = DEFAULT_MAX_RETRIES,
+    ):
         import anthropic  # deferred: only required in --live mode
 
         self._client = anthropic.Anthropic()
         self.model = model
         self.effort = effort
+        self._manifest_path = Path(manifest_path)
+        self._max_retries = max_retries
 
     def generate_lure(self, brand_display: str, tone: str) -> LureCopy:
-        response = self._client.messages.create(
-            model=self.model,
-            max_tokens=512,
-            system=_SYSTEM_PROMPT,
-            output_config={
-                "effort": self.effort,
-                "format": {"type": "json_schema", "schema": _LURE_SCHEMA},
-            },
-            messages=[{"role": "user", "content": _build_prompt(brand_display, tone)}],
-        )
-        if response.stop_reason == "refusal":
-            raise RuntimeError(
-                f"LLM declined the lure-copy request for brand={brand_display!r}: "
-                f"{getattr(response.stop_details, 'explanation', None)}"
-            )
+        prompt = _build_prompt(brand_display, tone)
 
-        text = next(block.text for block in response.content if block.type == "text")
-        data = json.loads(text)
-        return LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+        def _call():
+            response = self._client.messages.create(
+                model=self.model,
+                max_tokens=512,
+                system=_SYSTEM_PROMPT,
+                output_config={
+                    "effort": self.effort,
+                    "format": {"type": "json_schema", "schema": _LURE_SCHEMA},
+                },
+                messages=[{"role": "user", "content": prompt}],
+            )
+            if response.stop_reason == "refusal":
+                raise LureGenerationError(
+                    f"LLM declined the lure-copy request for brand={brand_display!r}: "
+                    f"{getattr(response.stop_details, 'explanation', None)}"
+                )
+            text = next(block.text for block in response.content if block.type == "text")
+            data = json.loads(text)
+            return text, LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+
+        (raw_text, lure), attempt = _with_retries(
+            _call, f"generate_lure({brand_display!r}, {tone!r}) [anthropic]", self._max_retries
+        )
+        _append_manifest(
+            self._manifest_path, "anthropic", self.model, brand_display, tone, prompt, raw_text, attempt
+        )
+        return lure
 
 
 class GeminiLureClient:
@@ -151,34 +251,52 @@ class GeminiLureClient:
     https://aistudio.google.com/apikey).
     """
 
-    def __init__(self, model: str = GEMINI_DEFAULT_MODEL, effort: str | None = None):
+    def __init__(
+        self,
+        model: str = GEMINI_DEFAULT_MODEL,
+        effort: Optional[str] = None,
+        manifest_path: Path = DEFAULT_MANIFEST_PATH,
+        max_retries: int = DEFAULT_MAX_RETRIES,
+    ):
         from google import genai  # deferred: only required in --live mode
 
         self._genai = genai
         self._client = genai.Client()
         self.model = model
         self.effort = effort  # accepted for CLI symmetry with Anthropic; unused by Gemini
+        self._manifest_path = Path(manifest_path)
+        self._max_retries = max_retries
 
     def generate_lure(self, brand_display: str, tone: str) -> LureCopy:
         from google.genai import types
 
-        response = self._client.models.generate_content(
-            model=self.model,
-            contents=_build_prompt(brand_display, tone),
-            config=types.GenerateContentConfig(
-                system_instruction=_SYSTEM_PROMPT,
-                response_mime_type="application/json",
-                response_schema=_LURE_SCHEMA,
-            ),
-        )
-        if not response.text:
-            raise RuntimeError(
-                f"Gemini returned no content for brand={brand_display!r} "
-                f"(possibly blocked — check response.prompt_feedback)"
-            )
+        prompt = _build_prompt(brand_display, tone)
 
-        data = json.loads(response.text)
-        return LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+        def _call():
+            response = self._client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=_SYSTEM_PROMPT,
+                    response_mime_type="application/json",
+                    response_schema=_LURE_SCHEMA,
+                ),
+            )
+            if not response.text:
+                raise LureGenerationError(
+                    f"Gemini returned no content for brand={brand_display!r} "
+                    f"(possibly blocked — check response.prompt_feedback)"
+                )
+            data = json.loads(response.text)
+            return response.text, LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+
+        (raw_text, lure), attempt = _with_retries(
+            _call, f"generate_lure({brand_display!r}, {tone!r}) [gemini]", self._max_retries
+        )
+        _append_manifest(
+            self._manifest_path, "gemini", self.model, brand_display, tone, prompt, raw_text, attempt
+        )
+        return lure
 
 
 def build_lure_client(provider: str, model: str, effort: str):
