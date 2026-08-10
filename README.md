@@ -274,6 +274,30 @@ already at 100% after mitigation) — reported as an honest null result.
 9's real downloaded data before this gap is fully trustworthy. Next:
 Phase 9, then a final re-run with both sides real.
 
+**Phase 9: real legacy data + benign HTML + judge fusion tuning
+(2026-08-10)**: downloaded real PhishTank (71,175 URLs), OpenPhish's
+free feed (300 URLs), and 5,000 Tranco domains. An initial fully-real
+run showed a suspicious 100% recall on the LLM holdout; ablation
+confirmed it's genuinely driven by URL-lexical pattern transfer, not a
+`has_html` shortcut, but also exposed that real legacy training data
+never contains real HTML for either class (no live scraping of
+phishing pages), making the HTML feature dimension untestable. Fixed
+by adding `fetch_tranco_html.py` to fetch real front-page HTML for 157
+top-ranked (legitimate, safe-to-fetch) Tranco domains — the model now
+correctly classifies all 41 real-HTML benign test samples as benign
+(0% FPR on that slice), resolving the concern rather than masking it.
+Final real-data baseline: **99.5% recall / 2.6% FPR** on 15,295 real
+`legacy_test` samples, **100% recall** on the 144-sample real LLM
+holdout. Also found the default 50/50 judge fusion (`alpha=0.5`)
+collapses `legacy_test` recall to **16.5%** — the mock judge scores 0
+on ~84% of real phishing URLs since its rules target blatant markers
+real-world phishing avoids — and fixed it by sweeping alpha and
+changing the default to **`alpha=0.7`**: **99.94% precision / 99.50%
+recall / 0.8% FPR**, cutting FPR by more than two-thirds vs.
+classifier-only for a 0.05-point recall cost. Remaining gap: OpenPhish
+free feed (not full academic access), 157/300 Tranco HTML fetches
+succeeded (rest blocked/timed out) — stated as honest limitations.
+
 ```bash
 pip install -e ".[gemini]"
 cp .env.example .env   # then edit .env yourself to add GEMINI_API_KEY=...

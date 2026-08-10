@@ -11,6 +11,7 @@ def _default_args(**overrides):
         openphish=None,
         tranco=None,
         tranco_limit=5000,
+        tranco_html=None,
         llm_generated=None,
         synthetic_n=10,
         fold_fraction=0.5,
@@ -32,6 +33,36 @@ def test_load_legacy_samples_requires_all_three_real_data_flags_together():
     args = _default_args(phishtank="x.csv")  # openphish/tranco missing
     with pytest.raises(SystemExit):
         _load_legacy_samples(args)
+
+
+def test_load_legacy_samples_merges_tranco_html_by_url(tmp_path):
+    from phishshield.data.generation import save_samples_jsonl
+    from phishshield.data.schema import Sample, Source
+
+    phishtank_csv = tmp_path / "phishtank.csv"
+    phishtank_csv.write_text("url\nhttps://evil.example/login\n")
+    openphish_txt = tmp_path / "openphish.txt"
+    openphish_txt.write_text("https://evil2.example/login\n")
+    tranco_csv = tmp_path / "tranco.csv"
+    tranco_csv.write_text("1,good.example\n2,other.example\n")
+    tranco_html_path = tmp_path / "tranco_html.jsonl"
+    save_samples_jsonl(
+        [Sample(url="https://good.example", label=0, source=Source.TRANCO, html="<html>real</html>")],
+        tranco_html_path,
+    )
+
+    args = _default_args(
+        phishtank=str(phishtank_csv),
+        openphish=str(openphish_txt),
+        tranco=str(tranco_csv),
+        tranco_html=str(tranco_html_path),
+    )
+    samples, mode = _load_legacy_samples(args)
+
+    assert "+ 1 Tranco samples with fetched benign HTML" in mode
+    assert len(samples) == 4  # 1 phishtank + 1 openphish + 2 tranco (1 enriched, 1 plain)
+    good = next(s for s in samples if s.url == "https://good.example")
+    assert good.html == "<html>real</html>"
 
 
 def test_format_example_md_handles_none():

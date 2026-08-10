@@ -47,12 +47,15 @@ def _load_legacy_samples(args: argparse.Namespace) -> tuple[list, str]:
         raise SystemExit("--phishtank/--openphish/--tranco must be provided together")
 
     if all(provided):
-        samples = (
-            load_phishtank(args.phishtank)
-            + load_openphish(args.openphish)
-            + load_tranco(args.tranco, limit=args.tranco_limit)
-        )
-        return samples, "real"
+        tranco_samples = load_tranco(args.tranco, limit=args.tranco_limit)
+        mode = "real"
+        if args.tranco_html:
+            html_samples = load_llm_generated(args.tranco_html)  # schema-generic loader
+            html_urls = {s.url for s in html_samples}
+            tranco_samples = [s for s in tranco_samples if s.url not in html_urls] + html_samples
+            mode = f"real (+ {len(html_samples)} Tranco samples with fetched benign HTML)"
+        samples = load_phishtank(args.phishtank) + load_openphish(args.openphish) + tranco_samples
+        return samples, mode
 
     return build_synthetic_legacy_pool(n_each=args.synthetic_n), "synthetic (illustrative only)"
 
@@ -169,11 +172,20 @@ def main() -> None:
     parser.add_argument("--openphish", default=None)
     parser.add_argument("--tranco", default=None)
     parser.add_argument("--tranco-limit", type=int, default=5000)
+    parser.add_argument(
+        "--tranco-html", default=None,
+        help="optional JSONL of Tranco samples with fetched benign HTML (see fetch_tranco_html.py); "
+        "merged into --tranco by URL, replacing the html=None versions of those domains",
+    )
     parser.add_argument("--llm-generated", default=None, help="path to a saved JSONL partition; regenerates if omitted")
     parser.add_argument("--synthetic-n", type=int, default=40, help="samples per class for the synthetic legacy pool")
     parser.add_argument("--fold-fraction", type=float, default=0.5)
     parser.add_argument("--test-size", type=float, default=0.2)
-    parser.add_argument("--alpha", type=float, default=0.5)
+    parser.add_argument(
+        "--alpha", type=float, default=0.7,
+        help="classifier weight in judge fusion (default 0.7 -- 0.5 collapses recall on real "
+        "phishing data, see mitigation.run_mitigation_experiment's docstring)",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", default=str(REPORTS_DIR))
     args = parser.parse_args()

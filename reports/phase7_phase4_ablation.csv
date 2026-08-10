@@ -1,5 +1,5 @@
 variant,partition,n_samples,precision,recall,f1,fpr
-classifier_only,legacy_test,16,1.0,1.0,1.0,0.0
-classifier_plus_judge,legacy_test,16,1.0,1.0,1.0,0.0
+classifier_only,legacy_test,15295,0.9981762065095399,0.9954529555788737,0.9968127210955834,0.026
+classifier_plus_judge,legacy_test,15295,0.9994378864530635,0.995033228401539,0.9972306937287482,0.008
 classifier_only,llm_holdout_remainder,72,1.0,1.0,1.0,
 classifier_plus_judge,llm_holdout_remainder,72,1.0,1.0,1.0,

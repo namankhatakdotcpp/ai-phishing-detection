@@ -1,5 +1,5 @@
 model,partition,n_samples,precision,recall,f1,fpr
-before,legacy_test,16,1.0,1.0,1.0,0.0
-before,llm_holdout_remainder,72,1.0,0.9583333333333334,0.9787234042553191,
-after,legacy_test,16,1.0,1.0,1.0,0.0
+before,legacy_test,15295,0.9981760785689232,0.995383001049318,0.9967775831873905,0.026
+before,llm_holdout_remainder,72,1.0,1.0,1.0,
+after,legacy_test,15295,0.9981762065095399,0.9954529555788737,0.9968127210955834,0.026
 after,llm_holdout_remainder,72,1.0,1.0,1.0,

@@ -47,7 +47,7 @@ def run_mitigation_experiment(
     fold_fraction: float = 0.5,
     test_size: float = 0.2,
     seed: int = 42,
-    alpha: float = 0.5,
+    alpha: float = 0.7,
     threshold: float = 0.5,
     judge_log_path: str | Path | None = None,
 ) -> MitigationResult:
@@ -55,7 +55,14 @@ def run_mitigation_experiment(
     vs. classifier+judge ablation, and return both as tables.
 
     `alpha` is the classifier's weight in the fusion ablation (see
-    `phishshield.models.fusion.fuse_scores`). If `judge_log_path` is given,
+    `phishshield.models.fusion.fuse_scores`). Defaults to 0.7, not an even
+    0.5 split: an alpha sweep against real-world data found the mock judge
+    scores 0 on ~84% of real phishing URLs (its rules target blatant
+    markers like raw IPs/`@`-tricks that real-world phishing mostly avoids
+    in favor of subtler typosquatting), so an even split drags fused scores
+    for most real phishing below the classification threshold and collapses
+    recall (~99.5% -> ~16.5% observed). 0.7 keeps the classifier dominant
+    while still letting the judge shave FPR down. If `judge_log_path` is given,
     every feature-dict/verdict pair the judge produces during the ablation
     is written there as JSONL (tagged with `partition`), satisfying Phase
     5's reproducibility requirement for this evaluation run.

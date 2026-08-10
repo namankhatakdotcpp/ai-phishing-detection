@@ -1,4 +1,5 @@
 source,label,count
 llm_generated,1,144
-phishtank,1,40
-tranco,0,40
+openphish,1,300
+phishtank,1,71175
+tranco,0,5000
