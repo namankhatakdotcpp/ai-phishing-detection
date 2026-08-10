@@ -259,9 +259,20 @@ pipeline. Hit two free-tier quirks along the way, both fixed:
 (exhausted by testing) — switched to `gemini-flash-lite-latest` for a
 separate quota bucket; that model then hit a 15/minute cap, fixed by
 parsing the API's actual `retryDelay` instead of a fixed backoff and
-adding a 4.5s self-paced interval between calls. Next: re-run Phases
-3/4/7 against this real partition instead of the illustrative synthetic
-pool, then Phase 9 (real PhishTank/OpenPhish/Tranco ingestion).
+adding a 4.5s self-paced interval between calls.
+
+**Phase 3/4/7 re-run against the real partition (2026-08-10)**:
+`python -m phishshield.models.build_report_assets --llm-generated
+data/generated/llm_phishing_v1.jsonl` — legacy side is still the
+synthetic pool (Phase 9 isn't done), LLM-generated side is now real.
+Headline: baseline recall on the real LLM holdout is **97.2%**
+(140/144) — high, because structural signals generalize well, but a
+real, nonzero gap; folding half the real data into training closes it
+to **100%**. Judge fusion added nothing further in this run (both
+already at 100% after mitigation) — reported as an honest null result.
+**Caveat**: not the final number — the legacy side still needs Phase
+9's real downloaded data before this gap is fully trustworthy. Next:
+Phase 9, then a final re-run with both sides real.
 
 ```bash
 pip install -e ".[gemini]"

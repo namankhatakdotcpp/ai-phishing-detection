@@ -251,9 +251,40 @@ phishshield/
     (urgent/formal/reward/security_alert/invoice/delivery), not
     templated. Round-trips cleanly through the existing Phase 1 feature
     pipeline with no loader/extractor changes needed.
-  - **Next**: re-run Phases 3/4/7 against this real-generated partition
-    instead of the illustrative synthetic pool, then move to Phase 9
-    (real PhishTank/OpenPhish/Tranco ingestion).
+- **Phase 3/4/7 re-run against the real LLM-generated partition**
+  (2026-08-10): `build_report_assets --llm-generated
+  data/generated/llm_phishing_v1.jsonl` — legacy side is still the
+  synthetic pool (Phase 9's real PhishTank/OpenPhish/Tranco download
+  hasn't happened yet), but the LLM-generated side is now the real
+  144-sample dataset, not the mocked grid. `run()`'s mode label was
+  fixed to state legacy/llm_generated provenance separately
+  (`legacy: synthetic (illustrative only); llm_generated: real (loaded
+  from ...)`) rather than one combined string that went stale the
+  moment only one side became real.
+  - **Headline result**: baseline (legacy-only) classifier recall on
+    the real LLM-generated holdout is **97.2%** (140/144) — already
+    high, because the structural signals it learned from
+    hand-templated/synthetic legacy phishing (password field, external
+    form action, off-domain script) generalize to genuinely
+    LLM-authored lure copy; the gap this project set out to measure is
+    real but smaller than the illustrative synthetic run suggested.
+    Folding half the real LLM data into training closes it to **100%**
+    on the untouched remainder. Classifier+judge fusion made no
+    further difference in this run (both already at 100% recall on
+    the after-mitigation model) — an honest null result worth stating
+    as-is rather than reaching for a fusion benefit that isn't there
+    yet at this sample size.
+  - Qualitative flip example is now a real generated sample:
+    `https://chaase.com/account/verify-now` (Chase, homoglyph
+    obfuscation) — missed by the before-model (score 0.0), caught
+    after mitigation (score 1.0).
+  - **Caveat for the report**: this is not yet the final result — the
+    legacy side needs Phase 9's real downloaded data before the
+    reported gap is fully trustworthy. A synthetic legacy classifier
+    may over- or under-generalize to real LLM phishing in ways a
+    classifier trained on real PhishTank/OpenPhish data would not.
+  - **Next**: Phase 9 (real PhishTank/OpenPhish/Tranco ingestion), then
+    a final Phase 3/4/7 re-run with both sides real.
 
 ## 6. What "done" looks like
 
