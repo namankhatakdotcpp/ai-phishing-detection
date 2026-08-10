@@ -10,6 +10,7 @@ import pytest
 from phishshield.data.llm_client import (
     LureGenerationError,
     _append_manifest,
+    _suggested_retry_delay,
     _with_retries,
 )
 
@@ -51,6 +52,42 @@ def test_with_retries_raises_lure_generation_error_after_exhausting_attempts(mon
 
     with pytest.raises(LureGenerationError, match="failed after 3 attempts"):
         _with_retries(fn, "test call", max_retries=3)
+
+
+def test_suggested_retry_delay_parses_gemini_style_error():
+    exc = RuntimeError(
+        "429 RESOURCE_EXHAUSTED. {'error': {'code': 429, "
+        "'details': [{'@type': 'type.googleapis.com/google.rpc.RetryInfo', "
+        "'retryDelay': '28s'}]}}"
+    )
+    assert _suggested_retry_delay(exc) == 28.0
+
+
+def test_suggested_retry_delay_parses_fractional_seconds():
+    exc = RuntimeError("...'retryDelay': '4.5s'...")
+    assert _suggested_retry_delay(exc) == 4.5
+
+
+def test_suggested_retry_delay_returns_none_when_absent():
+    assert _suggested_retry_delay(RuntimeError("some other transient error")) is None
+
+
+def test_with_retries_waits_at_least_the_suggested_delay(monkeypatch):
+    sleeps = []
+    monkeypatch.setattr("time.sleep", lambda seconds: sleeps.append(seconds))
+
+    calls = {"n": 0}
+
+    def fn():
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("429 ... 'retryDelay': '28s' ...")
+        return "ok"
+
+    result, attempt = _with_retries(fn, "test call", max_retries=3)
+    assert result == "ok"
+    assert attempt == 2
+    assert sleeps == [29.0]  # 28s suggested + 1s safety margin, not the 2s exponential default
 
 
 def test_append_manifest_writes_one_json_record_per_call(tmp_path):

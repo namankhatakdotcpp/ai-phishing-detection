@@ -35,6 +35,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -212,9 +213,26 @@ def _append_manifest(
         f.write(json.dumps(record) + "\n")
 
 
+_RETRY_DELAY_PATTERN = re.compile(r"['\"]?retryDelay['\"]?\s*:\s*['\"](\d+(?:\.\d+)?)s['\"]")
+
+
+def _suggested_retry_delay(exc: BaseException) -> Optional[float]:
+    """Extract the API's own suggested wait time from a 429 error, if
+    present (both Anthropic's and Gemini's SDKs surface this in the
+    exception's string form as a `retryDelay`-style field). Rate-limit
+    windows are seconds-scale and our fixed exponential backoff (2/4/8s)
+    is often shorter than what the API actually needs to clear.
+    """
+    match = _RETRY_DELAY_PATTERN.search(str(exc))
+    return float(match.group(1)) if match else None
+
+
 def _with_retries(fn, description: str, max_retries: int):
-    """Call `fn()`, retrying on any exception with exponential backoff
-    (2s, 4s, 8s, ...) up to `max_retries` attempts. Returns (result,
+    """Call `fn()`, retrying on any exception up to `max_retries` attempts.
+    Waits the API's own suggested `retryDelay` when a 429 response
+    provides one (common on a per-minute rate limit, where our default
+    2/4/8s backoff is too short to clear the window); otherwise falls
+    back to exponential backoff (2s, 4s, 8s, ...). Returns (result,
     attempt_number) so callers can log which attempt succeeded.
 
     Deliberately re-raises as `LureGenerationError` rather than degrading
@@ -230,7 +248,10 @@ def _with_retries(fn, description: str, max_retries: int):
             last_error = exc
             logger.warning("%s attempt %d/%d failed: %s", description, attempt, max_retries, exc)
             if attempt < max_retries:
-                time.sleep(2**attempt)
+                delay = _suggested_retry_delay(exc)
+                if delay is None:
+                    delay = 2**attempt
+                time.sleep(delay + 1)  # +1s safety margin past the API's own estimate
     raise LureGenerationError(f"{description} failed after {max_retries} attempts") from last_error
 
 
@@ -311,6 +332,7 @@ class GeminiLureClient:
         effort: Optional[str] = None,
         manifest_path: Path = DEFAULT_MANIFEST_PATH,
         max_retries: int = DEFAULT_MAX_RETRIES,
+        min_call_interval: float = 4.5,
     ):
         from google import genai  # deferred: only required in --live mode
 
@@ -320,6 +342,11 @@ class GeminiLureClient:
         self.effort = effort  # accepted for CLI symmetry with Anthropic; unused by Gemini
         self._manifest_path = Path(manifest_path)
         self._max_retries = max_retries
+        # Free-tier flash models cap at 15 req/min/project/model — self-pace
+        # rather than only reacting after a 429, since a burst of calls (the
+        # normal shape of this workload) hits that ceiling within seconds.
+        self._min_call_interval = min_call_interval
+        self._last_call_at: Optional[float] = None
 
     def generate_lure(self, brand_display: str, tone: str) -> LureCopy:
         from google.genai import types
@@ -327,6 +354,12 @@ class GeminiLureClient:
         prompt = _build_prompt(brand_display, tone)
 
         def _call():
+            if self._last_call_at is not None:
+                elapsed = time.monotonic() - self._last_call_at
+                wait = self._min_call_interval - elapsed
+                if wait > 0:
+                    time.sleep(wait)
+            self._last_call_at = time.monotonic()
             response = self._client.models.generate_content(
                 model=self.model,
                 contents=prompt,
