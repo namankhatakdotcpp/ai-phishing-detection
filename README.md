@@ -195,9 +195,12 @@ python -m phishshield.models.build_report_assets
 **Phase 8 in progress**: `phishshield.data.llm_client` wires a real LLM
 call in for the persuasive lure copy (title + paragraph) per (brand, tone)
 pair — the part of the generated phishing page an attacker would actually
-tailor, and the part the project's "robustness against LLM-generated
-phishing" claim is about. The page skeleton (password field, external
-form action, script) stays deterministic either way, so mock and live
+tailor. Note this is prose text, not a feature the classifier's URL-lexical
+/ HTML-structural feature space reads (see `reports/FINAL_REPORT.md`
+§3.2/§6): live-generating it makes the *dataset* more realistic, it does
+not by itself let this project's experiments measure robustness to
+LLM-authored content specifically. The page skeleton (password field,
+external form action, script) stays deterministic either way, so mock and live
 output stay structurally comparable. `generate_llm_phishing_dataset()`
 keeps its existing signature — pass `llm_client=None` (default, free,
 deterministic) or a real client (cached per brand+tone pair — 36 calls
