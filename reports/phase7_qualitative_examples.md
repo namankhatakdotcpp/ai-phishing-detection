@@ -1,6 +1,6 @@
 # Phase 7 qualitative examples
 
-Run mode: **synthetic (illustrative only)** legacy data.
+Run mode: **legacy: synthetic (illustrative only); llm_generated: real (loaded from data/generated/llm_phishing_v1.jsonl)**.
 
 ### Legacy phishing correctly caught (before model)
 
@@ -15,7 +15,7 @@ Run mode: **synthetic (illustrative only)** legacy data.
 
 ### LLM-generated sample missed by baseline, caught after mitigation
 
-- URL: `https://amazzon.com/account/verify-now`
+- URL: `https://chaase.com/account/verify-now`
 - before_score: 0.000
 - after_score: 1.000
 - risk_score: 70
