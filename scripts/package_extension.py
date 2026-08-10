@@ -28,6 +28,7 @@ REQUIRED_FILES = [
     "popup.html",
     "popup.css",
     "popup.js",
+    "config.js",
     "page_extractor.js",
     "page_overlay.js",
 ]

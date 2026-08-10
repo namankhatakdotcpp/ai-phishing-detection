@@ -6,7 +6,9 @@
 // verdict, also injects an in-page warning overlay (page_overlay.js) into
 // the same tab, using the same click-granted activeTab access.
 
-const API_BASE = "http://127.0.0.1:8000";
+// See config.js (loaded before this file in popup.html) -- switch
+// PHISHSHIELD_CONFIG.API_BASE there for production, not here.
+const API_BASE = PHISHSHIELD_CONFIG.API_BASE;
 const REQUEST_TIMEOUT_MS = 10000;
 
 // UI-only labels over the backend's risk_band() ("low"/"medium"/"high") --

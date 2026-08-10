@@ -88,9 +88,16 @@ actually committed to the branch/commit Render or Cloud Run built from
 
 ## After a successful deployment: switch the extension over
 
-See Phase 12 in `reports/FINAL_REPORT.md`'s plan — `extension/popup.js`'s
-`API_BASE` constant needs to change from `http://127.0.0.1:8000` to your
-deployed HTTPS URL, and `extension/manifest.json`'s `host_permissions`
-needs the new origin added (and the localhost ones can be removed or
-kept for continued local development — your call). **Not done yet** —
-this session doesn't have your deployed URL.
+See Phase 12 in `reports/FINAL_REPORT.md`'s plan. Two edits, in one
+place each:
+
+1. `extension/config.js` — change `PHISHSHIELD_CONFIG.API_BASE` from
+   `http://127.0.0.1:8000` to your deployed HTTPS URL (a commented-out
+   production example is already in that file).
+2. `extension/manifest.json`'s `host_permissions` — add the new origin
+   (the localhost entries can stay for continued local development, or
+   be removed for a Store submission — your call).
+
+**Not done yet** — this session doesn't have your deployed URL. `config.js`
+exists specifically so this is a one-line change instead of hunting
+through `popup.js`'s request logic.
