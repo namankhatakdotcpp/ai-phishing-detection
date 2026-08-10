@@ -5,7 +5,17 @@
   "description": "Research-prototype security assistant: analyzes the current page's structural features (forms, external scripts, URL patterns -- never form contents or credentials) against a local PhishShield AI backend, only when you click Analyze. Shows an in-page warning for high-risk pages.",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "PhishShield AI (Demo)"
+    "default_title": "PhishShield AI (Demo)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "permissions": [
     "activeTab",
