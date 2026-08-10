@@ -388,6 +388,21 @@ phishshield/
     feed; Tranco benign HTML is 157 samples, not the full 5,000-domain
     pool (many top sites block non-browser fetches). Both are honest,
     stated limitations, not blockers to reporting current results.
+  - **Correction (2026-08-11, later the same day)**: the numbers above
+    (99.94% precision / 99.50% recall / 0.8% FPR) were later found to be
+    substantially an artifact of two real bugs in `load_tranco()` — see
+    `reports/FINAL_REPORT.md` Sections 3.5-3.7 for the full, current,
+    corrected account. Kept here unedited as a historical record of what
+    was believed true at the time, per this project's stated norm of
+    adding a correction rather than silently rewriting past entries.
+    **Current, real numbers as of the last commit**: real, live
+    hard-negative testing against 46 real major websites (Google,
+    GitHub, Wikipedia, MDN, banks, etc.) found **13.0% FPR**, not 0% —
+    meaningfully improved from the original state (where nearly every
+    major site scored HIGH), but not resolved. **The project is not
+    deployment-ready.** `reports/FINAL_REPORT.md` is the authoritative,
+    up-to-date source for all headline numbers; treat any number in this
+    section as historical unless corroborated there.
 
 ## 6. What "done" looks like
 

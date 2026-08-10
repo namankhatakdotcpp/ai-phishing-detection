@@ -570,11 +570,16 @@ match, external JavaScript domain, hidden elements present.
 
 - **The offline evaluation's URL-only (`has_html=0`) regime still has a
   real, unresolved false-positive weakness, separate from the
-  live-extension-facing problem Section 3.6 fixed.** After Section 3.6's
-  fix, the held-out `legacy_test` benign samples with `has_html=1` (the
-  only case a live browser tab ever actually produces) have 0% FPR — the
-  real, deployment-relevant problem is substantially fixed and confirmed
-  on real websites. But the much larger `has_html=0` population (natural
+  live-extension-facing problem Section 3.6 partially fixed.** After
+  Section 3.6's fix, the held-out `legacy_test` benign samples with
+  `has_html=1` (the only case a live browser tab ever actually produces)
+  showed 0% FPR at n=18 — real progress, but **Section 3.7's larger,
+  46-real-page evaluation found 13.0% FPR**, not 0%, including several
+  clearly benign, reputable sites in the HIGH band. The
+  deployment-relevant problem is meaningfully improved, not resolved;
+  see Section 3.7 for the current number and its own diagnosed causes
+  before treating either figure as final. Separately, the much larger
+  `has_html=0` population (natural
   for offline PhishTank/OpenPhish/Tranco data under this project's
   no-live-scraping constraint) got *worse* (FPR 21.7%→31.1% classifier-
   only), because widening the benign path-length distribution to include
@@ -698,19 +703,26 @@ report claims. A rule-based explainability judge, fused naively, is
 unsafe on real-world data; fused at a validated weight (`alpha=0.7`), it
 meaningfully improves precision and false-positive rate.
 
-**Final, honest state, not smoothed into a single verdict**: the problem
-that would actually matter to a real user of the extension — false
-positives on real, major, benign websites — is substantially fixed and
-independently confirmed (Google, GitHub, and Wikipedia all moved from
-SUSPICIOUS/HIGH to LOW after Section 3.6's fix, and the held-out
-`has_html=1` test slice shows 0% FPR). The aggregate offline research
-metric most of this report is built around (`legacy_test` FPR, dominated
-by the URL-only population natural to this project's no-live-scraping
-constraint) is *not* fully resolved and in fact got numerically worse in
-this same fix, a real, stated trade-off rather than a hidden one. We
-treat "the live-extension-facing problem is fixed" and "the aggregate
-offline metric is fixed" as two different claims, only the first of
-which this report makes.
+**Final, honest state, not smoothed into a single verdict, and updated
+once more by Section 3.7's larger evaluation**: the problem that would
+actually matter to a real user of the extension — false positives on
+real, major, benign websites — is meaningfully **improved**, not fully
+**fixed**. Google, GitHub, and Wikipedia's homepages all moved from
+SUSPICIOUS/HIGH to LOW after Section 3.6's fix, and an 18-sample
+held-out slice showed 0% FPR — but scaling the real-page evaluation to
+46 pages (Section 3.7) found 13.0% FPR, including several clearly
+benign, reputable pages (a GitHub issues page, MDN docs, a Wikipedia
+article, a bank homepage) still landing HIGH, with at least one
+newly-diagnosed cause (`num_password_fields` on legitimate login pages)
+distinct from the path-length issue Section 3.6 fixed. The aggregate
+offline research metric most of this report is built around
+(`legacy_test` FPR, dominated by the URL-only population natural to
+this project's no-live-scraping constraint) is separately *not* fully
+resolved either, and got numerically worse in the same fix — a real,
+stated trade-off, not a hidden one. Neither "the live-extension-facing
+problem is fixed" nor "the aggregate offline metric is fixed" is a claim
+this report makes; both are real, measured, partial improvements with
+concrete, prioritized next steps documented in Sections 3.7 and 6.
 
 ## Appendix A: Reproducing these results
 
@@ -750,6 +762,8 @@ python -m phishshield.models.export_demo_model \
   --llm-generated data/generated/llm_phishing_v1.jsonl
 ```
 
-Full test suite: `pytest -q --ignore=tests/live` (134 tests, excludes
-`tests/live/` which makes real paid API calls and is skipped by
-default).
+Full test suite: `pytest -q --ignore=tests/live` (153 tests as of this
+writing -- includes `tests/test_js_*.py`, which run the real extension
+JS via Node/jsdom and skip gracefully if Node isn't set up; see
+LOCAL_SETUP.md. Excludes `tests/live/`, which makes real paid LLM API
+calls and is skipped by default.)

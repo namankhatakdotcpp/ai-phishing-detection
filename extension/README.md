@@ -84,11 +84,15 @@ popup disables the button and says so rather than silently failing.
 
 ## Known limitations
 
-- **FPR on real data is real, not hidden**: the classifier alone has a
-  measured ~21.7% false-positive rate on held-out real benign pages;
-  judge fusion (`alpha=0.7`) brings that to ~7.7%. Expect occasional
-  SUSPICIOUS/HIGH verdicts on genuinely benign pages -- this is stated
-  plainly in `reports/FINAL_REPORT.md`, not smoothed over here.
+- **FPR on real data is real, not hidden**: a real evaluation against 46
+  real major websites (Google, GitHub, Wikipedia, MDN, banks, etc. --
+  `reports/FINAL_REPORT.md` Section 3.7) found a **13.0% false-positive
+  rate** on the current model, including several clearly benign,
+  reputable pages landing HIGH. Expect occasional SUSPICIOUS/HIGH
+  verdicts on genuinely benign pages -- this is a real, unresolved,
+  diagnosed limitation (at least one cause: legitimate login pages are
+  underrepresented in benign training data), not smoothed over here.
+  **Not deployment-ready.**
 - **Local backend only**: `API_BASE` in `popup.js` points at
   `127.0.0.1:8000`. Pointing it at a deployed HTTPS backend, adding
   request rate limiting, and locking down CORS (`api/app.py` currently

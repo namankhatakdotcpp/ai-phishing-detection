@@ -319,6 +319,16 @@ classifier-only for a 0.05-point recall cost. Remaining gap: OpenPhish
 free feed (not full academic access), 157/300 Tranco HTML fetches
 succeeded (rest blocked/timed out) — stated as honest limitations.
 
+**Correction**: the numbers immediately above were later found to be
+substantially an artifact of two real `load_tranco()` bugs (a benign
+URL path/subdomain gap, discovered via live-extension testing against
+real websites) — see `reports/FINAL_REPORT.md` Sections 3.5-3.7 for the
+full corrected account. After fixing, a real evaluation against 46 real
+major websites found **13.0% FPR**, not 0% — meaningfully better than
+before, but **the project is not deployment-ready**. This paragraph is
+kept as a historical record rather than silently edited; treat
+`reports/FINAL_REPORT.md` as the current source of truth.
+
 ```bash
 pip install -e ".[gemini]"
 cp .env.example .env   # then edit .env yourself to add GEMINI_API_KEY=...
