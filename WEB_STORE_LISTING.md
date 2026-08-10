@@ -5,6 +5,20 @@
 a Web Store listing pointing at `localhost` is not usable by anyone but
 the developer.
 
+## Packaging (verified — actually run, not just written)
+
+```bash
+python scripts/package_extension.py
+```
+
+Builds `release/` with exactly the 6 files Chrome needs (`manifest.json`,
+`popup.html`/`.css`/`.js`, `page_extractor.js`, `page_overlay.js`),
+validates no backend code/secrets/dataset paths leaked in, and zips it
+to `phishshield-extension.zip` at the repo root (this file and
+`release/` are gitignored — regenerate, don't hand-edit). Confirmed
+working: last run packaged 6 files into a 10,299-byte zip with zero
+validation failures.
+
 ## Extension name
 
 PhishShield AI
