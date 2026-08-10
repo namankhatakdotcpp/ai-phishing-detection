@@ -33,3 +33,9 @@ reports/*.jsonl
 # package-lock.json ARE committed for reproducibility; run `npm install`
 # inside tests_js/ to regenerate this.
 tests_js/node_modules/
+
+# Real third-party page content fetched for the hard-negative evaluation
+# (Section 3.6, FINAL_REPORT.md) -- not redistributed, same policy as
+# data/raw/*. The fetch is a plain documented curl one-liner, reproducible
+# without committing the pages themselves.
+tests_js/hard_negative_fixtures/

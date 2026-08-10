@@ -121,11 +121,17 @@ async function test_low_risk_result_renders_correctly() {
 
   const resultEl = dom.window.document.getElementById("result");
   const errorEl = dom.window.document.getElementById("error-state");
+  const analyzingEl = dom.window.document.getElementById("analyzing");
   const riskCard = dom.window.document.getElementById("risk-card");
   const highActions = dom.window.document.getElementById("high-risk-actions");
 
   assert.equal(resultEl.classList.contains("hidden"), false, "result section should be visible");
   assert.equal(errorEl.classList.contains("hidden"), true, "error section should stay hidden");
+  assert.equal(
+    analyzingEl.classList.contains("hidden"),
+    true,
+    "'Checking this page...' spinner must NOT remain visible once a result has rendered"
+  );
   assert.ok(riskCard.className.includes("low"), `expected 'low' class, got: ${riskCard.className}`);
   assert.equal(dom.window.document.getElementById("risk-label").textContent, "LOW RISK");
   assert.equal(dom.window.document.getElementById("risk-score").textContent, "4 / 100");
@@ -134,6 +140,21 @@ async function test_low_risk_result_renders_correctly() {
     dom.window.document.getElementById("analyzed-at").textContent.includes("abc123def456"),
     "model version should be shown in details"
   );
+
+  // "View details" toggle: should be collapsed by default, expand on
+  // click with the real classifier/judge/model-version text, and
+  // collapse again on a second click.
+  const detailsEl = dom.window.document.getElementById("details");
+  const detailsToggle = dom.window.document.getElementById("details-toggle");
+  assert.equal(detailsEl.classList.contains("hidden"), true, "details should be collapsed by default");
+
+  detailsToggle.click();
+  assert.equal(detailsEl.classList.contains("hidden"), false, "details should expand after clicking 'View details'");
+  assert.equal(dom.window.document.getElementById("classifier-score").textContent, "classifier: 1.0%");
+  assert.equal(dom.window.document.getElementById("judge-score").textContent, "judge: 0.0%");
+
+  detailsToggle.click();
+  assert.equal(detailsEl.classList.contains("hidden"), true, "details should collapse again on a second click");
 }
 
 async function test_high_risk_result_renders_and_triggers_overlay_injection() {

@@ -42,7 +42,20 @@ def registrable_domain(url: str) -> str:
 # give the benign class the path/query variety real browsing actually has,
 # without live-fetching arbitrary real subpages.
 _BENIGN_PATH_TEMPLATES = [
-    "",  # bare root -- still a real, common case, kept in the mix
+    "",  # bare root, no trailing slash -- what f"https://{domain}" alone produces
+    # "/" (path_length=1) deliberately repeated: every real browser
+    # normalizes a bare-domain homepage visit to a single "/" (confirmed
+    # via jsdom, which follows the same WHATWG URL spec as real Chrome --
+    # see FEATURE_PARITY.md), so this is arguably the single most common
+    # real-world benign path shape. Found via a live false positive on
+    # https://www.google.com/ (path_length=1): the templates below jumped
+    # straight from length 0 to length 5+, leaving path_length 1-4
+    # completely unrepresented in benign training data -- the classifier
+    # had *zero* benign examples in that range and treated any real
+    # (browser-normalized) homepage as anomalous. See PROJECT_BRIEF.md,
+    # Phase 9 "path_length gap at 1-4" entry.
+    "/", "/", "/", "/",
+    "/en", "/us", "/gb", "/de",  # short language/region prefixes, real sites use these constantly
     "/about",
     "/about-us",
     "/contact",

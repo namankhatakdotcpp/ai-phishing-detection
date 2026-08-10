@@ -22,7 +22,7 @@ const RISK_UI = {
   medium: {
     label: "SUSPICIOUS",
     cssClass: "suspicious",
-    summary: "This website contains some unusual characteristics. Review before entering sensitive information.",
+    summary: "Some unusual characteristics were detected. This does not necessarily mean the website is malicious -- many legitimate sites trigger some of the same structural signals. Review before entering sensitive information.",
   },
   high: {
     label: "HIGH RISK",
