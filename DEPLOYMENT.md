@@ -1,0 +1,96 @@
+# Production deployment — exact settings
+
+This file is configuration and instructions only. **No deployment has
+been performed.** Creating the account, connecting the repo, setting
+secrets, and clicking deploy are yours to do (see
+`reports/FINAL_REPORT.md`'s final checklist for the exact split).
+
+## Option A: Render (Blueprint, `render.yaml` already in this repo)
+
+1. Push this repo to GitHub (you: `git push`, since this session doesn't
+   push without being asked, per its own operating rules).
+2. Render dashboard → **New** → **Blueprint** → connect the GitHub repo.
+   Render reads `render.yaml` automatically.
+3. Render will prompt for the one `sync: false` variable:
+   **`PHISHSHIELD_CORS_ORIGINS`** — set to the extension's real origin
+   once known (`chrome-extension://<extension-id>`; Chrome assigns the
+   ID on Web Store publish, or you can find a dev-mode ID at
+   `chrome://extensions` after loading unpacked). Until you have a
+   stable ID, a placeholder like `https://example.invalid` is safer than
+   leaving it as `*` — the CORS guard in `api/app.py` will refuse to
+   start in production with a wildcard regardless, so this step is not
+   optional.
+4. Click **Deploy**.
+
+**Manual settings, if not using the Blueprint / building by hand:**
+
+| Setting | Value |
+|---|---|
+| Runtime | Python 3.11 |
+| Build command | `pip install -r requirements.txt && pip install -e .` |
+| Start command | `uvicorn phishshield.api.app:app --host 0.0.0.0 --port $PORT` |
+| Health check path | `/health` |
+| `PHISHSHIELD_ENV` | `production` |
+| `PHISHSHIELD_CORS_ORIGINS` | the extension's real origin (not `*`) |
+| `PHISHSHIELD_RATE_LIMIT_PER_MINUTE` | `60` (adjust to taste) |
+| `PHISHSHIELD_MAX_REQUEST_BYTES` | `65536` |
+
+**Expected URL format**: `https://phishshield-api.onrender.com` (Render
+assigns `<service-name>.onrender.com`; the actual URL is shown in the
+Render dashboard after first deploy).
+
+## Option B: Google Cloud Run (using the committed `Dockerfile`)
+
+**Not built or tested in this session** — no `docker` binary was
+available in this environment (verified: `which docker` → not found).
+The `Dockerfile` was written from the same verified dependency trace as
+`requirements.txt`, but treat it as unverified until you build it once
+yourself:
+
+```bash
+docker build -t phishshield-api .
+docker run -p 8000:8000 phishshield-api
+curl http://localhost:8000/health   # verify locally before pushing anywhere
+```
+
+Then, once verified locally:
+
+```bash
+gcloud run deploy phishshield-api \
+  --source . \
+  --port 8000 \
+  --set-env-vars PHISHSHIELD_ENV=production,PHISHSHIELD_CORS_ORIGINS=<extension-origin>,PHISHSHIELD_RATE_LIMIT_PER_MINUTE=60,PHISHSHIELD_MAX_REQUEST_BYTES=65536 \
+  --allow-unauthenticated
+```
+
+`--allow-unauthenticated` matches this project's actual auth model (see
+`SECURITY_REVIEW.md`, M3 — no auth on `/analyze` by design, a stateless
+classifier call with no PII/billing behind it).
+
+**Expected URL format**: `https://phishshield-api-<hash>-<region>.a.run.app`.
+
+## Post-deployment verification (run this yourself after deploying)
+
+```bash
+curl -s https://<your-deployed-url>/health
+# expect: {"status":"ok","model_loaded":true,"model_version":"<hash>"}
+
+curl -s -X POST https://<your-deployed-url>/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"features":{"num_password_fields":1,"has_external_form_action":1}}'
+# expect a 200 with risk_score/risk_band/reasons
+```
+
+If `model_loaded` is `false`, the artifact didn't make it into the
+deployed build — check that `artifacts/phishing_classifier.joblib` is
+actually committed to the branch/commit Render or Cloud Run built from
+(`git ls-files artifacts/`).
+
+## After a successful deployment: switch the extension over
+
+See Phase 12 in `reports/FINAL_REPORT.md`'s plan — `extension/popup.js`'s
+`API_BASE` constant needs to change from `http://127.0.0.1:8000` to your
+deployed HTTPS URL, and `extension/manifest.json`'s `host_permissions`
+needs the new origin added (and the localhost ones can be removed or
+kept for continued local development — your call). **Not done yet** —
+this session doesn't have your deployed URL.

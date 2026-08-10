@@ -1,0 +1,29 @@
+# Render Blueprint for the PhishShield AI demo API.
+# This file describes the deployment; it does NOT deploy anything by
+# itself -- the account/connect/deploy actions are yours (see
+# reports/FINAL_REPORT.md's engineering-vs-manual-actions split).
+#
+# To use: Render dashboard -> New -> Blueprint -> connect this repo ->
+# Render reads this file automatically.
+
+services:
+  - type: web
+    name: phishshield-api
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && pip install -e ."
+    startCommand: "uvicorn phishshield.api.app:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PHISHSHIELD_ENV
+        value: production
+      - key: PHISHSHIELD_CORS_ORIGINS
+        sync: false  # set manually in Render dashboard to the real
+                      # chrome-extension://<id> origin once the extension
+                      # has a stable ID (Web Store assigns one on publish)
+      - key: PHISHSHIELD_RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: PHISHSHIELD_MAX_REQUEST_BYTES
+        value: "65536"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
