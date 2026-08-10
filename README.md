@@ -246,12 +246,22 @@ key yourself, in your own editor/terminal — `llm_client.py` loads it via
 presence with only a masked prefix/suffix, never the full value, and the
 CLI prints that check (not the key) before every `--live` run.
 
-**Canary run complete (2026-08-10)** — live Gemini output checked for
-variety (distinct framing between `urgent`/`formal` tones for the same
-brand, not synonym-swapped) and non-liftability (synthetic exfil host,
-no verbatim real-brand wording). Passed both. Full 144-sample run is the
-next step, followed by re-running Phases 3/4/7 against real-generated
-data instead of the illustrative synthetic pool.
+**Full 144-sample live run complete (2026-08-10)** — output at
+`data/generated/llm_phishing_v1.jsonl` (gitignored), 36 unique lure
+texts across 6 brands × 6 tones, 24 samples each. Checked before and
+after: variety (spot-checked all 6 tones for two brands — genuinely
+distinct framing, not synonym-swapped), non-liftability (synthetic
+exfil host, no verbatim real-brand wording), and zero refusal artifacts
+(re-scanned the full output with `_looks_like_refusal()` after the
+fact). Round-trips cleanly through the existing Phase 1 feature
+pipeline. Hit two free-tier quirks along the way, both fixed:
+`gemini-flash-latest`'s underlying model has only a 20/day free quota
+(exhausted by testing) — switched to `gemini-flash-lite-latest` for a
+separate quota bucket; that model then hit a 15/minute cap, fixed by
+parsing the API's actual `retryDelay` instead of a fixed backoff and
+adding a 4.5s self-paced interval between calls. Next: re-run Phases
+3/4/7 against this real partition instead of the illustrative synthetic
+pool, then Phase 9 (real PhishTank/OpenPhish/Tranco ingestion).
 
 ```bash
 pip install -e ".[gemini]"
@@ -262,7 +272,8 @@ python -m phishshield.data.generate_llm_dataset --dry-run
 # unique lure-copy API calls (cached per brand+tone pair): 36
 # cost estimate (paid-tier rates): ~$0.04 — likely $0 on the free tier
 
-# canary first, read the output, then the full grid:
+# canary first, read the output, then the full grid (--model gemini-flash-lite-latest
+# if you hit gemini-flash-latest's 20/day quota):
 python -m phishshield.data.generate_llm_dataset --live --max-samples 4
 python -m phishshield.data.generate_llm_dataset --live --max-samples 144
 ```

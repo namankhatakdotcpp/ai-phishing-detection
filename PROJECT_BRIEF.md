@@ -227,9 +227,33 @@ phishshield/
     synthetic placeholder (`beacon.credential-sink.top`), no real
     brand wording copied verbatim. Passed both the variety check and
     the non-liftability check before proceeding.
-  - **Next**: run the full 144-sample grid for real, then re-run
-    Phases 3/4/7 against the real-generated partition (currently
-    illustrative-only results).
+- **Full 144-sample live run complete** (2026-08-10), output at
+  `data/generated/llm_phishing_v1.jsonl` (gitignored). Two more issues
+  found and fixed en route:
+  1. `gemini-flash-latest` resolved to `gemini-3.6-flash` under the
+     hood, whose free tier caps at **20 requests/day/project/model** —
+     testing during the canary phase alone used most of that. Switched
+     to `gemini-flash-lite-latest` for the full run (separate quota
+     bucket, untouched), re-canaried at 8 samples before trusting it.
+  2. `gemini-flash-lite-latest` hit a **15 requests/minute** free-tier
+     cap — our fixed exponential backoff (2s/4s/8s ≈ 14s total) wasn't
+     reliably long enough to clear a per-minute window. Fixed two ways:
+     `_suggested_retry_delay()` now parses the API's own `retryDelay`
+     out of a 429 response and waits that long (+1s margin) instead of
+     the fixed backoff; `GeminiLureClient` also self-paces at a 4.5s
+     minimum interval between calls so it avoids the ceiling proactively
+     rather than only reacting after hitting it.
+  - Result: clean run, zero retries needed, 144 samples / 36 unique
+    lure texts, evenly distributed (24 samples per brand). Re-scanned
+    the full output with `_looks_like_refusal()` after the fact — zero
+    refusal artifacts made it into the dataset. Spot-checked Microsoft
+    and Chase across all 6 tones — genuinely distinct framing per tone
+    (urgent/formal/reward/security_alert/invoice/delivery), not
+    templated. Round-trips cleanly through the existing Phase 1 feature
+    pipeline with no loader/extractor changes needed.
+  - **Next**: re-run Phases 3/4/7 against this real-generated partition
+    instead of the illustrative synthetic pool, then move to Phase 9
+    (real PhishTank/OpenPhish/Tranco ingestion).
 
 ## 6. What "done" looks like
 
