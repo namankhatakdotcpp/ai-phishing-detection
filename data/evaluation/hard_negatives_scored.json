@@ -3,16 +3,16 @@
     "name": "reddit_home",
     "url": "https://www.reddit.com/",
     "has_html": 1,
-    "classifier_score": 0.028729368918610335,
+    "classifier_score": 0.01829533556813354,
     "judge_score": 0.0,
-    "risk_score": 2,
+    "risk_score": 1,
     "risk_band": "low"
   },
   {
     "name": "python_docs",
     "url": "https://docs.python.org/3/",
     "has_html": 1,
-    "classifier_score": 0.01908624269095749,
+    "classifier_score": 0.01598672997146121,
     "judge_score": 0.0,
     "risk_score": 1,
     "risk_band": "low"
@@ -21,7 +21,7 @@
     "name": "github_home",
     "url": "https://github.com/",
     "has_html": 1,
-    "classifier_score": 0.007425249033157056,
+    "classifier_score": 0.006126643294919208,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -30,52 +30,52 @@
     "name": "apple_home",
     "url": "https://www.apple.com/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.011918823384377225,
     "judge_score": 0.0,
-    "risk_score": 2,
+    "risk_score": 1,
     "risk_band": "low"
   },
   {
     "name": "google_home",
     "url": "https://www.google.com/",
     "has_html": 1,
-    "classifier_score": 0.028729368918610335,
+    "classifier_score": 0.01829533556813354,
     "judge_score": 0.07,
-    "risk_score": 4,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "microsoft_home",
     "url": "https://www.microsoft.com/en-us",
     "has_html": 1,
-    "classifier_score": 0.13276863091369384,
+    "classifier_score": 0.051624572035402556,
     "judge_score": 0.08,
-    "risk_score": 12,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "linkedin_home",
     "url": "https://www.linkedin.com/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07958816316603606,
     "judge_score": 0.15,
-    "risk_score": 12,
+    "risk_score": 10,
     "risk_band": "low"
   },
   {
     "name": "mdn_home",
     "url": "https://developer.mozilla.org/en-US/",
     "has_html": 1,
-    "classifier_score": 0.3394598197964612,
+    "classifier_score": 0.14150596069015892,
     "judge_score": 0.0,
-    "risk_score": 24,
+    "risk_score": 10,
     "risk_band": "low"
   },
   {
     "name": "youtube_home",
     "url": "https://www.youtube.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.0,
     "risk_score": 4,
     "risk_band": "low"
@@ -84,16 +84,16 @@
     "name": "github_repo",
     "url": "https://github.com/torvalds/linux",
     "has_html": 1,
-    "classifier_score": 0.18719948594664387,
+    "classifier_score": 0.11939713850203441,
     "judge_score": 0.15,
-    "risk_score": 18,
+    "risk_score": 13,
     "risk_band": "low"
   },
   {
     "name": "iitd",
     "url": "https://home.iitd.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.014942564785396418,
+    "classifier_score": 0.014049492960338106,
     "judge_score": 0.17,
     "risk_score": 6,
     "risk_band": "low"
@@ -102,16 +102,16 @@
     "name": "wikipedia_phishing",
     "url": "https://en.wikipedia.org/wiki/Phishing",
     "has_html": 1,
-    "classifier_score": 0.11972164530297649,
+    "classifier_score": 0.05302890230210932,
     "judge_score": 0.07,
-    "risk_score": 10,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "bbc_news",
     "url": "https://www.bbc.com/news",
     "has_html": 1,
-    "classifier_score": 0.0019430409204792781,
+    "classifier_score": 0.0026737908087807304,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -120,52 +120,52 @@
     "name": "mdn_js",
     "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
     "has_html": 1,
-    "classifier_score": 0.9916382588496387,
+    "classifier_score": 0.0626269316072063,
     "judge_score": 0.0,
-    "risk_score": 69,
-    "risk_band": "medium"
+    "risk_score": 4,
+    "risk_band": "low"
   },
   {
     "name": "wikipedia_python",
     "url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
     "has_html": 1,
-    "classifier_score": 0.9920671755631284,
+    "classifier_score": 0.09464775508693274,
     "judge_score": 0.07,
-    "risk_score": 72,
-    "risk_band": "high"
+    "risk_score": 9,
+    "risk_band": "low"
   },
   {
     "name": "paypal_home",
     "url": "https://www.paypal.com/",
     "has_html": 1,
-    "classifier_score": 0.028729368918610335,
+    "classifier_score": 0.01829533556813354,
     "judge_score": 0.15,
-    "risk_score": 7,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "nytimes",
     "url": "https://www.nytimes.com/",
     "has_html": 1,
-    "classifier_score": 0.03604722412325754,
+    "classifier_score": 0.049358269421004464,
     "judge_score": 0.08,
-    "risk_score": 5,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "mit",
     "url": "https://www.mit.edu/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.07,
-    "risk_score": 3,
+    "risk_score": 2,
     "risk_band": "low"
   },
   {
     "name": "cnn",
     "url": "https://www.cnn.com/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -174,34 +174,34 @@
     "name": "harvard",
     "url": "https://www.harvard.edu/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.15,
-    "risk_score": 9,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "github_issues",
     "url": "https://github.com/facebook/react/issues",
     "has_html": 1,
-    "classifier_score": 0.9483421922816113,
+    "classifier_score": 0.2286324403823902,
     "judge_score": 0.15,
-    "risk_score": 71,
-    "risk_band": "high"
+    "risk_score": 21,
+    "risk_band": "low"
   },
   {
     "name": "wikipedia_org",
     "url": "https://www.wikipedia.org/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12537070102997608,
     "judge_score": 0.0,
-    "risk_score": 13,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "amazon_home",
     "url": "https://www.amazon.com/",
     "has_html": 1,
-    "classifier_score": 0.017865121971958605,
+    "classifier_score": 0.019782264036272052,
     "judge_score": 0.07,
     "risk_score": 3,
     "risk_band": "low"
@@ -210,7 +210,7 @@
     "name": "pypi",
     "url": "https://pypi.org/",
     "has_html": 1,
-    "classifier_score": 0.005777777874828553,
+    "classifier_score": 0.005158600817372123,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -219,16 +219,16 @@
     "name": "facebook",
     "url": "https://www.facebook.com/",
     "has_html": 1,
-    "classifier_score": 0.07307461727099987,
+    "classifier_score": 0.09088781786476252,
     "judge_score": 0.07,
-    "risk_score": 7,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "zoom",
     "url": "https://zoom.us/",
     "has_html": 1,
-    "classifier_score": 0.00936145972826221,
+    "classifier_score": 0.005876715367757202,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -237,7 +237,7 @@
     "name": "twitter_x",
     "url": "https://twitter.com/",
     "has_html": 1,
-    "classifier_score": 0.015306137025778209,
+    "classifier_score": 0.0089762246193939,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -246,7 +246,7 @@
     "name": "spotify",
     "url": "https://www.spotify.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.08,
     "risk_score": 6,
     "risk_band": "low"
@@ -255,16 +255,16 @@
     "name": "atlassian",
     "url": "https://www.atlassian.com/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12537070102997608,
     "judge_score": 0.0,
-    "risk_score": 13,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "iitb",
     "url": "https://www.iitb.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.005158720475095835,
+    "classifier_score": 0.004845968249194823,
     "judge_score": 0.18,
     "risk_score": 6,
     "risk_band": "low"
@@ -273,25 +273,25 @@
     "name": "walmart",
     "url": "https://www.walmart.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.15,
-    "risk_score": 9,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "salesforce",
     "url": "https://www.salesforce.com/",
     "has_html": 1,
-    "classifier_score": 0.21231475777806044,
+    "classifier_score": 0.13970928536187818,
     "judge_score": 0.08,
-    "risk_score": 17,
+    "risk_score": 12,
     "risk_band": "low"
   },
   {
     "name": "dropbox_home",
     "url": "https://www.dropbox.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.08,
     "risk_score": 6,
     "risk_band": "low"
@@ -300,16 +300,16 @@
     "name": "ebay",
     "url": "https://www.ebay.com/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.013469459800501276,
     "judge_score": 0.15,
-    "risk_score": 6,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "netflix_home",
     "url": "https://www.netflix.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.08,
     "risk_score": 6,
     "risk_band": "low"
@@ -318,16 +318,16 @@
     "name": "icloud",
     "url": "https://www.icloud.com/",
     "has_html": 1,
-    "classifier_score": 0.028729368918610335,
+    "classifier_score": 0.01829533556813354,
     "judge_score": 0.07,
-    "risk_score": 4,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "slack",
     "url": "https://slack.com/",
     "has_html": 1,
-    "classifier_score": 0.010330822963187611,
+    "classifier_score": 0.005250282542289695,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -336,25 +336,25 @@
     "name": "docusign",
     "url": "https://www.docusign.com/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07958816316603606,
     "judge_score": 0.07,
-    "risk_score": 10,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "github_login",
     "url": "https://github.com/login",
     "has_html": 1,
-    "classifier_score": 0.0037096857879835364,
+    "classifier_score": 0.017915266646035013,
     "judge_score": 0.15,
-    "risk_score": 5,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "chase_bank",
     "url": "https://www.chase.com/",
     "has_html": 1,
-    "classifier_score": 0.015873723667509,
+    "classifier_score": 0.018323293646753867,
     "judge_score": 0.07,
     "risk_score": 3,
     "risk_band": "low"
@@ -363,25 +363,25 @@
     "name": "reddit_login",
     "url": "https://www.reddit.com/login/",
     "has_html": 1,
-    "classifier_score": 0.022327897978639332,
+    "classifier_score": 0.012994122403081836,
     "judge_score": 0.0,
-    "risk_score": 2,
+    "risk_score": 1,
     "risk_band": "low"
   },
   {
     "name": "stanford",
     "url": "https://www.stanford.edu/",
     "has_html": 1,
-    "classifier_score": 0.07307461727099987,
+    "classifier_score": 0.07715488974128973,
     "judge_score": 0.07,
-    "risk_score": 7,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "bankofamerica",
     "url": "https://www.bankofamerica.com/",
     "has_html": 1,
-    "classifier_score": 0.32143574447662343,
+    "classifier_score": 0.3293506510192662,
     "judge_score": 0.08,
     "risk_score": 25,
     "risk_band": "low"
@@ -390,7 +390,7 @@
     "name": "readthedocs",
     "url": "https://readthedocs.org/",
     "has_html": 1,
-    "classifier_score": 0.03220861508178917,
+    "classifier_score": 0.03259772165508944,
     "judge_score": 0.08,
     "risk_score": 5,
     "risk_band": "low"
@@ -399,7 +399,7 @@
     "name": "target",
     "url": "https://www.target.com/",
     "has_html": 1,
-    "classifier_score": 0.017865121971958605,
+    "classifier_score": 0.01769995019436829,
     "judge_score": 0.08,
     "risk_score": 4,
     "risk_band": "low"
@@ -408,34 +408,34 @@
     "name": "microsoft_login",
     "url": "https://login.microsoftonline.com/",
     "has_html": 1,
-    "classifier_score": 0.7094602351010827,
+    "classifier_score": 0.5810829586311397,
     "judge_score": 0.15,
-    "risk_score": 54,
+    "risk_score": 45,
     "risk_band": "medium"
   },
   {
     "name": "zoom_signin",
     "url": "https://zoom.us/signin",
     "has_html": 1,
-    "classifier_score": 0.5906232432751716,
+    "classifier_score": 0.3979269346852434,
     "judge_score": 0.08,
-    "risk_score": 44,
-    "risk_band": "medium"
+    "risk_score": 30,
+    "risk_band": "low"
   },
   {
     "name": "stackoverflow_login",
     "url": "https://stackoverflow.com/users/login",
     "has_html": 1,
-    "classifier_score": 0.3972997693392476,
+    "classifier_score": 0.45571738270284684,
     "judge_score": 0.08,
-    "risk_score": 30,
+    "risk_score": 34,
     "risk_band": "low"
   },
   {
     "name": "linkedin_login",
     "url": "https://www.linkedin.com/login",
     "has_html": 1,
-    "classifier_score": 0.007642023691626276,
+    "classifier_score": 0.012380308875984037,
     "judge_score": 0.0,
     "risk_score": 1,
     "risk_band": "low"
@@ -444,43 +444,43 @@
     "name": "wellsfargo",
     "url": "https://www.wellsfargo.com/",
     "has_html": 1,
-    "classifier_score": 0.14218959178606597,
+    "classifier_score": 0.24146025513687788,
     "judge_score": 0.07,
-    "risk_score": 12,
+    "risk_score": 19,
     "risk_band": "low"
   },
   {
     "name": "google_accounts",
     "url": "https://accounts.google.com/",
     "has_html": 1,
-    "classifier_score": 0.21231475777806044,
+    "classifier_score": 0.13970928536187818,
     "judge_score": 0.0,
-    "risk_score": 15,
+    "risk_score": 10,
     "risk_band": "low"
   },
   {
     "name": "protonmail",
     "url": "https://proton.me/mail",
     "has_html": 1,
-    "classifier_score": 0.010316403450931691,
+    "classifier_score": 0.0053633324797229525,
     "judge_score": 0.07,
-    "risk_score": 3,
+    "risk_score": 2,
     "risk_band": "low"
   },
   {
     "name": "guardian",
     "url": "https://www.theguardian.com/international",
     "has_html": 1,
-    "classifier_score": 0.23004080615815634,
+    "classifier_score": 0.09862148421884535,
     "judge_score": 0.08,
-    "risk_score": 19,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "dropbox_login",
     "url": "https://www.dropbox.com/login",
     "has_html": 1,
-    "classifier_score": 0.01005731940807444,
+    "classifier_score": 0.004675466893435823,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -489,16 +489,16 @@
     "name": "adobe_login",
     "url": "https://auth.services.adobe.com/en_US/index.html",
     "has_html": 1,
-    "classifier_score": 0.5260371404396342,
+    "classifier_score": 0.37564583086957665,
     "judge_score": 0.18,
-    "risk_score": 42,
-    "risk_band": "medium"
+    "risk_score": 32,
+    "risk_band": "low"
   },
   {
     "name": "techcrunch",
     "url": "https://techcrunch.com/",
     "has_html": 1,
-    "classifier_score": 0.017072204561623217,
+    "classifier_score": 0.019659643244620825,
     "judge_score": 0.08,
     "risk_score": 4,
     "risk_band": "low"
@@ -507,7 +507,7 @@
     "name": "theverge",
     "url": "https://www.theverge.com/",
     "has_html": 1,
-    "classifier_score": 0.07307461727099987,
+    "classifier_score": 0.07715488974128973,
     "judge_score": 0.15,
     "risk_score": 10,
     "risk_band": "low"
@@ -516,16 +516,16 @@
     "name": "aljazeera",
     "url": "https://www.aljazeera.com/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12376707077631227,
     "judge_score": 0.15,
-    "risk_score": 17,
+    "risk_score": 13,
     "risk_band": "low"
   },
   {
     "name": "hindustantimes",
     "url": "https://www.hindustantimes.com/",
     "has_html": 1,
-    "classifier_score": 0.34492075230640495,
+    "classifier_score": 0.355445235870125,
     "judge_score": 0.15,
     "risk_score": 29,
     "risk_band": "low"
@@ -534,16 +534,16 @@
     "name": "wordpress_login",
     "url": "https://wordpress.com/log-in",
     "has_html": 1,
-    "classifier_score": 0.2181119680101993,
+    "classifier_score": 0.34422185382731596,
     "judge_score": 0.0,
-    "risk_score": 15,
+    "risk_score": 24,
     "risk_band": "low"
   },
   {
     "name": "iitm",
     "url": "https://www.iitm.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.005158720475095835,
+    "classifier_score": 0.004845968249194823,
     "judge_score": 0.25,
     "risk_score": 8,
     "risk_band": "low"
@@ -552,61 +552,61 @@
     "name": "timesofindia",
     "url": "https://timesofindia.indiatimes.com/",
     "has_html": 1,
-    "classifier_score": 0.7940360741250356,
+    "classifier_score": 0.7272377174245843,
     "judge_score": 0.0,
-    "risk_score": 56,
+    "risk_score": 51,
     "risk_band": "medium"
   },
   {
     "name": "wired",
     "url": "https://www.wired.com/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.011918823384377225,
     "judge_score": 0.15,
-    "risk_score": 6,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "salesforce_login",
     "url": "https://login.salesforce.com/",
     "has_html": 1,
-    "classifier_score": 0.25768050629869094,
+    "classifier_score": 0.2739147524201396,
     "judge_score": 0.07,
-    "risk_score": 20,
+    "risk_score": 21,
     "risk_band": "low"
   },
   {
     "name": "instagram",
     "url": "https://www.instagram.com/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12376707077631227,
     "judge_score": 0.15,
-    "risk_score": 17,
+    "risk_score": 13,
     "risk_band": "low"
   },
   {
     "name": "berkeley",
     "url": "https://www.berkeley.edu/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07167087442575504,
     "judge_score": 0.08,
-    "risk_score": 10,
+    "risk_score": 7,
     "risk_band": "low"
   },
   {
     "name": "forbes",
     "url": "https://www.forbes.com/",
     "has_html": 1,
-    "classifier_score": 0.028729368918610335,
+    "classifier_score": 0.01829533556813354,
     "judge_score": 0.15,
-    "risk_score": 7,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "iisc",
     "url": "https://www.iisc.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.008361659656755527,
+    "classifier_score": 0.005011181176960088,
     "judge_score": 0.18,
     "risk_score": 6,
     "risk_band": "low"
@@ -615,16 +615,16 @@
     "name": "khanacademy",
     "url": "https://www.khanacademy.org/",
     "has_html": 1,
-    "classifier_score": 0.21231475777806044,
+    "classifier_score": 0.13970928536187818,
     "judge_score": 0.0,
-    "risk_score": 15,
+    "risk_score": 10,
     "risk_band": "low"
   },
   {
     "name": "cambridge",
     "url": "https://www.cam.ac.uk/",
     "has_html": 1,
-    "classifier_score": 0.007421593042447828,
+    "classifier_score": 0.0032492990789585916,
     "judge_score": 0.25,
     "risk_score": 8,
     "risk_band": "low"
@@ -633,43 +633,43 @@
     "name": "rust_docs",
     "url": "https://doc.rust-lang.org/book/",
     "has_html": 1,
-    "classifier_score": 0.13276863091369384,
+    "classifier_score": 0.051624572035402556,
     "judge_score": 0.0,
-    "risk_score": 9,
+    "risk_score": 4,
     "risk_band": "low"
   },
   {
     "name": "caltech",
     "url": "https://www.caltech.edu/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.15,
-    "risk_score": 9,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "edx",
     "url": "https://www.edx.org/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.07,
-    "risk_score": 3,
+    "risk_score": 2,
     "risk_band": "low"
   },
   {
     "name": "indianexpress",
     "url": "https://indianexpress.com/",
     "has_html": 1,
-    "classifier_score": 0.11201106000533417,
+    "classifier_score": 0.07968766529591652,
     "judge_score": 0.08,
-    "risk_score": 10,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "npr",
     "url": "https://www.npr.org/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -678,16 +678,16 @@
     "name": "coursera",
     "url": "https://www.coursera.org/",
     "has_html": 1,
-    "classifier_score": 0.07307461727099987,
+    "classifier_score": 0.06946139116263685,
     "judge_score": 0.08,
-    "risk_score": 8,
+    "risk_score": 7,
     "risk_band": "low"
   },
   {
     "name": "nodejs_docs",
     "url": "https://nodejs.org/en/docs",
     "has_html": 1,
-    "classifier_score": 0.018278767569137013,
+    "classifier_score": 0.01624387296827403,
     "judge_score": 0.0,
     "risk_score": 1,
     "risk_band": "low"
@@ -696,7 +696,7 @@
     "name": "react_docs",
     "url": "https://react.dev/learn",
     "has_html": 1,
-    "classifier_score": 0.051679587601407936,
+    "classifier_score": 0.04383862845291673,
     "judge_score": 0.15,
     "risk_score": 8,
     "risk_band": "low"
@@ -705,7 +705,7 @@
     "name": "aws_docs",
     "url": "https://docs.aws.amazon.com/",
     "has_html": 1,
-    "classifier_score": 0.040580914486201616,
+    "classifier_score": 0.04038708994186578,
     "judge_score": 0.25,
     "risk_score": 10,
     "risk_band": "low"
@@ -714,25 +714,25 @@
     "name": "reddit_subreddit",
     "url": "https://www.reddit.com/r/programming/",
     "has_html": 1,
-    "classifier_score": 0.23637883641611154,
+    "classifier_score": 0.0861168222419263,
     "judge_score": 0.0,
-    "risk_score": 17,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "djangoproject",
     "url": "https://docs.djangoproject.com/en/5.0/",
     "has_html": 1,
-    "classifier_score": 0.7936248360774888,
+    "classifier_score": 0.5015814766484937,
     "judge_score": 0.0,
-    "risk_score": 56,
-    "risk_band": "medium"
+    "risk_score": 35,
+    "risk_band": "low"
   },
   {
     "name": "golang_docs",
     "url": "https://go.dev/doc/",
     "has_html": 1,
-    "classifier_score": 0.012119310675008677,
+    "classifier_score": 0.005817654745967312,
     "judge_score": 0.07,
     "risk_score": 3,
     "risk_band": "low"
@@ -741,124 +741,124 @@
     "name": "w3schools",
     "url": "https://www.w3schools.com/html/",
     "has_html": 1,
-    "classifier_score": 0.04224580580145166,
+    "classifier_score": 0.025944301490284018,
     "judge_score": 0.15,
-    "risk_score": 7,
+    "risk_score": 6,
     "risk_band": "low"
   },
   {
     "name": "iitk",
     "url": "https://www.iitk.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.008361659656755527,
+    "classifier_score": 0.005011181176960088,
     "judge_score": 0.1,
-    "risk_score": 4,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "youtube_watch",
     "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "has_html": 1,
-    "classifier_score": 0.792168329224165,
+    "classifier_score": 0.41110809426575884,
     "judge_score": 0.0,
-    "risk_score": 55,
-    "risk_band": "medium"
+    "risk_score": 29,
+    "risk_band": "low"
   },
   {
     "name": "kubernetes_docs",
     "url": "https://kubernetes.io/docs/home/",
     "has_html": 1,
-    "classifier_score": 0.2878963152215238,
+    "classifier_score": 0.3381110786552098,
     "judge_score": 0.08,
-    "risk_score": 23,
+    "risk_score": 26,
     "risk_band": "low"
   },
   {
     "name": "github_actions_docs",
     "url": "https://docs.github.com/en/actions",
     "has_html": 1,
-    "classifier_score": 0.09540822879573183,
+    "classifier_score": 0.1314249815222373,
     "judge_score": 0.07,
-    "risk_score": 9,
+    "risk_score": 11,
     "risk_band": "low"
   },
   {
     "name": "iitkgp",
     "url": "https://www.iitkgp.ac.in/",
     "has_html": 1,
-    "classifier_score": 0.031676006646444904,
+    "classifier_score": 0.022652359526629064,
     "judge_score": 0.25,
-    "risk_score": 10,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "google_maps",
     "url": "https://www.google.com/maps",
     "has_html": 1,
-    "classifier_score": 0.007224938700272426,
+    "classifier_score": 0.004040719564883358,
     "judge_score": 0.0,
-    "risk_score": 1,
+    "risk_score": 0,
     "risk_band": "low"
   },
   {
     "name": "devto",
     "url": "https://dev.to/",
     "has_html": 1,
-    "classifier_score": 0.005777777874828553,
+    "classifier_score": 0.005158600817372123,
     "judge_score": 0.07,
-    "risk_score": 3,
+    "risk_score": 2,
     "risk_band": "low"
   },
   {
     "name": "hackernews",
     "url": "https://news.ycombinator.com/",
     "has_html": 1,
-    "classifier_score": 0.25768050629869094,
+    "classifier_score": 0.24251338091549068,
     "judge_score": 0.0,
-    "risk_score": 18,
+    "risk_score": 17,
     "risk_band": "low"
   },
   {
     "name": "spotify_search",
     "url": "https://open.spotify.com/search",
     "has_html": 1,
-    "classifier_score": 0.021840569363059132,
+    "classifier_score": 0.013754949005548332,
     "judge_score": 0.08,
-    "risk_score": 4,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "apple_support",
     "url": "https://support.apple.com/",
     "has_html": 1,
-    "classifier_score": 0.11952833948793495,
+    "classifier_score": 0.12172281491473141,
     "judge_score": 0.0,
-    "risk_score": 8,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "wikipedia_search",
     "url": "https://en.wikipedia.org/w/index.php?search=machine+learning",
     "has_html": 1,
-    "classifier_score": 0.9541507383383065,
+    "classifier_score": 0.12582434274411375,
     "judge_score": 0.07,
-    "risk_score": 69,
-    "risk_band": "medium"
+    "risk_score": 11,
+    "risk_band": "low"
   },
   {
     "name": "freecodecamp",
     "url": "https://www.freecodecamp.org/news/",
     "has_html": 1,
-    "classifier_score": 0.022099279655855748,
+    "classifier_score": 0.011508344317558705,
     "judge_score": 0.15,
-    "risk_score": 6,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "walmart_search",
     "url": "https://www.walmart.com/search?q=laptop",
     "has_html": 1,
-    "classifier_score": 0.0007497591789420716,
+    "classifier_score": 0.00017017973472762605,
     "judge_score": 0.0,
     "risk_score": 0,
     "risk_band": "low"
@@ -867,16 +867,16 @@
     "name": "airbnb",
     "url": "https://www.airbnb.com/",
     "has_html": 1,
-    "classifier_score": 0.07162447936351866,
+    "classifier_score": 0.04329395531807947,
     "judge_score": 0.0,
-    "risk_score": 5,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "linkedin_jobs",
     "url": "https://www.linkedin.com/jobs/",
     "has_html": 1,
-    "classifier_score": 0.007642023691626276,
+    "classifier_score": 0.007233310044633595,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -885,16 +885,16 @@
     "name": "twitter_search",
     "url": "https://twitter.com/search?q=phishing",
     "has_html": 1,
-    "classifier_score": 0.0017425345874997153,
+    "classifier_score": 0.00046286057489498486,
     "judge_score": 0.08,
-    "risk_score": 3,
+    "risk_score": 2,
     "risk_band": "low"
   },
   {
     "name": "cmu",
     "url": "https://www.cmu.edu/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -903,52 +903,52 @@
     "name": "figma",
     "url": "https://www.figma.com/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.013330245068785211,
     "judge_score": 0.07,
-    "risk_score": 4,
+    "risk_score": 3,
     "risk_band": "low"
   },
   {
     "name": "google_docs",
     "url": "https://docs.google.com/document/u/0/",
     "has_html": 1,
-    "classifier_score": 0.15808248499630567,
+    "classifier_score": 0.07724860460934566,
     "judge_score": 0.08,
-    "risk_score": 13,
+    "risk_score": 8,
     "risk_band": "low"
   },
   {
     "name": "google_drive",
     "url": "https://drive.google.com/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07167087442575504,
     "judge_score": 0.0,
-    "risk_score": 8,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "trello",
     "url": "https://trello.com/",
     "has_html": 1,
-    "classifier_score": 0.03702533088744335,
+    "classifier_score": 0.06658429555731758,
     "judge_score": 0.15,
-    "risk_score": 7,
+    "risk_score": 9,
     "risk_band": "low"
   },
   {
     "name": "notion",
     "url": "https://www.notion.so/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.011918823384377225,
     "judge_score": 0.0,
-    "risk_score": 2,
+    "risk_score": 1,
     "risk_band": "low"
   },
   {
     "name": "shopify_home",
     "url": "https://www.shopify.com/",
     "has_html": 1,
-    "classifier_score": 0.057323130175526926,
+    "classifier_score": 0.05096331801688694,
     "judge_score": 0.07,
     "risk_score": 6,
     "risk_band": "low"
@@ -957,16 +957,16 @@
     "name": "github_pr",
     "url": "https://github.com/facebook/react/pulls",
     "has_html": 1,
-    "classifier_score": 0.023309267261977486,
+    "classifier_score": 0.01305379365439959,
     "judge_score": 0.15,
-    "risk_score": 6,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "vimeo",
     "url": "https://vimeo.com/",
     "has_html": 1,
-    "classifier_score": 0.010330822963187611,
+    "classifier_score": 0.005250282542289695,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -975,7 +975,7 @@
     "name": "asana",
     "url": "https://asana.com/",
     "has_html": 1,
-    "classifier_score": 0.006378446255967852,
+    "classifier_score": 0.005158600817372123,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -984,25 +984,25 @@
     "name": "microsoft_support",
     "url": "https://support.microsoft.com/en-us",
     "has_html": 1,
-    "classifier_score": 0.32997299801198665,
+    "classifier_score": 0.14054917721008092,
     "judge_score": 0.15,
-    "risk_score": 28,
+    "risk_score": 14,
     "risk_band": "low"
   },
   {
     "name": "digitalocean",
     "url": "https://www.digitalocean.com/",
     "has_html": 1,
-    "classifier_score": 0.36080632719370204,
+    "classifier_score": 0.24875593085582884,
     "judge_score": 0.0,
-    "risk_score": 25,
+    "risk_score": 17,
     "risk_band": "low"
   },
   {
     "name": "tumblr",
     "url": "https://www.tumblr.com/",
     "has_html": 1,
-    "classifier_score": 0.017865121971958605,
+    "classifier_score": 0.01769995019436829,
     "judge_score": 0.08,
     "risk_score": 4,
     "risk_band": "low"
@@ -1011,16 +1011,16 @@
     "name": "cloudflare",
     "url": "https://www.cloudflare.com/",
     "has_html": 1,
-    "classifier_score": 0.21231475777806044,
+    "classifier_score": 0.13970928536187818,
     "judge_score": 0.0,
-    "risk_score": 15,
+    "risk_score": 10,
     "risk_band": "low"
   },
   {
     "name": "venmo",
     "url": "https://venmo.com/",
     "has_html": 1,
-    "classifier_score": 0.010330822963187611,
+    "classifier_score": 0.005876715367757202,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -1029,7 +1029,7 @@
     "name": "heroku",
     "url": "https://www.heroku.com/",
     "has_html": 1,
-    "classifier_score": 0.017865121971958605,
+    "classifier_score": 0.019782264036272052,
     "judge_score": 0.15,
     "risk_score": 6,
     "risk_band": "low"
@@ -1038,7 +1038,7 @@
     "name": "square",
     "url": "https://squareup.com/us/en",
     "has_html": 1,
-    "classifier_score": 0.01274807744533922,
+    "classifier_score": 0.008418611235669298,
     "judge_score": 0.0,
     "risk_score": 1,
     "risk_band": "low"
@@ -1047,16 +1047,16 @@
     "name": "vercel",
     "url": "https://vercel.com/",
     "has_html": 1,
-    "classifier_score": 0.012018426807433506,
+    "classifier_score": 0.006235421812692773,
     "judge_score": 0.0,
-    "risk_score": 1,
+    "risk_score": 0,
     "risk_band": "low"
   },
   {
     "name": "squarespace",
     "url": "https://www.squarespace.com/",
     "has_html": 1,
-    "classifier_score": 0.14218959178606597,
+    "classifier_score": 0.1357089268505542,
     "judge_score": 0.07,
     "risk_score": 12,
     "risk_band": "low"
@@ -1065,34 +1065,34 @@
     "name": "twitch",
     "url": "https://www.twitch.tv/",
     "has_html": 1,
-    "classifier_score": 0.025558464191150935,
+    "classifier_score": 0.011918823384377225,
     "judge_score": 0.0,
-    "risk_score": 2,
+    "risk_score": 1,
     "risk_band": "low"
   },
   {
     "name": "icicibank",
     "url": "https://www.icicibank.com/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12537070102997608,
     "judge_score": 0.15,
-    "risk_score": 17,
+    "risk_score": 13,
     "risk_band": "low"
   },
   {
     "name": "sbi",
     "url": "https://sbi.co.in/",
     "has_html": 1,
-    "classifier_score": 0.00761795489446403,
+    "classifier_score": 0.0032467172175949023,
     "judge_score": 0.0,
-    "risk_score": 1,
+    "risk_score": 0,
     "risk_band": "low"
   },
   {
     "name": "wix",
     "url": "https://www.wix.com/",
     "has_html": 1,
-    "classifier_score": 0.009556260209226536,
+    "classifier_score": 0.004113587010615576,
     "judge_score": 0.08,
     "risk_score": 3,
     "risk_band": "low"
@@ -1101,7 +1101,7 @@
     "name": "stripe",
     "url": "https://stripe.com/",
     "has_html": 1,
-    "classifier_score": 0.012018426807433506,
+    "classifier_score": 0.006235421812692773,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -1110,7 +1110,7 @@
     "name": "etrade",
     "url": "https://us.etrade.com/home",
     "has_html": 1,
-    "classifier_score": 0.003860144421407792,
+    "classifier_score": 0.0034002571170492404,
     "judge_score": 0.15,
     "risk_score": 5,
     "risk_band": "low"
@@ -1119,43 +1119,43 @@
     "name": "hdfcbank",
     "url": "https://www.hdfcbank.com/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07167087442575504,
     "judge_score": 0.08,
-    "risk_score": 10,
+    "risk_score": 7,
     "risk_band": "low"
   },
   {
     "name": "pinterest",
     "url": "https://www.pinterest.com/",
     "has_html": 1,
-    "classifier_score": 0.1808334240793538,
+    "classifier_score": 0.12537070102997608,
     "judge_score": 0.08,
-    "risk_score": 15,
+    "risk_score": 11,
     "risk_band": "low"
   },
   {
     "name": "robinhood",
     "url": "https://robinhood.com/us/en/",
     "has_html": 1,
-    "classifier_score": 0.06659096409108525,
+    "classifier_score": 0.0482750460553003,
     "judge_score": 0.07,
-    "risk_score": 7,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "hsbc",
     "url": "https://www.hsbc.com/",
     "has_html": 1,
-    "classifier_score": 0.015873723667509,
+    "classifier_score": 0.013236162531875742,
     "judge_score": 0.15,
-    "risk_score": 6,
+    "risk_score": 5,
     "risk_band": "low"
   },
   {
     "name": "schwab",
     "url": "https://www.schwab.com/",
     "has_html": 1,
-    "classifier_score": 0.017865121971958605,
+    "classifier_score": 0.019782264036272052,
     "judge_score": 0.15,
     "risk_score": 6,
     "risk_band": "low"
@@ -1164,9 +1164,9 @@
     "name": "citibank",
     "url": "https://www.citibank.com/",
     "has_html": 1,
-    "classifier_score": 0.11362879270969223,
+    "classifier_score": 0.07167087442575504,
     "judge_score": 0.07,
-    "risk_score": 10,
+    "risk_score": 7,
     "risk_band": "low"
   }
 ]

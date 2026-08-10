@@ -398,16 +398,19 @@ phishshield/
     **Current, real numbers as of the last commit**: real, live
     hard-negative testing against 46 real major websites (Google,
     GitHub, Wikipedia, MDN, banks, etc.) found 13.0% FPR, not 0%.
-    Section 3.8 then fixed one diagnosed cause (real login pages
-    underrepresented in benign training data) and rescaled the
-    evaluation to 130 real pages: **6.2% FPR at n=130**, with the fix
-    verified to cost nothing in phishing recall on the model that
+    Sections 3.8-3.9 then fixed all three diagnosed causes (real login
+    pages and long documentation/wiki paths were both underrepresented
+    in benign training data) and rescaled the evaluation to 130 real
+    pages: **0.8% FPR at n=130, zero pages in the HIGH band**, with the
+    fix verified to cost nothing in phishing recall on the model that
     actually ships. Meaningfully improved from the original state
-    (where nearly every major site scored HIGH), but not resolved — two
-    other diagnosed causes remain open. **The project is not
-    deployment-ready.** `reports/FINAL_REPORT.md` is the authoritative,
-    up-to-date source for all headline numbers; treat any number in this
-    section as historical unless corroborated there.
+    (where nearly every major site scored HIGH). **The project is
+    still not deployment-ready** — not because of this evaluation's
+    numbers anymore, but because live Chrome validation (an actual
+    unpacked extension in an actual Chrome profile) has never been run
+    in this environment; see Section 8.1. `reports/FINAL_REPORT.md` is
+    the authoritative, up-to-date source for all headline numbers; treat
+    any number in this section as historical unless corroborated there.
 
 ## 6. What "done" looks like
 

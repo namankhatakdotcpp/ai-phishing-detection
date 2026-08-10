@@ -1,0 +1,25 @@
+bugzilla_mozilla|https://bugzilla.mozilla.org/buglist.cgi?bug_status=NEW|3038|ok
+pandas_docs|https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html|69303|ok
+scikit_docs|https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingClassifier.html|185205|ok
+oracle_docs|https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html|231354|ok
+numpy_docs|https://numpy.org/doc/stable/reference/generated/numpy.array.html|49864|ok
+ruby_docs|https://docs.ruby-lang.org/en/3.3/String.html|300000|ok
+docs_rs|https://docs.rs/serde/latest/serde/trait.Serialize.html|226191|ok
+wiktionary_article|https://en.wiktionary.org/wiki/software|300000|ok
+wikimedia_docs|https://www.mediawiki.org/wiki/Manual:Configuration_settings|300000|ok
+wikibooks_article|https://en.wikibooks.org/wiki/Python_Programming/Basic_Syntax|67399|ok
+pytorch_docs|https://pytorch.org/docs/stable/generated/torch.nn.Linear.html|1748|ok
+php_docs|https://www.php.net/manual/en/function.array-merge.php|66118|ok
+terraform_docs|https://developer.hashicorp.com/terraform/language/resources/syntax|0|HTTP Error 308: Permanent Redirect
+tensorflow_docs|https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dense|300000|ok
+ansible_docs|https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html|94786|ok
+jenkins_docs|https://www.jenkins.io/doc/book/pipeline/syntax/|170028|ok
+redis_docs|https://redis.io/docs/latest/commands/set/|300000|ok
+postgresql_docs|https://www.postgresql.org/docs/current/sql-select.html|118036|ok
+elastic_docs|https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html|300000|ok
+archwiki_article|https://wiki.archlinux.org/title/Installation_guide|99729|ok
+gentoo_wiki|https://wiki.gentoo.org/wiki/Handbook:AMD64|39846|ok
+sourceforge_tracker|https://sourceforge.net/p/sevenzip/discussion/45797/|85952|ok
+codeberg_issues|https://codeberg.org/forgejo/forgejo/issues|300000|ok
+debian_wiki|https://wiki.debian.org/DebianPackage|18226|ok
+launchpad_bug|https://bugs.launchpad.net/ubuntu/+bug/1999999|32269|ok

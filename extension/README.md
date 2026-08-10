@@ -87,14 +87,16 @@ popup disables the button and says so rather than silently failing.
 - **FPR on real data is real, not hidden**: a real evaluation against 46
   real major websites (Google, GitHub, Wikipedia, MDN, banks, etc. --
   `reports/FINAL_REPORT.md` Section 3.7) found a 13.0% false-positive
-  rate. `reports/FINAL_REPORT.md` Section 3.8 then fixed one diagnosed
-  cause (legitimate login pages were underrepresented in benign training
-  data) and rescaled the evaluation to 130 real pages: **6.2% FPR at
-  n=130** on the current model (`sha256[:12]=2f5af5d0affb`), verified to
-  cost nothing in phishing recall. Expect occasional SUSPICIOUS/HIGH
-  verdicts on genuinely benign pages -- two other diagnosed causes
-  (URL special characters, combination-driven scores on docs/issue
-  pages) remain open, not smoothed over here. **Not deployment-ready.**
+  rate. `reports/FINAL_REPORT.md` Sections 3.8-3.9 then fixed all three
+  diagnosed causes (legitimate login pages and long documentation/wiki
+  paths were both underrepresented in benign training data) and
+  rescaled the evaluation to 130 real pages: **0.8% FPR at n=130, zero
+  pages in the HIGH band**, on the current model
+  (`sha256[:12]=70e68ee007b7`), verified to cost nothing in phishing
+  recall. The remaining blocker to deployment is not this evaluation's
+  numbers -- it's that live Chrome validation (an actual unpacked
+  extension in an actual Chrome profile) has still never been run; see
+  Section 8.1. **Not deployment-ready for that reason.**
 - **Local backend only**: `API_BASE` in `popup.js` points at
   `127.0.0.1:8000`. Pointing it at a deployed HTTPS backend, adding
   request rate limiting, and locking down CORS (`api/app.py` currently

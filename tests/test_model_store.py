@@ -68,6 +68,68 @@ def test_scores_are_valid_probabilities():
     assert 0.0 <= score <= 1.0
 
 
+def test_long_documentation_path_alone_does_not_score_high():
+    # Regression test for reports/FINAL_REPORT.md Section 3.9: a long,
+    # realistic documentation/wiki URL (path_length in the range real
+    # pages like Wikipedia articles, MDN docs, and GitHub issue lists
+    # actually use) must not, by itself, push the fused risk score into
+    # the HIGH band the way it did before that fix -- a benign structural
+    # property (a long path) is not a phishing signal on its own.
+    model = get_demo_model()
+    from phishshield.judge.judge import judge_features, risk_band
+
+    dummy = Sample(
+        url="https://docs.example.com/en/latest/reference/api/module.submodule.ClassName.html",
+        label=0, source=Source.TRANCO,
+        html="<html><head><title>API reference</title></head><body>"
+        "<p>Documentation content.</p></body></html>",
+    )
+    feats = extract_features(dummy)
+    classifier_score = predict_feature_dict(model, feats)
+    judge_score = judge_features(feats).risk_score / 100
+    fused = 0.7 * classifier_score + 0.3 * judge_score
+    assert risk_band(round(fused * 100)) != "high"
+
+
+def test_login_page_with_password_field_does_not_score_high_alone():
+    # Regression test for reports/FINAL_REPORT.md Section 3.8: a real
+    # login form (one password field, same-site action, normal HTML) on
+    # a normal-looking URL must not alone land HIGH -- num_password_fields
+    # was previously an almost-unconditional phishing signal.
+    model = get_demo_model()
+    from phishshield.judge.judge import judge_features, risk_band
+
+    dummy = Sample(
+        url="https://accounts.example.com/login",
+        label=0, source=Source.TRANCO,
+        html="<html><head><title>Sign in</title></head><body>"
+        '<form action="/login" method="post">'
+        '<input type="email" name="email">'
+        '<input type="password" name="password">'
+        "</form></body></html>",
+    )
+    feats = extract_features(dummy)
+    classifier_score = predict_feature_dict(model, feats)
+    judge_score = judge_features(feats).risk_score / 100
+    fused = 0.7 * classifier_score + 0.3 * judge_score
+    assert risk_band(round(fused * 100)) != "high"
+
+
+def test_known_phishing_fixture_with_password_field_still_detected():
+    # The other half of the regression check: fixing the two benign gaps
+    # above must not have taught the model that password fields are
+    # always safe -- a real phishing fixture (external form action,
+    # suspicious TLD, brand mismatch) with a password field must still
+    # score as phishing.
+    model = get_demo_model()
+    phishing_html = (FIXTURES / "phishing_paypal_clone.html").read_text()
+    phishing = Sample(
+        url="https://paypa1-secure.tk/login", label=1, source=Source.PHISHTANK, html=phishing_html
+    )
+    score = predict_feature_dict(model, extract_features(phishing))
+    assert score >= 0.5
+
+
 def test_get_model_version_returns_a_short_stable_id():
     version = get_model_version()
     assert version is not None
