@@ -27,7 +27,13 @@ import argparse
 from pathlib import Path
 
 from phishshield.data.generation import generate_llm_phishing_dataset
-from phishshield.data.loaders import load_llm_generated, load_openphish, load_phishtank, load_tranco
+from phishshield.data.loaders import (
+    load_llm_generated,
+    load_openphish,
+    load_phishtank,
+    load_tranco,
+    registrable_domain,
+)
 from phishshield.data.pipeline import build_feature_dataframe
 from phishshield.data.splits import build_partitions
 from phishshield.data.stats import dataset_stats
@@ -51,8 +57,16 @@ def _load_legacy_samples(args: argparse.Namespace) -> tuple[list, str]:
         mode = "real"
         if args.tranco_html:
             html_samples = load_llm_generated(args.tranco_html)  # schema-generic loader
-            html_urls = {s.url for s in html_samples}
-            tranco_samples = [s for s in tranco_samples if s.url not in html_urls] + html_samples
+            # Match by registrable domain, not exact URL/hostname:
+            # load_tranco() attaches a realistic (not necessarily
+            # matching) subdomain/path per domain (see loaders.py's
+            # path/subdomain-variety fix), so the plain and
+            # HTML-enriched entries for the same site won't share a URL
+            # or even a hostname.
+            html_domains = {registrable_domain(s.url) for s in html_samples}
+            tranco_samples = [
+                s for s in tranco_samples if registrable_domain(s.url) not in html_domains
+            ] + html_samples
             mode = f"real (+ {len(html_samples)} Tranco samples with fetched benign HTML)"
         samples = load_phishtank(args.phishtank) + load_openphish(args.openphish) + tranco_samples
         return samples, mode

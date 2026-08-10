@@ -2,34 +2,57 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>PhishShield AI (Demo)</title>
+  <title>PhishShield AI</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <h1>PhishShield AI <span class="badge">research demo</span></h1>
+  <header class="header">
+    <span class="shield">🛡</span>
+    <div class="header-text">
+      <div class="brand">PhishShield AI</div>
+      <div class="page-info" id="page-info"></div>
+    </div>
+  </header>
+
+  <button id="analyze-btn" type="button" class="analyze-btn">Analyze this page</button>
+
+  <div id="status" class="status"></div>
+
+  <section id="analyzing" class="state hidden">
+    <div class="spinner"></div>
+    <div class="state-text">Checking this page…</div>
+  </section>
+
+  <section id="result" class="state hidden">
+    <div class="risk-card" id="risk-card">
+      <div class="risk-label" id="risk-label"></div>
+      <div class="risk-score" id="risk-score"></div>
+      <div class="risk-summary" id="risk-summary"></div>
+    </div>
+
+    <div id="reasons-section" class="reasons-section hidden">
+      <div class="section-title">Why is this suspicious?</div>
+      <ul id="reasons" class="reasons-list"></ul>
+    </div>
+
+    <div id="high-risk-actions" class="high-risk-actions hidden">
+      <button id="leave-btn" type="button" class="btn btn-danger">Leave website</button>
+      <button id="continue-btn" type="button" class="btn btn-ghost">Continue anyway</button>
+    </div>
+
+    <button id="details-toggle" type="button" class="details-toggle">View details</button>
+    <div id="details" class="details hidden">
+      <div id="classifier-score"></div>
+      <div id="judge-score"></div>
+      <div id="analyzed-at"></div>
+    </div>
+  </section>
+
   <p class="disclaimer">
-    Scores a curated set of sample pages against a local backend.
-    This demo does not read or scan the page you're currently on.
+    Analyzes this page's structure (forms, external scripts, URL patterns)
+    only when you click Analyze. Never reads form contents, passwords, or
+    cookies, and never scans in the background.
   </p>
-
-  <label for="sample-select">Demo sample</label>
-  <select id="sample-select"></select>
-
-  <button id="analyze-btn" type="button">Analyze</button>
-
-  <div id="status"></div>
-
-  <div id="result" class="hidden">
-    <div class="risk-header">
-      <span id="risk-score" class="risk-score"></span>
-      <span id="risk-band" class="risk-band"></span>
-    </div>
-    <ul id="reasons"></ul>
-    <div class="scores-detail">
-      <span id="classifier-score"></span>
-      <span id="judge-score"></span>
-    </div>
-  </div>
 
   <script src="popup.js"></script>
 </body>

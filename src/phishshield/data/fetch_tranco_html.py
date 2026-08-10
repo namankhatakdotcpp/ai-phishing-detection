@@ -27,6 +27,7 @@ import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import replace
+from urllib.parse import urlsplit
 
 from phishshield.data.generation import save_samples_jsonl
 from phishshield.data.loaders import load_tranco
@@ -55,9 +56,17 @@ def _fetch_html(url: str, timeout: float) -> str | None:
 
 
 def _fetch_one(sample):
-    html = _fetch_html(sample.url, DEFAULT_TIMEOUT)
-    if html is None and sample.url.startswith("https://"):
-        html = _fetch_html("http://" + sample.url[len("https://") :], DEFAULT_TIMEOUT)
+    # `sample.url` now carries a load_tranco()-assigned realistic path (see
+    # loaders.py) for feature-vector variety, but that fabricated path
+    # almost certainly doesn't exist on the real site (404) -- fetch the
+    # domain root instead, and attach the real HTML to the sample's actual
+    # (possibly-pathed) URL. Both the URL shape and the HTML content are
+    # genuinely benign either way; they just may not be the same physical
+    # page, which doesn't matter for structural feature extraction.
+    root = f"https://{urlsplit(sample.url).hostname}/"
+    html = _fetch_html(root, DEFAULT_TIMEOUT)
+    if html is None:
+        html = _fetch_html(f"http://{urlsplit(sample.url).hostname}/", DEFAULT_TIMEOUT)
     return sample, html
 
 

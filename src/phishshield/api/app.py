@@ -1,9 +1,10 @@
 """Demo API: a single `/analyze` endpoint over precomputed features or a
-curated demo sample, plus a listing endpoint for the extension's dropdown.
+curated demo sample, plus a listing endpoint for the extension's dropdown
+and a `/health` endpoint for the extension to check backend availability.
 
 Research-prototype demo, not a production security product: no live
 WHOIS/SSL/DNS lookups, no arbitrary-page fetching. See PROJECT_BRIEF.md,
-Phase 6.
+Phase 6/9.
 """
 
 from __future__ import annotations
@@ -12,8 +13,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from phishshield.api.demo_data import CURATED_DEMO_SAMPLES, get_demo_sample
-from phishshield.api.model_store import get_demo_model
-from phishshield.api.schemas import AnalyzeRequest, AnalyzeResponse, DemoSampleMeta
+from phishshield.api.model_store import get_demo_model, get_model_version
+from phishshield.api.schemas import AnalyzeRequest, AnalyzeResponse, DemoSampleMeta, HealthResponse
 from phishshield.features.pipeline import extract_features
 from phishshield.judge.judge import judge_features, risk_band
 from phishshield.models.classifier import predict_feature_dict
@@ -41,6 +42,15 @@ app.add_middleware(
 )
 
 
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    try:
+        get_demo_model()
+        return HealthResponse(status="ok", model_loaded=True, model_version=get_model_version())
+    except FileNotFoundError:
+        return HealthResponse(status="model_unavailable", model_loaded=False, model_version=None)
+
+
 @app.get("/demo-samples", response_model=list[DemoSampleMeta])
 def list_demo_samples() -> list[DemoSampleMeta]:
     return [
@@ -60,7 +70,10 @@ def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
     else:
         features = request.features
 
-    model = get_demo_model()
+    try:
+        model = get_demo_model()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=f"model unavailable: {exc}") from exc
     classifier_score = predict_feature_dict(model, features)
 
     verdict = judge_features(features)

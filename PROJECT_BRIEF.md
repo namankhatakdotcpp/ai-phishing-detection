@@ -121,9 +121,48 @@ phishshield/
   + the mocked LLM-generated set — not the real Phase 3/4 result) fused
   with the Phase 5 judge, matching the pitch's "Risk Score: N% —
   reasons..." format.
-- Manifest V3 popup extension over the curated demo set only — no
-  `activeTab`/`scripting` permission, `host_permissions` scoped to
-  `localhost:8000`, never reads the page the user is on.
+- Manifest V3 popup extension, originally over the curated demo set only
+  (no `activeTab`/`scripting`, never read the page the user was on).
+- **Sprint 1 (2026-08-10)**: converted to live current-tab analysis.
+  `manifest.json` now requests `activeTab` + `scripting` (Chrome's
+  narrower alternative to standing host permissions — access is granted
+  only after the user's explicit click, only for that tab, no
+  `<all_urls>`, no background scanning). New `page_extractor.js` is
+  injected into the active tab on click and computes the exact same
+  feature schema as `phishshield.features.url_features`/`html_features`
+  client-side, then `popup.js` sends only that numeric feature dict to
+  the existing `/analyze` endpoint (already accepted a caller-supplied
+  `features` dict — no backend schema change needed). Never reads or
+  sends form/input values, so no typed credentials are collected.
+  `host_permissions` stays scoped to `localhost:8000`/`127.0.0.1:8000`.
+  The curated `/demo-samples` + `sample_id` path still exists on the
+  backend but the popup UI no longer uses it.
+- **v1 security-assistant UX (2026-08-11)**: `api/model_store.py`'s toy
+  synthetic-demo classifier was replaced with the real Phase 9 artifact
+  (`artifacts/phishing_classifier.joblib`, `phishshield.models.export_demo_model`),
+  loaded once at startup and failing loudly (not silently falling back)
+  if missing -- this is the same investigation that found and fixed the
+  `load_tranco()` path/subdomain artifacts documented above. `api/app.py`
+  gained `GET /health` (status, model_loaded, a short content-hash model
+  version -- no filesystem paths exposed) and `AnalyzeRequest` gained
+  optional display-only `url`/`title` fields. The popup was rebuilt
+  around LOW/SUSPICIOUS/HIGH risk cards (reusing the backend's own
+  `judge.risk_band()` thresholds, never recomputed client-side) with an
+  expandable "why" reasons list. New `page_overlay.js` injects an
+  in-page warning (closed Shadow DOM, immune to host-page CSS, all
+  dynamic text via `textContent` only) for HIGH verdicts, from the same
+  click-triggered `activeTab` grant used for feature extraction --
+  "Leave website" / "Continue anyway", the latter remembered for the
+  rest of that tab's session via `sessionStorage`. Verified live: real
+  Wikipedia page scores LOW/SUSPICIOUS correctly, real LLM-generated
+  phishing sample scores HIGH (91%) and the overlay renders and dismisses
+  correctly on a live page via the Browser tool (screenshots + direct
+  Shadow DOM interaction, since the sandboxed preview can't load
+  `chrome://extensions` or exercise the real `chrome.scripting` API --
+  that remains unverified pending a real Chrome load, see below).
+  14 new/changed backend tests (model loading, feature-ordering,
+  directional + fused-score checks, `/health`, missing-model 503) --
+  134/134 total passing.
 
 ### Phase 7 — Report assets
 - `build_report_assets` generates dataset stats, the Phase 3 eval table,

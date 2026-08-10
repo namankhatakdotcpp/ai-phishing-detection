@@ -122,18 +122,33 @@ python -m phishshield.models.run_mitigation \
     --llm-generated data/generated/llm_phishing_v1.jsonl
 ```
 
-**Phase 6 complete**: FastAPI demo backend (`phishshield.api.app`) with
-`GET /demo-samples` and `POST /analyze`, backed by a self-contained demo
-classifier (`phishshield.api.model_store` — trained from in-repo synthetic
-patterns + the mocked LLM-generated set, *not* the real Phase 3/4 result,
-which needs downloaded data this demo doesn't ship with) fused with the
-Phase 5 judge. `/analyze` accepts either a curated `sample_id` or a
-caller-supplied precomputed `features` dict. A Manifest V3 popup extension
-(`extension/`) calls it over the curated demo set only — no
-`activeTab`/`scripting` permission, `host_permissions` scoped to
-`localhost:8000`, and it never reads the page the user is on. Verified
-end-to-end in a browser against the live backend (dropdown populated from
-`/demo-samples`, "Analyze" renders "Risk Score: N% — reasons...").
+**Phase 6/9 complete**: FastAPI demo backend (`phishshield.api.app`) with
+`GET /health`, `GET /demo-samples`, and `POST /analyze`, backed by the
+**real Phase 9 classifier** (`artifacts/phishing_classifier.joblib`,
+loaded once at startup by `phishshield.api.model_store` — an earlier
+self-contained synthetic-only demo model was replaced after live testing
+found it gave backwards verdicts) fused with the Phase 5 judge at
+`alpha=0.7`. `/analyze` accepts either a curated `sample_id` or a
+caller-supplied precomputed `features` dict, plus optional display-only
+`url`/`title`.
+
+**Extension (v1 security-assistant UX)**: the Manifest V3 popup
+(`extension/`) analyzes the **current tab** on click, not a curated demo
+set. It uses `activeTab` + `scripting` — Chrome's narrower alternative to
+standing host permissions: access is granted only after the user's
+explicit click, only for that tab. `page_extractor.js` computes the same
+URL-lexical / HTML-structural feature schema as the Python pipeline
+client-side and sends only that numeric feature vector to `/analyze` —
+never the page's raw HTML, never form/input values, so no typed
+credentials are ever collected. The popup shows a LOW/SUSPICIOUS/HIGH
+risk card with expandable reasons; a HIGH verdict also injects an
+in-page warning overlay (`page_overlay.js`, closed Shadow DOM, all
+dynamic text via `textContent` only — never `innerHTML`) with "Leave
+website"/"Continue anyway". `host_permissions` stays scoped to
+`localhost:8000`/`127.0.0.1:8000`; there is no `<all_urls>` grant and no
+background/persistent scanning. See `extension/README.md` for the exact
+contract and known limitations (real, measured FPR; local-only backend;
+structural not semantic features).
 
 ```
 src/phishshield/
