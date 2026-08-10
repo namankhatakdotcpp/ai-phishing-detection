@@ -23,6 +23,13 @@
     <div class="state-text">Checking this page…</div>
   </section>
 
+  <section id="error-state" class="state hidden error-state">
+    <div class="error-icon">⚠</div>
+    <div class="error-title">Unable to analyze</div>
+    <div class="error-message" id="error-message"></div>
+    <button id="retry-btn" type="button" class="retry-btn">Retry</button>
+  </section>
+
   <section id="result" class="state hidden">
     <div class="risk-card" id="risk-card">
       <div class="risk-label" id="risk-label"></div>

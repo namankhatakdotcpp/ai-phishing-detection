@@ -7,6 +7,7 @@
 // the same tab, using the same click-granted activeTab access.
 
 const API_BASE = "http://127.0.0.1:8000";
+const REQUEST_TIMEOUT_MS = 10000;
 
 // UI-only labels over the backend's risk_band() ("low"/"medium"/"high") --
 // reuses the backend's actual banding, never recomputes it client-side.
@@ -32,6 +33,9 @@ const pageInfoEl = document.getElementById("page-info");
 const analyzeBtn = document.getElementById("analyze-btn");
 const statusEl = document.getElementById("status");
 const analyzingEl = document.getElementById("analyzing");
+const errorStateEl = document.getElementById("error-state");
+const errorMessageEl = document.getElementById("error-message");
+const retryBtn = document.getElementById("retry-btn");
 const resultEl = document.getElementById("result");
 const riskCardEl = document.getElementById("risk-card");
 const riskLabelEl = document.getElementById("risk-label");
@@ -56,7 +60,17 @@ function setStatus(message) {
 
 function setState(state) {
   analyzingEl.classList.toggle("hidden", state !== "analyzing");
+  errorStateEl.classList.toggle("hidden", state !== "error");
   resultEl.classList.toggle("hidden", state !== "result");
+}
+
+// Explicit, distinguishable failure states -- never shows a fake/default
+// risk score on failure (setState("error") hides the result section
+// entirely). Each branch names the actual failure mode rather than one
+// generic "something went wrong" message.
+function showError(message) {
+  errorMessageEl.textContent = message;
+  setState("error");
 }
 
 async function getActiveTab() {
@@ -114,6 +128,81 @@ async function injectWarningOverlay(tabId, verdict) {
   }
 }
 
+async function fetchAnalysis(features, url, title) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let response;
+  try {
+    response = await fetch(`${API_BASE}/analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ features, url, title }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new AnalysisError(
+        "timeout",
+        `The backend didn't respond within ${REQUEST_TIMEOUT_MS / 1000} seconds. It may be slow, overloaded, or unreachable.`
+      );
+    }
+    // fetch() rejects with a generic TypeError for DNS/connection failures
+    // -- this is the "backend isn't running / can't be reached" case.
+    throw new AnalysisError(
+      "offline",
+      `Couldn't reach the PhishShield backend at ${API_BASE}. ` +
+        `Is it running? (uvicorn phishshield.api.app:app --port 8000)`
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  if (response.status === 503) {
+    let detail = "The backend is running but its model isn't loaded.";
+    try {
+      const body = await response.json();
+      if (body && body.detail) detail = body.detail;
+    } catch {
+      // fall through to the default detail text above
+    }
+    throw new AnalysisError("model_unavailable", detail);
+  }
+  if (response.status === 429) {
+    throw new AnalysisError("rate_limited", "Too many requests -- please wait a moment and try again.");
+  }
+  if (response.status >= 500) {
+    throw new AnalysisError("server_error", `Backend error (HTTP ${response.status}). Try again in a moment.`);
+  }
+  if (!response.ok) {
+    throw new AnalysisError(
+      "rejected",
+      `The backend rejected this request (HTTP ${response.status}). This shouldn't normally happen.`
+    );
+  }
+
+  let verdict;
+  try {
+    verdict = await response.json();
+  } catch {
+    throw new AnalysisError("malformed_response", "Got a response the extension couldn't understand (invalid JSON).");
+  }
+  if (
+    typeof verdict.risk_score !== "number" ||
+    typeof verdict.risk_band !== "string" ||
+    !Array.isArray(verdict.reasons)
+  ) {
+    throw new AnalysisError("malformed_response", "Got an unexpected response shape from the backend.");
+  }
+  return verdict;
+}
+
+class AnalysisError extends Error {
+  constructor(kind, message) {
+    super(message);
+    this.kind = kind;
+  }
+}
+
 async function analyzeCurrentPage() {
   analyzeBtn.disabled = true;
   setStatus("");
@@ -122,15 +211,13 @@ async function analyzeCurrentPage() {
   try {
     const tab = await getActiveTab();
     if (!tab || !isAnalyzablePage(tab.url)) {
-      setState(null);
-      setStatus("This page can't be analyzed.");
+      showError("This page can't be analyzed (not an http:// or https:// page).");
       return;
     }
 
     const rawFeatures = await extractFeaturesFromTab(tab.id);
     if (!rawFeatures) {
-      setState(null);
-      setStatus("Couldn't read this page (restricted page or extension blocked here).");
+      showError("Couldn't read this page (restricted page, e.g. chrome:// or the Web Store, or the extension was blocked here).");
       return;
     }
 
@@ -139,20 +226,12 @@ async function analyzeCurrentPage() {
     // used as a model feature or logged.
     const { _meta_url, _meta_title, ...features } = rawFeatures;
 
-    const response = await fetch(`${API_BASE}/analyze`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ features, url: _meta_url, title: _meta_title }),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const verdict = await response.json();
+    const verdict = await fetchAnalysis(features, _meta_url, _meta_title);
     renderResult(verdict, tab.id);
   } catch (err) {
-    setState(null);
-    setStatus(
-      `Couldn't reach the PhishShield backend at ${API_BASE}. ` +
-        `Is it running? (uvicorn phishshield.api.app:app --port 8000)`
-    );
+    // Never falls through to showing a risk score on failure -- setState
+    // inside showError hides the result section entirely.
+    showError(err instanceof AnalysisError ? err.message : "An unexpected error occurred while analyzing this page.");
   } finally {
     analyzeBtn.disabled = false;
   }
@@ -208,5 +287,6 @@ detailsToggle.addEventListener("click", () => {
 leaveBtn.addEventListener("click", leaveWebsite);
 continueBtn.addEventListener("click", () => window.close());
 analyzeBtn.addEventListener("click", analyzeCurrentPage);
+retryBtn.addEventListener("click", analyzeCurrentPage);
 
 showActiveTabInfo();
