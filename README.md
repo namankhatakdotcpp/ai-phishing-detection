@@ -200,8 +200,15 @@ phishing" claim is about. The page skeleton (password field, external
 form action, script) stays deterministic either way, so mock and live
 output stay structurally comparable. `generate_llm_phishing_dataset()`
 keeps its existing signature — pass `llm_client=None` (default, free,
-deterministic) or a real client (cached per brand+tone pair — 12 calls
-for the full 48-sample grid).
+deterministic) or a real client (cached per brand+tone pair — 36 calls
+for the full 144-sample grid: 6 brands × 6 tones × 4 obfuscations).
+`TONES` was expanded from 2 to 6 (`urgent`, `formal`, `reward`,
+`security_alert`, `invoice`, `delivery`) so obfuscation isn't the only
+thing varying between samples — otherwise most of a padded-up dataset
+would share identical lure copy. Every live call is logged to
+`data/generated/generation_manifest.jsonl` (gitignored) for methodology
+reproducibility, and each call retries up to 3x with exponential backoff
+before the run aborts on a persistently failing pair.
 
 Two providers, one interface — `build_lure_client(provider, model,
 effort)`:
@@ -235,13 +242,13 @@ pip install -e ".[gemini]"
 cp .env.example .env   # then edit .env yourself to add GEMINI_API_KEY=...
 python -m phishshield.data.generate_llm_dataset --dry-run
 # provider: gemini  model: gemini-2.5-flash  effort: None
-# total samples: 48 (full grid: 48)
-# unique lure-copy API calls (cached per brand+tone pair): 12
-# cost estimate (paid-tier rates): ~$0.01 — likely $0 on the free tier
+# total samples: 144 (full grid: 144)
+# unique lure-copy API calls (cached per brand+tone pair): 36
+# cost estimate (paid-tier rates): ~$0.04 — likely $0 on the free tier
 
 # canary first, read the output, then the full grid:
 python -m phishshield.data.generate_llm_dataset --live --max-samples 4
-python -m phishshield.data.generate_llm_dataset --live --max-samples 48
+python -m phishshield.data.generate_llm_dataset --live --max-samples 144
 ```
 
 Phases 9–15 (real dataset ingestion, four-way eval matrix, deploy, Chrome

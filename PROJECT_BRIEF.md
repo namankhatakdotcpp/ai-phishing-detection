@@ -142,9 +142,25 @@ phishshield/
 - `generate_llm_phishing_dataset(seed, llm_client=None, max_samples=None)`
   keeps its interface stable: mock (default, `llm_client=None`, free) vs.
   live (pass any client implementing `generate_lure(brand, tone) ->
-  LureCopy`) only changes where the lure copy comes from. Lure calls are
-  cached per (brand, tone) pair — 12 calls for the full 48-sample grid,
-  not 48.
+  LureCopy`) only changes where the lure copy comes from. `TONES` was
+  expanded from 2 to 6 categories (`urgent`, `formal`, `reward`,
+  `security_alert`, `invoice`, `delivery`) — otherwise obfuscation alone
+  varies the domain, not the lure content, so padding via `max_samples`
+  would repeat identical copy across samples and weaken the
+  legacy-vs-LLM robustness claim. Grid is now 6 brands × 6 tones × 4
+  obfuscations = **144 samples**, from **36 unique (brand, tone) lure
+  calls** (cached and reused across the 4 obfuscation techniques per
+  pair, same caching behavior as before).
+- Every live call and its raw response is appended to
+  `data/generated/generation_manifest.jsonl` (gitignored) for methodology
+  reproducibility — enough to check post hoc whether accuracy dropped on
+  a specific tone category, without adding a field to the tested `Sample`
+  schema.
+- Retries: each `generate_lure()` call retries up to 3 times with
+  exponential backoff (2s/4s/8s) on any exception (API error or
+  malformed response), then raises `LureGenerationError` rather than
+  degrading silently — a pair that fails after retries aborts the run
+  instead of producing a sample mislabeled as live-generated.
 - Two providers behind one interface (`phishshield.data.llm_client`):
   `GeminiLureClient` (default — `gemini-2.5-flash`, free tier via
   `GEMINI_API_KEY`/`GOOGLE_API_KEY`, `pip install -e ".[gemini]"`) and
@@ -186,11 +202,11 @@ phishshield/
 - **Not yet done**: no real generation has actually been run in this
   environment — no credentials for either provider have been available
   here so far. Recommended sequence once a key is available: `--live
-  --max-samples 4` first (one brand × two tones) and read the actual
-  generated lure text before trusting it, *then* the full 48-sample grid
-  if it reads as varied/realistic rather than templated. Running it for
-  real, and then re-running Phases 3/4/7 against the real-generated
-  partition, is the next step.
+  --max-samples 4` first (a canary — one brand × two tones) and read the
+  actual generated lure text before trusting it, *then* the full
+  144-sample grid if it reads as varied/realistic rather than templated.
+  Running it for real, and then re-running Phases 3/4/7 against the
+  real-generated partition, is the next step.
 
 ## 6. What "done" looks like
 
