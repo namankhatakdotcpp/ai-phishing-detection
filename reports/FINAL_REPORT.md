@@ -350,6 +350,68 @@ Judge fusion (`alpha=0.7`) continues to substantially reduce FPR
 (31.1%→17.8% on the classifier-only regression), for a similar small
 recall cost as previously documented.
 
+### 3.7 A scaled, reproducible hard-negative evaluation — the "0% FPR" claim did not fully generalize
+
+Section 3.6's "0% FPR on the `has_html=1` slice" conclusion was based on
+18 held-out synthetic-distribution samples plus 3 informally tested real
+sites (Google, GitHub, Wikipedia homepages). Before treating that as
+sufficient evidence, we built a larger, reproducible hard-negative set:
+58 real URLs across major services, developer/documentation sites, news,
+universities, and banks, including several real subpages rather than
+only homepages (`scripts/fetch_hard_negatives.py`, concurrently fetched,
+labeled `curl`-collected — not browser-rendered, so JS-driven content
+some sites only serve after client-side execution is absent here). 11
+of 58 were bot-blocked, rate-limited, or returned trivial stub content
+(HTTP 403/429/timeout, or a bare redirect page) and were **excluded**
+rather than treated as representative benign HTML — a 403 page is not a
+sample of the real site's structure. **46 real pages were scored
+through the current, unmodified model** (`scripts/eval_hard_negatives.py`;
+manifest and scores committed at `data/evaluation/hard_negatives_*`).
+
+**Result: FPR = 13.0% (6/46), not 0%.** Median risk score is 5 (most
+pages score correctly low), but there is a real tail: p90/p95 are
+68-70, and 4 clearly benign, reputable sites land in the HIGH band —
+a GitHub issues page, an MDN JavaScript documentation page, a Wikipedia
+article, and Wells Fargo's real homepage. **The earlier "substantially
+fixed" conclusion from Section 3.6 does not fully generalize** — it was
+real progress (13% is far better than the near-universal false
+positives before that fix), but not the resolution it looked like at
+n=21.
+
+Feature ablation on the four HIGH-scoring pages found **three distinct
+causes, not one**:
+
+- **`github_issues` and `mdn_js`**: no single feature's ablation moves
+  the score by more than a few points — these are combination-driven
+  predictions that simple one-feature-at-a-time ablation cannot
+  attribute. Properly diagnosing this would need permutation importance
+  or SHAP against the actual tree ensemble, which was not done here
+  (stated as a real gap, not silently skipped).
+- **`wikipedia_python`**: `special_char_count` (parentheses in the URL
+  slug, `Python_(programming_language)`) is the dominant driver.
+  Real encyclopedia/wiki-style URLs commonly use parenthetical
+  disambiguators; the benign training URLs do not.
+- **`wellsfargo`**: `num_password_fields=1` is overwhelmingly dominant
+  (zeroing it alone drops the score by 0.69). A bank's real homepage
+  has a real login form — completely normal — but the benign training
+  population has essentially no examples with a password field present
+  (Tranco homepages mostly don't have login forms on the front page;
+  the model has learned "password field present" as an almost
+  unconditional phishing signal). This is the same *class* of problem
+  as Sections 3.5-3.6 (a real, common benign pattern nearly absent from
+  training) in a new feature dimension, and is plausibly the
+  highest-value next fix given how large its effect size is.
+
+**We are not calling this resolved, and are not retraining against this
+observation within this report** — per this project's own stated
+research discipline (diagnose before fixing, evaluate old vs. new on
+identical held-out sets, no threshold changes, no domain allowlist), a
+responsible fix requires deliberately chosen benign login-page/complex-page
+training examples and a full before/after re-evaluation on this same
+46-page set plus the existing held-out splits, not a rushed patch. This
+is documented here as the concrete, prioritized next research task,
+not an unfixed embarrassment to be minimized.
+
 ## 4. Classifier and Evaluation
 
 `HistGradientBoostingClassifier` (scikit-learn), trained on the concatenated

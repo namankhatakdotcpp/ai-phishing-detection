@@ -1,0 +1,58 @@
+reddit_home|https://www.reddit.com/|8393|ok
+stackoverflow_q|https://stackoverflow.com/questions/tagged/python|0|HTTP Error 403: Forbidden
+google_home|https://www.google.com/|84832|ok
+apple_home|https://www.apple.com/|253927|ok
+microsoft_home|https://www.microsoft.com/en-us|201253|ok
+github_home|https://github.com/|500000|ok
+python_docs|https://docs.python.org/3/|19434|ok
+youtube_home|https://www.youtube.com/|500000|ok
+mdn_js|https://developer.mozilla.org/en-US/docs/Web/JavaScript|202147|ok
+mdn_home|https://developer.mozilla.org/en-US/|121373|ok
+stackoverflow_home|https://stackoverflow.com/|0|HTTP Error 403: Forbidden
+paypal_home|https://www.paypal.com/|200562|ok
+google_search|https://www.google.com/search?q=phishing+detection|0|HTTP Error 429: Too Many Requests
+github_repo|https://github.com/torvalds/linux|318280|ok
+linkedin_home|https://www.linkedin.com/|141469|ok
+wikipedia_phishing|https://en.wikipedia.org/wiki/Phishing|500000|ok
+wikipedia_python|https://en.wikipedia.org/wiki/Python_(programming_language)|500000|ok
+reuters|https://www.reuters.com/|0|HTTP Error 401: HTTP Forbidden
+iitd|https://home.iitd.ac.in/|281830|ok
+amazon_home|https://www.amazon.com/|500000|ok
+wikipedia_org|https://www.wikipedia.org/|120361|ok
+github_issues|https://github.com/facebook/react/issues|319300|ok
+harvard|https://www.harvard.edu/|146088|ok
+facebook|https://www.facebook.com/|445688|ok
+cnn|https://www.cnn.com/|500000|ok
+mit|https://www.mit.edu/|47820|ok
+nytimes|https://www.nytimes.com/|500000|ok
+spotify|https://www.spotify.com/|301069|ok
+pypi|https://pypi.org/|22977|ok
+quora|https://www.quora.com/|0|HTTP Error 403: Forbidden
+npmjs|https://www.npmjs.com/|0|HTTP Error 403: Forbidden
+instagram|https://www.instagram.com/|393495|ok
+twitter_x|https://twitter.com/|34234|ok
+medium|https://medium.com/|0|HTTP Error 403: Forbidden
+zoom|https://zoom.us/|263562|ok
+atlassian|https://www.atlassian.com/|500000|ok
+coinbase|https://www.coinbase.com/|0|HTTP Error 403: Forbidden
+salesforce|https://www.salesforce.com/|500000|ok
+iitb|https://www.iitb.ac.in/|308311|ok
+bbc_news|https://www.bbc.com/news|360643|ok
+walmart|https://www.walmart.com/|500000|ok
+netflix_home|https://www.netflix.com/|500000|ok
+stanford|https://www.stanford.edu/|500000|ok
+ebay|https://www.ebay.com/|500000|ok
+slack|https://slack.com/|258654|ok
+office|https://www.office.com/|79|ok
+chase_bank|https://www.chase.com/|339221|ok
+icloud|https://www.icloud.com/|30950|ok
+dropbox_home|https://www.dropbox.com/|149514|ok
+readthedocs|https://readthedocs.org/|34786|ok
+target|https://www.target.com/|377795|ok
+docusign|https://www.docusign.com/|500000|ok
+wellsfargo|https://www.wellsfargo.com/|125044|ok
+bankofamerica|https://www.bankofamerica.com/|317954|ok
+outlook|https://outlook.com/|0|HTTP Error 417: Expectation Failed
+protonmail|https://proton.me/mail|336151|ok
+adobe_home|https://www.adobe.com/|0|The read operation timed out
+bestbuy|https://www.bestbuy.com/|0|The read operation timed out
