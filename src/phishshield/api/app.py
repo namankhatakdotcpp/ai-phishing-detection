@@ -9,10 +9,15 @@ Phase 6/9.
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+import logging
+import time
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from phishshield.api import config
 from phishshield.api.demo_data import CURATED_DEMO_SAMPLES, get_demo_sample
+from phishshield.api.middleware import MaxBodySizeMiddleware, RateLimitMiddleware
 from phishshield.api.model_store import get_demo_model, get_model_version
 from phishshield.api.schemas import AnalyzeRequest, AnalyzeResponse, DemoSampleMeta, HealthResponse
 from phishshield.features.pipeline import extract_features
@@ -21,6 +26,10 @@ from phishshield.models.classifier import predict_feature_dict
 
 FUSION_ALPHA = 0.7  # classifier weight; matches mitigation.run_mitigation_experiment's
 # default (see its docstring) -- 0.5 was found to collapse recall on real-world data
+
+logger = logging.getLogger("phishshield.api")
+
+config.assert_cors_configured_for_production(config.ENVIRONMENT, config.CORS_ORIGINS)
 
 app = FastAPI(
     title="PhishShield AI demo API",
@@ -31,15 +40,29 @@ app = FastAPI(
     ),
 )
 
-# The demo extension's popup runs from a chrome-extension:// origin and
-# calls this localhost-only API. Wide open CORS is fine here: this is a
-# local research demo, not a deployed service with anything to protect.
+# Local dev default (config.CORS_ORIGINS = ["*"]) matches the extension's
+# chrome-extension:// origin (which varies per install) with zero setup.
+# Production deployment must set PHISHSHIELD_CORS_ORIGINS explicitly (see
+# the guard above) -- this is not a silent gap, it's an enforced one.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=config.CORS_ORIGINS,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(MaxBodySizeMiddleware)
+
+
+@app.middleware("http")
+async def log_latency(request: Request, call_next):
+    # Latency/status only -- never the request body, URL query params, or
+    # feature payload. See PRIVACY_POLICY.md for the full logging contract.
+    start = time.monotonic()
+    response = await call_next(request)
+    elapsed_ms = (time.monotonic() - start) * 1000
+    logger.info("%s %s -> %d (%.1fms)", request.method, request.url.path, response.status_code, elapsed_ms)
+    return response
 
 
 @app.get("/health", response_model=HealthResponse)
