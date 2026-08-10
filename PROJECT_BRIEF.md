@@ -34,8 +34,12 @@ say so explicitly in the report).
 - Production-quality code: clean architecture, SOLID where it actually
   applies (don't over-abstract a course project), meaningful names, proper
   error handling, no dead code, tests for the core pipeline logic.
-- LLM calls (dataset generation, judge module) are **mocked/stubbed** for
-  this deadline, noted as future work in the report — not real API calls.
+- LLM calls (dataset generation, judge module) were originally planned as
+  **mocked/stubbed** for this deadline. Dataset generation was later made
+  real (Phase 8: live Gemini calls produce the 144-sample LLM-generated
+  partition used from Phase 9 onward). The judge module remains a mocked
+  rule-based stand-in — not a real LLM call — noted as future work in the
+  report.
 
 ## 3. Tech stack
 
