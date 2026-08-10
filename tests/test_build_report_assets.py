@@ -77,4 +77,22 @@ def test_run_writes_all_expected_report_assets(tmp_path):
         assert path.stat().st_size > 0, filename
 
     qualitative_md = (output_dir / "phase7_qualitative_examples.md").read_text()
-    assert "Run mode: **synthetic" in qualitative_md
+    assert "Run mode: **legacy: synthetic" in qualitative_md
+    assert "llm_generated: mocked" in qualitative_md
+
+
+def test_run_labels_real_llm_generated_partition_distinctly(tmp_path):
+    real_llm_path = tmp_path / "real_llm.jsonl"
+    from phishshield.data.generation import generate_llm_phishing_dataset
+    from phishshield.data.generation import save_samples_jsonl
+
+    save_samples_jsonl(generate_llm_phishing_dataset(), real_llm_path)
+
+    args = _default_args(synthetic_n=25, llm_generated=str(real_llm_path))
+    output_dir = tmp_path / "reports"
+
+    run(args, output_dir)
+
+    qualitative_md = (output_dir / "phase7_qualitative_examples.md").read_text()
+    assert "llm_generated: real (loaded from" in qualitative_md
+    assert "legacy: synthetic" in qualitative_md

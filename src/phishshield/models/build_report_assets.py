@@ -76,11 +76,15 @@ def run(args: argparse.Namespace, output_dir: Path) -> None:
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    legacy_samples, mode = _load_legacy_samples(args)
-    llm_samples = (
-        load_llm_generated(args.llm_generated) if args.llm_generated else generate_llm_phishing_dataset()
-    )
-    print(f"=== running on {mode} legacy data ({len(legacy_samples)} samples) ===")
+    legacy_samples, legacy_mode = _load_legacy_samples(args)
+    if args.llm_generated:
+        llm_samples = load_llm_generated(args.llm_generated)
+        llm_mode = f"real (loaded from {args.llm_generated})"
+    else:
+        llm_samples = generate_llm_phishing_dataset()
+        llm_mode = "mocked (generated fresh, illustrative only)"
+    mode = f"legacy: {legacy_mode}; llm_generated: {llm_mode}"
+    print(f"=== running with {mode} ({len(legacy_samples)} legacy + {len(llm_samples)} llm samples) ===")
 
     # --- dataset stats ---
     stats = dataset_stats(legacy_samples + llm_samples)
@@ -139,7 +143,7 @@ def run(args: argparse.Namespace, output_dir: Path) -> None:
     md = [
         "# Phase 7 qualitative examples",
         "",
-        f"Run mode: **{mode}** legacy data.",
+        f"Run mode: **{mode}**.",
         "",
         _format_example_md(
             "Legacy phishing correctly caught (before model)",
