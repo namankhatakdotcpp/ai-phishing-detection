@@ -77,3 +77,30 @@ def test_get_model_version_returns_a_short_stable_id():
 
 def test_get_model_version_returns_none_for_missing_artifact():
     assert get_model_version(Path("artifacts/does-not-exist.joblib")) is None
+
+
+def test_predict_feature_dict_reindexes_reordered_and_partial_features():
+    # Explicit feature-ordering-mismatch check: predict_feature_dict must
+    # reindex to the model's own recorded column order regardless of the
+    # order/completeness of the input dict, since API callers (the
+    # extension's page_extractor.js) build the dict independently and
+    # dict key order is never guaranteed to match training order.
+    model = get_demo_model()
+    dummy = Sample(url="https://example.com/some/page?x=1", label=0, source=Source.TRANCO)
+    canonical_features = extract_features(dummy)
+
+    # Same values, keys inserted in reverse order.
+    reordered = dict(reversed(list(canonical_features.items())))
+    # Drop half the keys (simulates a caller sending a partial feature set).
+    partial = dict(list(canonical_features.items())[: len(canonical_features) // 2])
+    # Add an unexpected extra key a caller might send.
+    with_extra = dict(canonical_features, unexpected_future_feature=1.0)
+
+    canonical_score = predict_feature_dict(model, canonical_features)
+    reordered_score = predict_feature_dict(model, reordered)
+    extra_score = predict_feature_dict(model, with_extra)
+
+    assert reordered_score == canonical_score
+    assert extra_score == canonical_score
+    partial_score = predict_feature_dict(model, partial)
+    assert 0.0 <= partial_score <= 1.0  # doesn't crash; missing cols fill with 0.0

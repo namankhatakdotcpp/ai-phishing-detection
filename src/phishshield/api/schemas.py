@@ -33,6 +33,7 @@ class AnalyzeResponse(BaseModel):
     reasons: List[str]
     classifier_score: float
     judge_score: float
+    model_version: Optional[str] = None
 
 
 class DemoSampleMeta(BaseModel):

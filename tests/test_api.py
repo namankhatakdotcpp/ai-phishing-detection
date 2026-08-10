@@ -31,6 +31,8 @@ def test_analyze_by_sample_id_returns_scored_response():
     assert body["reasons"]
     assert 0.0 <= body["classifier_score"] <= 1.0
     assert 0.0 <= body["judge_score"] <= 1.0
+    assert body["model_version"] is not None
+    assert "/" not in body["model_version"]
 
 
 def test_analyze_phishing_sample_scores_higher_than_benign_sample():

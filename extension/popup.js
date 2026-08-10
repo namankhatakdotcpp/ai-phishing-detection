@@ -181,7 +181,9 @@ function renderResult(verdict, tabId) {
 
   classifierScoreEl.textContent = `classifier: ${(verdict.classifier_score * 100).toFixed(1)}%`;
   judgeScoreEl.textContent = `judge: ${(verdict.judge_score * 100).toFixed(1)}%`;
-  analyzedAtEl.textContent = `Analyzed just now`;
+  analyzedAtEl.textContent = verdict.model_version
+    ? `Analyzed just now (model ${verdict.model_version})`
+    : "Analyzed just now";
 
   setState("result");
 

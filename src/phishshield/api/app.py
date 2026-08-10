@@ -111,4 +111,5 @@ def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
         reasons=verdict.reasons,
         classifier_score=classifier_score,
         judge_score=judge_score,
+        model_version=get_model_version(),
     )
