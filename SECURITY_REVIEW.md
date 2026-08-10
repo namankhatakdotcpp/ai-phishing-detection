@@ -9,10 +9,14 @@
 
 ## Findings
 
-### HIGH
+### HIGH (blocked, not fixable right now — see below)
 
-**H1 — `starlette` has known CVEs at the currently pinned/resolved version.**
-`pip-audit` (real scan, run 2026-08-11) against this repo's `.venv` found `starlette==0.49.3` (installed transitively via `fastapi>=0.110`) flagged for 5 advisories (`PYSEC-2026-161`, `-248`, `-249`, `-2280`, `-2281`), with fix versions `1.0.1`–`1.3.1`. `starlette` is FastAPI's ASGI foundation — every request in this API passes through it, including the CORS, rate-limit, and body-size middleware added in this session. **Action before any public deployment**: pin `fastapi`/`starlette` to versions with these advisories resolved and re-run `pip-audit` clean. Not fixed in this pass — flagging rather than silently bumping a major-version-looking dependency without regression-testing the whole API against it first.
+**H1 — `starlette` has known CVEs; no fixed version is published yet.**
+`pip-audit` (real scan, run 2026-08-11) against this repo's `.venv` found `starlette==0.49.3` (installed transitively via `fastapi>=0.110`) flagged for 5 advisories (`PYSEC-2026-161`, `-248`, `-249`, `-2280`, `-2281`), with the advisory database listing fix versions `1.0.1`–`1.3.1`.
+
+**Attempted fix, 2026-08-11**: confirmed directly (`pip index versions starlette`/`fastapi`, and `pip install --upgrade starlette fastapi`, which reported "already satisfied") that **`0.49.3`/`0.128.8` are the latest versions of `starlette`/`fastapi` currently published on PyPI** — there is no `starlette 1.x` release to install. The advisory database's fix-version metadata points at a version that doesn't exist yet on PyPI as of this check. This isn't a case of "didn't bother upgrading" — there is nothing newer to upgrade *to* right now.
+
+**Action before any public deployment**: re-run `pip-audit` and `pip index versions starlette` periodically (this is a "when it ships" item, not a "when I get to it" item) — once `starlette>=1.0.1` is actually published, `pip install --upgrade starlette fastapi && pytest -q` and confirm the advisories clear. Tracked as blocked-on-upstream, not resolved.
 
 ### MEDIUM
 
@@ -79,6 +83,6 @@ Explicitly checked: `GET /health`'s `model_version` field is `hashlib.sha256(...
 
 ## Not fixed in this pass — action required before public deployment
 
-1. **H1**: bump `starlette`/`fastapi` past the flagged CVEs, re-run `pip-audit`, re-run the full test suite.
+1. **H1**: blocked on upstream, not on effort — confirmed 2026-08-11 that `starlette 0.49.3`/`fastapi 0.128.8` are the latest versions on PyPI; no fixed release exists to install yet. Re-check `pip index versions starlette` periodically and upgrade the moment `>=1.0.1` ships.
 2. Set `PHISHSHIELD_ENV=production` and a real `PHISHSHIELD_CORS_ORIGINS` value as a **required** step in the deployment checklist (see `LOCAL_SETUP.md`/Render config docs) — the code enforces this, but the human deploying it still has to actually set it.
 3. If usage ever grows past a single small instance, replace the in-memory rate limiter (M2) with a shared store.
