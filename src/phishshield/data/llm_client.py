@@ -52,7 +52,9 @@ logger = logging.getLogger(__name__)
 ANTHROPIC_DEFAULT_MODEL = "claude-opus-5"
 ANTHROPIC_DEFAULT_EFFORT = "low"  # short, scoped, non-reasoning-heavy generation task
 
-GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"  # free-tier eligible at time of writing; pass --model to override
+GEMINI_DEFAULT_MODEL = "gemini-flash-latest"  # alias tracking Google's current flash model;
+# confirmed live 2026-08-10 — gemini-2.5-flash 404s for new-user keys ("no longer
+# available to new users"), so pin to the alias rather than a specific dated model.
 
 DEFAULT_MANIFEST_PATH = Path("data/generated/generation_manifest.jsonl")
 DEFAULT_MAX_RETRIES = 3  # exponential backoff: 2s, 4s, 8s between attempts
@@ -98,6 +100,23 @@ _LURE_SCHEMA = {
     "additionalProperties": False,
 }
 
+# Gemini's response_schema uses a restricted OpenAPI subset that rejects
+# additionalProperties outright (400 INVALID_ARGUMENT) — same shape as
+# _LURE_SCHEMA minus that one field, kept as a separate constant rather
+# than stripped ad hoc so both schemas stay easy to diff against each
+# other when the shared fields change.
+_GEMINI_LURE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {"type": "string", "description": "Browser tab / page title"},
+        "lure_copy": {
+            "type": "string",
+            "description": "One short paragraph of persuasive account-verification text",
+        },
+    },
+    "required": ["title", "lure_copy"],
+}
+
 # One entry per tone key used in generation.py's TONES tuple. Keep this in
 # sync with generation.py's _TONE_COPY/_TONE_PATH dicts — every tone in
 # TONES needs a matching entry here (live) and there (mock fallback).
@@ -134,6 +153,35 @@ class LureCopy:
 
 class LureGenerationError(RuntimeError):
     """Raised when an API call or response parsing fails after retries."""
+
+
+# Phrases indicating the model refused the request inside otherwise
+# schema-valid JSON — structured output guarantees *shape*, not that the
+# model actually complied. A refusal wrapped in {"title": "...", ...} would
+# otherwise parse cleanly and get saved into the dataset as a normal,
+# silently mislabeled sample. Checked case-insensitively, matched as a
+# substring since refusal phrasing varies by provider/model.
+_REFUSAL_MARKERS = (
+    "cannot fulfill this request",
+    "can't fulfill this request",
+    "cannot generate",
+    "can't generate",
+    "unable to generate",
+    "i cannot assist",
+    "i can't assist",
+    "i'm unable to",
+    "i am unable to",
+    "cannot help with that",
+    "can't help with that",
+    "against my guidelines",
+    "i won't create",
+    "i will not create",
+)
+
+
+def _looks_like_refusal(lure: LureCopy) -> bool:
+    text = f"{lure.title} {lure.lure_copy}".lower()
+    return any(marker in text for marker in _REFUSAL_MARKERS)
 
 
 def _build_prompt(brand_display: str, tone: str) -> str:
@@ -230,7 +278,13 @@ class AnthropicLureClient:
                 )
             text = next(block.text for block in response.content if block.type == "text")
             data = json.loads(text)
-            return text, LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+            lure = LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+            if _looks_like_refusal(lure):
+                raise LureGenerationError(
+                    f"model refused inside schema-valid JSON for brand={brand_display!r}, "
+                    f"tone={tone!r}: {lure.title!r} / {lure.lure_copy!r}"
+                )
+            return text, lure
 
         (raw_text, lure), attempt = _with_retries(
             _call, f"generate_lure({brand_display!r}, {tone!r}) [anthropic]", self._max_retries
@@ -279,7 +333,7 @@ class GeminiLureClient:
                 config=types.GenerateContentConfig(
                     system_instruction=_SYSTEM_PROMPT,
                     response_mime_type="application/json",
-                    response_schema=_LURE_SCHEMA,
+                    response_schema=_GEMINI_LURE_SCHEMA,
                 ),
             )
             if not response.text:
@@ -288,7 +342,13 @@ class GeminiLureClient:
                     f"(possibly blocked — check response.prompt_feedback)"
                 )
             data = json.loads(response.text)
-            return response.text, LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+            lure = LureCopy(title=data["title"], lure_copy=data["lure_copy"])
+            if _looks_like_refusal(lure):
+                raise LureGenerationError(
+                    f"model refused inside schema-valid JSON for brand={brand_display!r}, "
+                    f"tone={tone!r}: {lure.title!r} / {lure.lure_copy!r}"
+                )
+            return response.text, lure
 
         (raw_text, lure), attempt = _with_retries(
             _call, f"generate_lure({brand_display!r}, {tone!r}) [gemini]", self._max_retries

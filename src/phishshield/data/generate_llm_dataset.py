@@ -54,6 +54,7 @@ _MODEL_PRICING_PER_MTOK = {
     "claude-opus-5": (5.00, 25.00),
     "claude-sonnet-5": (3.00, 15.00),
     "claude-haiku-4-5": (1.00, 5.00),
+    "gemini-flash-latest": (0.30, 2.50),  # alias tracking whatever "flash" currently is
     "gemini-2.5-flash": (0.30, 2.50),
     "gemini-2.5-flash-lite": (0.10, 0.40),
 }
