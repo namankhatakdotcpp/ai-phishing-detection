@@ -38,7 +38,7 @@ BRANDS = [
     ("netflix", "Netflix", "netflix.com"),
 ]
 
-TONES = ("urgent", "formal")
+TONES = ("urgent", "formal", "reward", "security_alert", "invoice", "delivery")
 
 OBFUSCATIONS = ("typosquat", "hyphenated", "subdomain", "homoglyph")
 
@@ -51,11 +51,31 @@ _TONE_COPY = {
         "As part of our routine security review, please confirm your "
         "account details below."
     ),
+    "reward": (
+        "You have a pending refund waiting. Confirm your account details "
+        "to receive it."
+    ),
+    "security_alert": (
+        "We detected an unusual sign-in attempt on your account. Please "
+        "verify this was you."
+    ),
+    "invoice": (
+        "You have an overdue invoice on your account. Log in to review "
+        "and settle the balance."
+    ),
+    "delivery": (
+        "Your package delivery could not be completed. Confirm your "
+        "address details to reschedule."
+    ),
 }
 
 _TONE_PATH = {
     "urgent": "account/verify-now",
     "formal": "secure/confirm-identity",
+    "reward": "account/claim-refund",
+    "security_alert": "secure/confirm-signin",
+    "invoice": "account/invoice-review",
+    "delivery": "secure/delivery-confirm",
 }
 
 # Homoglyph substitutions cheap enough to render in a plain domain string
