@@ -1,0 +1,10 @@
+{
+  "name": "phishshield-js-parity-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "jsdom-based harness for comparing page_extractor.js against the Python feature pipeline. Not part of the shipped extension -- dev/test only.",
+  "type": "module",
+  "dependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

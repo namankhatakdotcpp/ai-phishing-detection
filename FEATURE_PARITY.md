@@ -8,17 +8,36 @@ distribution to hold. This table was produced by direct comparison of
 `src/phishshield/features/html_features.py` against
 `extension/page_extractor.js`, not written from memory.
 
-**No automated cross-runtime parity test exists.** This environment has
-no Node.js (`which node` → not found, confirmed 2026-08-11) and no way
-to install it, so there is no way to run `page_extractor.js` and compare
-its output to Python's `extract_features()` on identical input inside
-the test suite. Parity was verified by (a) this line-by-line table, and
-(b) live manual checks earlier in this project against real pages
-(Wikipedia, a controlled phishing fixture) where the JS-extracted vector
-was hand-copied into a Python `curl`/script call and produced the
-expected classification. **If Node becomes available, the highest-value
-addition to this project's test suite would be an automated fixture-based
-parity test** — see "Suggested follow-up" at the bottom.
+**Update, 2026-08-11: an automated cross-runtime parity test now
+exists** (`tests/test_js_parity.py` + `tests_js/extract_features.mjs`).
+Node.js v24.19.0 was downloaded (no system package manager was available
+in this environment -- no Homebrew/MacPorts/nvm found) and extracted to
+`~/.phishshield-node` (not committed, not inside the repo). The test runs
+the *actual* `extension/page_extractor.js` source file (via jsdom + Node's
+`vm` module, capturing its completion value the same way
+`chrome.scripting.executeScript`'s `files` option does in real Chrome —
+not a reimplementation that could drift independently) against the same
+fixtures/URLs used elsewhere in this suite, and asserts its output
+matches Python's real `extract_features()` key-for-key. 7/7 passing.
+
+**Writing this test caught two real test-harness bugs on the first
+run** (not production bugs): comparing JS's always-`has_html=1` against
+Python's `html=None`→`0` for pages with no local fixture (two different
+scenarios, not a parity gap), and not accounting for jsdom's
+WHATWG-spec URL normalization via `location.href` (the same
+normalization a real browser tab performs) before feeding the URL to
+Python's side. Both fixed in the test itself; see the file's comments.
+
+**The previously-flagged `has_ip_literal` approximation gap (Python's
+`ipaddress` module vs. JS's regex heuristic) was directly tested and
+found to agree** for both an IPv4 literal (`192.168.1.1`) and a
+standard-notation IPv6 literal (`2001:db8::1`) — downgraded from "⚠️
+theoretical risk" to "tested and matching for standard notation," not
+exhaustively fuzzed against every valid-but-unusual IPv6 textual form.
+
+Skipped gracefully (not failed) if Node/`tests_js/node_modules` aren't
+present in a given checkout — see `tests/test_js_parity.py`'s docstring
+and `LOCAL_SETUP.md` for how to set it up.
 
 ## URL-lexical features (`url_features.py` ↔ `extractUrlFeatures` in `page_extractor.js`)
 
@@ -33,7 +52,7 @@ parity test** — see "Suggested follow-up" at the bottom.
 | `special_char_count` | `special_char_count` | count against `_SPECIAL_CHARS` set | ✅ same literal character set |
 | `special_char_ratio` | `special_char_ratio` | `special_char_count / len(url)` | ✅ identical |
 | `has_at_symbol` | `has_at_symbol` | `"@" in url` | ✅ identical |
-| `has_ip_literal` | `has_ip_literal` | `ipaddress.ip_address()` / regex-based IPv4 + crude IPv6 check | ⚠️ **approximation** — Python uses the stdlib `ipaddress` module (fully correct IPv4/IPv6 parsing); JS uses a regex for IPv4 and a loose hex-and-colon heuristic for IPv6. Edge-case IPv6 literals could disagree. Low practical impact (`has_ip_literal` is rare in real traffic either way), but not a byte-for-byte match. |
+| `has_ip_literal` | `has_ip_literal` | `ipaddress.ip_address()` / regex-based IPv4 + crude IPv6 check | ✅ **tested and agrees** for standard-notation IPv4 (`192.168.1.1`) and IPv6 (`2001:db8::1`) literals, via `tests/test_js_parity.py`. Python uses the stdlib `ipaddress` module (fully correct parsing); JS uses a regex approximation — theoretically could disagree on unusual-but-valid IPv6 textual forms (not exhaustively fuzzed), but the previously-untested "approximation" concern is now a confirmed non-issue for realistic inputs. |
 | `is_https` | `is_https` | `scheme == "https"` / `protocol === "https:"` | ✅ identical |
 | `path_length` | `path_length` | `len(parts.path)` / `pathname.length` | ✅ identical |
 | `query_length` | `query_length` | `len(parts.query)` (no `?`) / `search` with leading `?` stripped | ✅ identical after the strip |
@@ -88,11 +107,13 @@ Tested live against `https://en.wikipedia.org/wiki/Phishing`:
   in real Chrome at a real mobile viewport** — flagged rather than
   claimed clean.
 
-## Suggested follow-up (not done — no Node.js available in this environment)
+## Follow-up status
 
-If Node becomes available: a `tests/js_parity/` fixture set (a handful of
-saved HTML pages) run through both `extract_features()` (Python) and
-`page_extractor.js`'s logic (via `node --eval` or a headless browser) on
-identical input, asserting the two dicts are equal key-for-key. This
-would convert the "⚠️ approximation" row above (IP-literal parsing) from
-a documented risk into either a proven non-issue or a concrete bug to fix.
+Done, see above: `tests/test_js_parity.py` + `tests_js/` now provide the
+automated cross-runtime check this section used to only recommend.
+Remaining real gap: Node.js had to be manually downloaded into a
+non-standard location (`~/.phishshield-node`) because this environment
+has no package manager at all (no Homebrew/MacPorts/nvm) — a fresh
+checkout on a different machine needs its own Node.js install (any
+recent LTS; see `LOCAL_SETUP.md`) before `tests_js/npm install` and
+these tests will run rather than skip.

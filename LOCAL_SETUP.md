@@ -75,6 +75,26 @@ pytest -q --ignore=tests/live
 unless you explicitly opt in (requires `.env` with a real key — see
 `.env.example`). Never required for normal development.
 
+`tests/test_js_parity.py` (runs the real `extension/page_extractor.js`
+against Python's feature pipeline via Node + jsdom — see
+`FEATURE_PARITY.md`) is also skipped gracefully if Node.js isn't set up.
+To enable it:
+
+```bash
+# Install Node.js (any recent LTS) if you don't have it -- this project's
+# own dev environment had no package manager available at all, so Node
+# was downloaded directly from nodejs.org and extracted (no sudo/admin
+# needed):
+#   curl -L https://nodejs.org/dist/v24.19.0/node-v24.19.0-darwin-arm64.tar.gz \
+#     | tar -xz -C ~/.phishshield-node --strip-components=1
+#   export PATH="$HOME/.phishshield-node/bin:$PATH"   # add to your shell rc to persist
+# Or use your platform's usual method (Homebrew, nvm, the official
+# installer from nodejs.org) if available.
+
+cd tests_js && npm install && cd ..
+pytest -q tests/test_js_parity.py
+```
+
 ## 4. Environment variables (all optional for local use)
 
 See `.env.example`. Everything under "Demo API" has a safe default and

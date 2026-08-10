@@ -28,3 +28,8 @@ reports/*.jsonl
 # never hand-edited, no reason to commit a build artifact.
 /release/
 /phishshield-extension.zip
+
+# tests_js/'s installed dependencies (jsdom etc.) -- package.json and
+# package-lock.json ARE committed for reproducibility; run `npm install`
+# inside tests_js/ to regenerate this.
+tests_js/node_modules/
