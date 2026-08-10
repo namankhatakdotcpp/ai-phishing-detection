@@ -1,7 +1,7 @@
 [project]
 name = "phishshield"
 version = "0.1.0"
-description = "Research pipeline measuring phishing-detector robustness against LLM-generated phishing content"
+description = "Research pipeline measuring phishing-detector robustness on a controlled LLM-generated phishing benchmark"
 requires-python = ">=3.9"
 dependencies = [
     "pandas>=2.0",
