@@ -55,6 +55,9 @@
       .reasons li { font-size: 12px; line-height: 1.4; padding: 8px 10px; background: #fbe1df; border-radius: 6px; border-left: 3px solid #a02419; }
       .actions { display: flex; gap: 10px; }
       button { flex: 1; padding: 11px; font-size: 13px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; }
+      button:focus-visible {
+        outline: 3px solid #1a73e8; outline-offset: 2px;
+      }
       .leave { background: #a02419; color: #fff; }
       .leave:hover { opacity: 0.9; }
       .continue { background: #f0f0f0; color: #1a1a1a; }
@@ -68,6 +71,13 @@
 
     const card = document.createElement("div");
     card.className = "card";
+    // Accessible as a modal alert dialog: labelled by the headline,
+    // described by the body text, focus contained within it while shown.
+    card.setAttribute("role", "alertdialog");
+    card.setAttribute("aria-modal", "true");
+    card.setAttribute("aria-labelledby", "phishshield-headline");
+    card.setAttribute("aria-describedby", "phishshield-body-text");
+    card.tabIndex = -1;
 
     const shield = document.createElement("div");
     shield.className = "shield";
@@ -80,6 +90,7 @@
     card.appendChild(brand);
 
     const headline = document.createElement("div");
+    headline.id = "phishshield-headline";
     headline.className = "headline";
     headline.textContent = "This website may be dangerous";
     card.appendChild(headline);
@@ -103,6 +114,7 @@
     card.appendChild(barTrack);
 
     const bodyText = document.createElement("div");
+    bodyText.id = "phishshield-body-text";
     bodyText.className = "body-text";
     bodyText.textContent =
       "We detected several characteristics commonly associated with phishing websites.";
@@ -133,10 +145,7 @@
       }
     });
 
-    const continueBtn = document.createElement("button");
-    continueBtn.className = "continue";
-    continueBtn.textContent = "Continue anyway";
-    continueBtn.addEventListener("click", () => {
+    function dismiss() {
       try {
         sessionStorage.setItem(DISMISS_KEY, "1");
       } catch {
@@ -144,7 +153,12 @@
         // overlay is only ever re-shown by another explicit user click.
       }
       host.remove();
-    });
+    }
+
+    const continueBtn = document.createElement("button");
+    continueBtn.className = "continue";
+    continueBtn.textContent = "Continue anyway";
+    continueBtn.addEventListener("click", dismiss);
 
     actions.appendChild(leaveBtn);
     actions.appendChild(continueBtn);
@@ -157,7 +171,33 @@
 
     backdrop.appendChild(card);
     shadow.appendChild(backdrop);
-    return host;
+
+    // Keyboard accessibility: Escape dismisses (same as "Continue anyway"
+    // -- it does not leave the site, matching how a real dismiss action
+    // should behave), and Tab is trapped between the two buttons so
+    // keyboard focus can't silently leave the dialog into the page
+    // behind it while the warning is showing.
+    const focusable = [leaveBtn, continueBtn];
+    shadow.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dismiss();
+        return;
+      }
+      if (event.key === "Tab") {
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && shadow.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && shadow.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    return { host, leaveBtn };
   }
 
   window.__phishshieldShowOverlay = function (riskScore, riskLabel, reasons) {
@@ -171,7 +211,11 @@
       // sessionStorage unavailable -- fail open and show the warning.
     }
     removeExisting();
-    const host = buildOverlay(riskScore, riskLabel, reasons || []);
+    const { host, leaveBtn } = buildOverlay(riskScore, riskLabel, reasons || []);
     document.documentElement.appendChild(host);
+    // Initial focus on the safer action ("Leave website"), matching the
+    // convention browsers themselves use for security interstitials --
+    // a stray Enter/Space keypress dismisses toward safety, not danger.
+    leaveBtn.focus();
   };
 })();
