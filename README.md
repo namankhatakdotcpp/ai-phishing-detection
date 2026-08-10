@@ -7,7 +7,10 @@ then evaluates a mitigation. See `PROJECT_BRIEF.md` for full scope, phases,
 and hard constraints (no live scraping, no live WHOIS/SSL/DNS lookups, no
 hosting of generated phishing content).
 
-This is a research prototype, not a production security product.
+This is a research prototype, not a production security product. A v1
+extension UX and production-deployment prep exist (see `LOCAL_SETUP.md`,
+`SECURITY_REVIEW.md`, `PRIVACY_POLICY.md`, `DEPLOYMENT.md`), but nothing
+is deployed publicly and no Chrome Web Store submission has happened.
 
 ## Setup
 
