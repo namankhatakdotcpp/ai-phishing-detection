@@ -199,14 +199,37 @@ phishshield/
   after a real incident where a key was typed into `.env.example` instead
   of `.env`; the hook is the backstop for that exact mistake, checked
   before commit rather than caught after the fact.
-- **Not yet done**: no real generation has actually been run in this
-  environment — no credentials for either provider have been available
-  here so far. Recommended sequence once a key is available: `--live
-  --max-samples 4` first (a canary — one brand × two tones) and read the
-  actual generated lure text before trusting it, *then* the full
-  144-sample grid if it reads as varied/realistic rather than templated.
-  Running it for real, and then re-running Phases 3/4/7 against the
-  real-generated partition, is the next step.
+- **Canary run complete** (2026-08-10): ran live against Gemini with a
+  rotated key. Two bugs found and fixed before trusting the output:
+  1. `GEMINI_DEFAULT_MODEL` was `gemini-2.5-flash`, which now 404s for
+     new-user keys ("no longer available to new users") — switched to
+     `gemini-flash-latest`, an alias Google maintains to track the
+     current model, so this doesn't go stale the same way again.
+  2. `response_schema` included `additionalProperties`, which Gemini's
+     restricted OpenAPI schema subset rejects outright (400
+     INVALID_ARGUMENT) — Anthropic's full JSON Schema support doesn't
+     have this restriction, so the two providers now use separate
+     schema constants (`_LURE_SCHEMA` vs. `_GEMINI_LURE_SCHEMA`).
+  3. A real, load-bearing finding: the `urgent` tone was refused by
+     Gemini's safety classifier on one attempt ("I cannot fulfill this
+     request...") — but it came back as schema-valid JSON
+     (`{"title": "Refusal", "lure_copy": "I cannot fulfill..."}"`),
+     which parsed cleanly and would have been silently saved as a
+     normal, mislabeled sample. Refusal was non-deterministic — a retry
+     on the same tone succeeded cleanly. Added `_looks_like_refusal()`
+     as a guard in both clients' response handling (checked before the
+     retry-eligible return, so a caught refusal now retries like any
+     other failure instead of silently corrupting the dataset).
+  - Quality check on the resulting output (urgent vs. formal, same
+    brand): genuinely distinct framing — urgent used a 24-hour
+    suspension threat, formal used routine-review language — not
+    synonym-swapped from a shared template. Exfil host was our own
+    synthetic placeholder (`beacon.credential-sink.top`), no real
+    brand wording copied verbatim. Passed both the variety check and
+    the non-liftability check before proceeding.
+  - **Next**: run the full 144-sample grid for real, then re-run
+    Phases 3/4/7 against the real-generated partition (currently
+    illustrative-only results).
 
 ## 6. What "done" looks like
 

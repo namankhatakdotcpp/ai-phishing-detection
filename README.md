@@ -215,15 +215,28 @@ effort)`:
 
 | Provider | Client | Default model | Key | Install |
 |---|---|---|---|---|
-| `gemini` (default) | `GeminiLureClient` | `gemini-2.5-flash` | `GEMINI_API_KEY` / `GOOGLE_API_KEY` (free tier) | `pip install -e ".[gemini]"` |
+| `gemini` (default) | `GeminiLureClient` | `gemini-flash-latest` | `GEMINI_API_KEY` / `GOOGLE_API_KEY` (free tier) | `pip install -e ".[gemini]"` |
 | `anthropic` | `AnthropicLureClient` | `claude-opus-5` | `ANTHROPIC_API_KEY` | `pip install -e ".[llm]"` |
+
+The Gemini default is the `gemini-flash-latest` *alias*, not a dated
+model string — `gemini-2.5-flash` (the original default) started 404ing
+for new-user keys ("no longer available to new users") partway through
+this project, which is exactly the kind of drift an alias avoids.
 
 **Disclosure**: at the free tier, Google may use Gemini traffic to
 improve their products (unlike the paid tier). What's sent is short
 synthetic lure-copy requests for this research dataset only — no real
 user data — but say so plainly in the report's methodology section.
-`--model` overrides the default if a newer free-tier-recommended model
-supersedes `gemini-2.5-flash` later.
+`--model` overrides the default if needed.
+
+**Refusal detection**: structured output (`response_schema`) guarantees
+JSON *shape*, not that the model actually complied — a safety-filtered
+`urgent`-tone request came back as valid JSON
+(`{"title": "Refusal", "lure_copy": "I cannot fulfill this request..."}`)
+that would otherwise have been saved as a normal, silently mislabeled
+sample. `_looks_like_refusal()` catches this pattern in both clients and
+routes it through the same retry path as any other failure — observed
+refusal rate was non-deterministic (same prompt succeeded on retry).
 
 **Credential handling — never paste a key into a chat/agent session or a
 CLI argument.** Both land the raw secret in a transcript, shell history,
@@ -233,15 +246,18 @@ key yourself, in your own editor/terminal — `llm_client.py` loads it via
 presence with only a masked prefix/suffix, never the full value, and the
 CLI prints that check (not the key) before every `--live` run.
 
-**Not yet run for real** — no credentials for either provider have been
-available in this environment. `--dry-run` shows the cost estimate with
-no network calls needed:
+**Canary run complete (2026-08-10)** — live Gemini output checked for
+variety (distinct framing between `urgent`/`formal` tones for the same
+brand, not synonym-swapped) and non-liftability (synthetic exfil host,
+no verbatim real-brand wording). Passed both. Full 144-sample run is the
+next step, followed by re-running Phases 3/4/7 against real-generated
+data instead of the illustrative synthetic pool.
 
 ```bash
 pip install -e ".[gemini]"
 cp .env.example .env   # then edit .env yourself to add GEMINI_API_KEY=...
 python -m phishshield.data.generate_llm_dataset --dry-run
-# provider: gemini  model: gemini-2.5-flash  effort: None
+# provider: gemini  model: gemini-flash-latest  effort: None
 # total samples: 144 (full grid: 144)
 # unique lure-copy API calls (cached per brand+tone pair): 36
 # cost estimate (paid-tier rates): ~$0.04 — likely $0 on the free tier
