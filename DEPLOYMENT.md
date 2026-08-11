@@ -53,6 +53,21 @@ before calling this deployment-ready.
 assigns this; the actual URL is shown in the Render dashboard after
 first deploy — record it as `[PRODUCTION_API_URL]`).
 
+**Auto-deploy**: once the GitHub repo is connected (Blueprint or manual
+Web Service), Render redeploys automatically on every push to the
+connected branch (`main`) by default — no separate deploy step needed
+after the initial setup. This can be toggled off in the service's
+Settings if you want deploys to require manual approval instead.
+
+**Free-tier limitation — document, don't hide**: Render's free Web
+Service plan spins the service down after ~15 minutes of no requests
+and wakes it on the next incoming request. The first request after a
+period of inactivity will be noticeably slower (a cold start, on the
+order of tens of seconds) while the service restarts and reloads the
+model artifact. This is fine for a course-project demo, but it means
+this is **not** a continuously-warm production API — say so explicitly
+in any demo or writeup rather than implying always-on availability.
+
 ## Option B: Google Cloud Run (using the committed `Dockerfile`)
 
 **Not built or tested in this session** — no `docker` binary was
