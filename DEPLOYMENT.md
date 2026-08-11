@@ -49,9 +49,9 @@ before calling this deployment-ready.
 | `PHISHSHIELD_RATE_LIMIT_PER_MINUTE` | `60` (adjust to taste) |
 | `PHISHSHIELD_MAX_REQUEST_BYTES` | `65536` |
 
-**Expected URL format**: `https://phishshield-api.onrender.com` (Render
-assigns `<service-name>.onrender.com`; the actual URL is shown in the
-Render dashboard after first deploy).
+**Expected URL format**: `https://<service-name>.onrender.com` (Render
+assigns this; the actual URL is shown in the Render dashboard after
+first deploy — record it as `[PRODUCTION_API_URL]`).
 
 ## Option B: Google Cloud Run (using the committed `Dockerfile`)
 

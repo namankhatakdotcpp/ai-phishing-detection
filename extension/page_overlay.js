@@ -86,7 +86,7 @@
 
     const brand = document.createElement("div");
     brand.className = "brand";
-    brand.textContent = "PhishShield AI";
+    brand.textContent = "[PROJECT_NAME]";
     card.appendChild(brand);
 
     const headline = document.createElement("div");
@@ -166,7 +166,7 @@
 
     const footer = document.createElement("div");
     footer.className = "footer";
-    footer.textContent = "PhishShield AI -- research prototype, not a guarantee";
+    footer.textContent = "[PROJECT_NAME] -- research prototype, not a guarantee";
     card.appendChild(footer);
 
     backdrop.appendChild(card);

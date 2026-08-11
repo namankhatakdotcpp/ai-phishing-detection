@@ -1,4 +1,4 @@
-"""Generate placeholder PhishShield AI extension icons (16/48/128px).
+"""Generate placeholder [PROJECT_NAME] extension icons (16/48/128px).
 
 These are simple, programmatically-drawn shield icons -- adequate to
 make the extension installable/presentable and to unblock Web Store

@@ -1,9 +1,9 @@
-# PhishShield AI — v1 security-assistant extension
+# [PROJECT_NAME] — v1 security-assistant extension
 
 A Manifest V3 extension over the Phase 9 demo API. Analyzes the
 **current tab's** structural features (form/password-field counts,
 external script/form-action domains, URL-lexical patterns) against a
-local PhishShield AI backend, but only when you click "Analyze this
+local [PROJECT_NAME] backend, but only when you click "Analyze this
 page" — no persistent background scanning, no `<all_urls>` access.
 
 Uses `activeTab` + `scripting`, Chrome's narrower alternative to broad
@@ -47,7 +47,7 @@ matching the value the real alpha sweep validated (see
 
 2. In Chrome, go to `chrome://extensions`, enable "Developer mode", click
    "Load unpacked", and select this `extension/` directory.
-3. Navigate to any `http(s)://` page, click the PhishShield AI icon, and
+3. Navigate to any `http(s)://` page, click the [PROJECT_NAME] icon, and
    click "Analyze this page".
 
 Non-`http(s)` pages (`chrome://`, the Chrome Web Store, PDF viewer, etc.)

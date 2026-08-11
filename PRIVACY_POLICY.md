@@ -1,7 +1,12 @@
-# PhishShield AI — Privacy Policy
+# [PROJECT_NAME] — Privacy Policy
 
 **Last updated**: 2026-08-11
 **Status**: research prototype, not yet published to the Chrome Web Store.
+
+[PROJECT_NAME] is an academic research prototype developed by Naman
+Khatak as part of an ISP course project at the Indian Institute of
+Technology Mandi. It is not an official IIT Mandi product or service
+and should not be interpreted as an endorsement by IIT Mandi.
 
 This document describes what the current, actual implementation does —
 verified against the source code in this repository, not aspirational.
@@ -11,7 +16,7 @@ report it.
 
 ## What triggers analysis
 
-PhishShield AI **never** reads or analyzes any page automatically or in
+[PROJECT_NAME] **never** reads or analyzes any page automatically or in
 the background. Analysis of the current browser tab happens **only**
 when you click the extension icon and then click "Analyze this page."
 This uses Chrome's `activeTab` permission, which grants the extension
@@ -32,7 +37,7 @@ running in the current tab) reads:
 
 This numeric/textual structural summary — never the page's full HTML,
 never a screenshot, never anything else on the page — is sent over HTTPS
-(or `http://127.0.0.1` for local development) to the PhishShield backend
+(or `http://127.0.0.1` for local development) to the [PROJECT_NAME] backend
 for scoring, and nothing else is transmitted.
 
 ## What is NOT collected, ever
@@ -93,6 +98,13 @@ updated to reflect the deployed URL and hosting provider before that
 version is distributed, per this project's stated norm of never making
 privacy claims the code doesn't support.
 
+## Project
+
+Project: [PROJECT_NAME]
+Developer: Naman Khatak
+Institution: Indian Institute of Technology Mandi
+Context: ISP Course Project
+
 ## Contact
 
-`[contact email placeholder — fill in before Web Store submission]`
+[CONTACT_EMAIL]

@@ -7,7 +7,7 @@ account, payment, or network service is required for local use.
 
 ```bash
 git clone <this repo>   # or cd into it if you already have it
-cd PhishShield-AI       # repo root — wherever pyproject.toml lives
+cd [PROJECT_NAME]       # repo root — wherever pyproject.toml lives
 python3 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -e .
@@ -51,7 +51,7 @@ If `model_loaded` is `false`, the server is running but has no model —
 2. Enable **Developer mode** (top-right toggle).
 3. Click **Load unpacked**, select this repo's `extension/` directory.
 4. Navigate to any `http://` or `https://` page.
-5. Click the PhishShield AI icon in the toolbar, then **Analyze this
+5. Click the [PROJECT_NAME] icon in the toolbar, then **Analyze this
    page**.
 
 You should see a LOW/SUSPICIOUS/HIGH risk card. For a HIGH result, an

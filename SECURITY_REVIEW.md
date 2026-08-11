@@ -1,4 +1,4 @@
-# PhishShield AI — Security Review
+# [PROJECT_NAME] — Security Review
 
 **Date**: 2026-08-11
 **Scope**: `extension/` (Manifest V3 Chrome extension) and `src/phishshield/api/` (FastAPI backend). Research/data pipeline code (`data/`, `models/`, `features/`) is out of scope — it runs offline, never handles untrusted network input, and is not part of the shipped product surface.

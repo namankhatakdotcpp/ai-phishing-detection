@@ -1,0 +1,205 @@
+[
+  {
+    "name": "adobe_login",
+    "static_score": 32,
+    "static_band": "low",
+    "live_score": 42,
+    "live_band": "medium"
+  },
+  {
+    "name": "bankofamerica",
+    "static_score": 25,
+    "static_band": "low",
+    "live_score": 30,
+    "live_band": "low"
+  },
+  {
+    "name": "bbc_news",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 5,
+    "live_band": "low"
+  },
+  {
+    "name": "berkeley",
+    "static_score": 7,
+    "static_band": "low",
+    "live_score": 10,
+    "live_band": "low"
+  },
+  {
+    "name": "chase_bank",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 6,
+    "live_band": "low"
+  },
+  {
+    "name": "dropbox_login",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 5,
+    "live_band": "low"
+  },
+  {
+    "name": "github_home",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 5,
+    "live_band": "low"
+  },
+  {
+    "name": "github_issues",
+    "static_score": 21,
+    "static_band": "low",
+    "live_score": 21,
+    "live_band": "low"
+  },
+  {
+    "name": "github_repo",
+    "static_score": 13,
+    "static_band": "low",
+    "live_score": 13,
+    "live_band": "low"
+  },
+  {
+    "name": "google_accounts",
+    "static_score": 10,
+    "static_band": "low",
+    "live_score": 74,
+    "live_band": "high"
+  },
+  {
+    "name": "google_home",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 6,
+    "live_band": "low"
+  },
+  {
+    "name": "iitm",
+    "static_score": 8,
+    "static_band": "low",
+    "live_score": 8,
+    "live_band": "low"
+  },
+  {
+    "name": "instagram",
+    "static_score": 13,
+    "static_band": "low",
+    "live_score": 14,
+    "live_band": "low"
+  },
+  {
+    "name": "mdn_js",
+    "static_score": 4,
+    "static_band": "low",
+    "live_score": 4,
+    "live_band": "low"
+  },
+  {
+    "name": "mit",
+    "static_score": 2,
+    "static_band": "low",
+    "live_score": 3,
+    "live_band": "low"
+  },
+  {
+    "name": "nytimes",
+    "static_score": 6,
+    "static_band": "low",
+    "live_score": 8,
+    "live_band": "low"
+  },
+  {
+    "name": "python_docs",
+    "static_score": 1,
+    "static_band": "low",
+    "live_score": 1,
+    "live_band": "low"
+  },
+  {
+    "name": "react_docs",
+    "static_score": 8,
+    "static_band": "low",
+    "live_score": 24,
+    "live_band": "low"
+  },
+  {
+    "name": "reddit_home",
+    "static_score": 1,
+    "static_band": "low",
+    "live_score": 74,
+    "live_band": "high"
+  },
+  {
+    "name": "salesforce_login",
+    "static_score": 21,
+    "static_band": "low",
+    "live_score": 21,
+    "live_band": "low"
+  },
+  {
+    "name": "stackoverflow_login",
+    "static_score": 34,
+    "static_band": "low",
+    "live_score": 27,
+    "live_band": "low"
+  },
+  {
+    "name": "techcrunch",
+    "static_score": 4,
+    "static_band": "low",
+    "live_score": 6,
+    "live_band": "low"
+  },
+  {
+    "name": "twitter_x",
+    "static_score": 3,
+    "static_band": "low",
+    "live_score": 4,
+    "live_band": "low"
+  },
+  {
+    "name": "wellsfargo",
+    "static_score": 19,
+    "static_band": "low",
+    "live_score": 15,
+    "live_band": "low"
+  },
+  {
+    "name": "wikipedia_org",
+    "static_score": 9,
+    "static_band": "low",
+    "live_score": 9,
+    "live_band": "low"
+  },
+  {
+    "name": "wikipedia_python",
+    "static_score": 9,
+    "static_band": "low",
+    "live_score": 9,
+    "live_band": "low"
+  },
+  {
+    "name": "wordpress_login",
+    "static_score": 24,
+    "static_band": "low",
+    "live_score": 12,
+    "live_band": "low"
+  },
+  {
+    "name": "youtube_watch",
+    "static_score": 29,
+    "static_band": "low",
+    "live_score": 35,
+    "live_band": "low"
+  },
+  {
+    "name": "zoom_signin",
+    "static_score": 30,
+    "static_band": "low",
+    "live_score": 7,
+    "live_band": "low"
+  }
+]

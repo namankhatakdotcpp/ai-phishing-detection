@@ -17,5 +17,5 @@ const PHISHSHIELD_CONFIG = {
   // DEPLOYMENT.md for exact settings; also add the real origin to
   // manifest.json's host_permissions, since the localhost entries won't
   // match a deployed HTTPS origin):
-  // API_BASE: "https://phishshield-api.onrender.com",
+  // API_BASE: "[PRODUCTION_API_URL]",
 };

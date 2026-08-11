@@ -8,7 +8,7 @@ exact form fields.
 
 ## Single purpose description
 
-> PhishShield AI analyzes the structural characteristics of the current
+> [PROJECT_NAME] analyzes the structural characteristics of the current
 > web page (form/input counts, external script and form-submission
 > domains, URL patterns) — only when the user explicitly clicks
 > "Analyze this page" — and shows a phishing-risk assessment with
@@ -62,4 +62,4 @@ No.
 
 ## Privacy policy URL
 
-`[placeholder — host PRIVACY_POLICY.md somewhere public and put the URL here before submission]`
+`[PRIVACY_POLICY_URL]`

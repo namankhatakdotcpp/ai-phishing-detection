@@ -21,7 +21,7 @@ validation failures.
 
 ## Extension name
 
-PhishShield AI
+[PROJECT_NAME]
 
 ## Category recommendation
 
@@ -35,26 +35,44 @@ category list changes).
 
 ## Detailed description
 
-> PhishShield AI is a research-grade phishing detector you control. Click
-> the icon, click "Analyze this page," and get a LOW / SUSPICIOUS / HIGH
-> risk assessment with plain-language reasons — built from a classifier
-> trained on real phishing data and an explainability layer, not a
-> black-box score.
+> [PROJECT_NAME] is an academic research prototype — an ISP (Information
+> Security and Privacy) course project at the Indian Institute of
+> Technology Mandi, developed by Naman Khatak — that analyzes the
+> currently open web page and produces an interpretable phishing-risk
+> assessment.
 >
-> **What it looks at**: the page's URL patterns and structural signals —
-> form and password-field counts, where forms submit data, external
-> scripts, and similar. **What it never looks at**: what you type, your
+> Click the icon, click "Analyze this page," and get a 0-100 risk score
+> in one of three bands — LOW, SUSPICIOUS, or HIGH — with plain-language
+> reasons, built from a machine-learning classifier trained on real
+> phishing data plus a rule-based explainability layer, not a black-box
+> number.
+>
+> **What it looks at**: the page's structural characteristics — URL
+> patterns, form and password-field counts, where forms submit data,
+> external scripts, hidden elements, and similar signals associated with
+> phishing pages. **What it never looks at**: what you type, your
 > passwords, your cookies, or your browsing history. It only ever
-> analyzes the one tab you explicitly ask it to, in the moment you ask.
+> analyzes the one tab you explicitly ask it to, in the moment you ask —
+> no background scanning.
 >
-> For high-risk pages, PhishShield shows an in-page warning before you
+> For HIGH-risk pages, [PROJECT_NAME] shows an in-page warning before you
 > interact further, with the option to leave or continue at your own
 > discretion.
 >
-> **This is a research prototype from an academic project** — treat its
-> verdicts as one input to your own judgment, not a guarantee. See the
-> full methodology and known limitations at
-> `[project report URL placeholder]`.
+> **This is a research prototype, not a commercial security product.**
+> It does not detect 100% of phishing attempts, does not guarantee zero
+> false positives, and is not a substitute for your own judgment or a
+> commercial antivirus/anti-phishing product. Treat its verdicts as one
+> input among others. Full methodology, evaluation results, and stated
+> limitations are documented at `[PROJECT_WEBSITE_URL]`.
+
+## Support contact
+
+`[CONTACT_EMAIL]`
+
+## Website / project URL
+
+`[PROJECT_WEBSITE_URL]`
 
 ## Single-purpose description
 
@@ -83,7 +101,7 @@ form typically wants a short version per permission.)
 
 ## Privacy policy URL
 
-`[placeholder — same as WEB_STORE_PRIVACY_ANSWERS.md]`
+`[PRIVACY_POLICY_URL]`
 
 ## Screenshot checklist (capture these once the deployed version is running)
 

@@ -1,0 +1,38 @@
+google_home|https://www.google.com/|ok|ok
+wikipedia_org|https://www.wikipedia.org/|ok|ok
+youtube_home|https://www.youtube.com/|error|TimeoutError: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to "https://www.youtube.com/", waiting until "load"
+
+youtube_watch|https://www.youtube.com/watch?v=dQw4w9WgXcQ|ok|ok
+github_home|https://github.com/|ok|ok
+github_repo|https://github.com/torvalds/linux|ok|ok
+github_issues|https://github.com/facebook/react/issues|ok|ok
+reddit_home|https://www.reddit.com/|ok|ok
+instagram|https://www.instagram.com/|ok|ok
+twitter_x|https://twitter.com/|ok|ok
+wellsfargo|https://www.wellsfargo.com/|ok|ok
+chase_bank|https://www.chase.com/|ok|ok
+bankofamerica|https://www.bankofamerica.com/|ok|ok
+salesforce_login|https://login.salesforce.com/|ok|ok
+adobe_login|https://auth.services.adobe.com/en_US/index.html|ok|ok
+dropbox_login|https://www.dropbox.com/login|ok|ok
+slack_signin|https://slack.com/signin|ok|ok
+zoom_signin|https://zoom.us/signin|ok|ok
+wordpress_login|https://wordpress.com/log-in|ok|ok
+stackoverflow_login|https://stackoverflow.com/users/login|ok|ok
+google_accounts|https://accounts.google.com/|ok|ok
+mdn_js|https://developer.mozilla.org/en-US/docs/Web/JavaScript|ok|ok
+python_docs|https://docs.python.org/3/|ok|ok
+react_docs|https://react.dev/learn|ok|ok
+wikipedia_python|https://en.wikipedia.org/wiki/Python_(programming_language)|ok|ok
+techcrunch|https://techcrunch.com/|ok|ok
+theverge|https://www.theverge.com/|error|TimeoutError: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to "https://www.theverge.com/", waiting until "load"
+
+bbc_news|https://www.bbc.com/news|ok|ok
+nytimes|https://www.nytimes.com/|ok|ok
+mit|https://www.mit.edu/|ok|ok
+berkeley|https://www.berkeley.edu/|ok|ok
+iitm|https://www.iitm.ac.in/|ok|ok

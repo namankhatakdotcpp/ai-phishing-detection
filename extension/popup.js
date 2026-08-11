@@ -1,7 +1,7 @@
 // Current-tab analysis: on click, extracts structural features from the
 // active tab (via chrome.scripting.executeScript, activeTab permission —
 // temporary, user-invoked access only, no background scanning) and POSTs
-// only that feature vector to the local PhishShield AI backend. Never
+// only that feature vector to the local [PROJECT_NAME] backend. Never
 // reads or sends form field values, passwords, or cookies. For a HIGH
 // verdict, also injects an in-page warning overlay (page_overlay.js) into
 // the same tab, using the same click-granted activeTab access.

@@ -82,10 +82,6 @@ body {
   min-height: 14px;
 }
 
-.hidden {
-  display: none;
-}
-
 .state {
   margin-top: 14px;
   animation: fade-in 0.18s ease;
@@ -304,4 +300,16 @@ body {
   line-height: 1.4;
   border-top: 1px solid #eee;
   padding-top: 10px;
+}
+
+/* Deliberately last in this file, and !important: a real Chrome bug
+   (found via live extension testing, not by this project's automated
+   tests) had #analyzing's ID selector and .error-state's `display: flex`
+   both outrank this class's `display: none` -- once shown, the loading
+   spinner and the "Unable to analyze" box never actually hid again, even
+   though popup.js's setState() was correctly toggling this class. Being
+   last in source order plus !important makes this win regardless of any
+   future rule added above it, on any selector. */
+.hidden {
+  display: none !important;
 }

@@ -22,6 +22,7 @@ import { JSDOM } from "jsdom";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXT_DIR = path.join(__dirname, "..", "extension");
 
+const POPUP_CSS = fs.readFileSync(path.join(EXT_DIR, "popup.css"), "utf8");
 const POPUP_HTML = fs.readFileSync(path.join(EXT_DIR, "popup.html"), "utf8")
   // Strip the two <script src> tags -- we eval their real source
   // manually after installing chrome/fetch mocks, since runScripts
@@ -29,7 +30,18 @@ const POPUP_HTML = fs.readFileSync(path.join(EXT_DIR, "popup.html"), "utf8")
   // before we'd get a chance to inject the mocks popup.js needs
   // immediately (showActiveTabInfo() runs at the bottom of the file).
   .replace(/<script src="config\.js"><\/script>\s*/, "")
-  .replace(/<script src="popup\.js"><\/script>\s*/, "");
+  .replace(/<script src="popup\.js"><\/script>\s*/, "")
+  // jsdom doesn't fetch external stylesheets by default (no `resources`
+  // option set below), so <link rel="stylesheet" href="popup.css"> is a
+  // no-op here -- inline the real popup.css so getComputedStyle() below
+  // reflects the actual cascade (this is what caught the #analyzing /
+  // .error-state specificity bug that classList-only assertions missed:
+  // real Chrome testing found the loading spinner and the retry box
+  // stayed visibly stuck on screen under the final result, because
+  // `#analyzing { display: flex }` and `.error-state { display: flex }`
+  // outrank/out-order `.hidden { display: none }` in the cascade even
+  // once popup.js correctly adds the "hidden" class).
+  .replace(/<link rel="stylesheet" href="popup\.css" \/>/, `<style>${POPUP_CSS}</style>`);
 const CONFIG_SRC = fs.readFileSync(path.join(EXT_DIR, "config.js"), "utf8");
 const POPUP_SRC = fs.readFileSync(path.join(EXT_DIR, "popup.js"), "utf8");
 
@@ -80,6 +92,59 @@ function flush(times = 3) {
   let p = Promise.resolve();
   for (let i = 0; i < times; i++) p = p.then(() => new Promise((r) => setTimeout(r, 0)));
   return p;
+}
+
+function assertActuallyHidden(dom, el, label) {
+  assert.ok(el.classList.contains("hidden"), `${label}: expected "hidden" class to be present`);
+  const computedDisplay = dom.window.getComputedStyle(el).display;
+  assert.equal(
+    computedDisplay,
+    "none",
+    `${label}: has the "hidden" class but popup.css's cascade still renders it ` +
+      `(computed display: "${computedDisplay}") -- a competing #id or later .class ` +
+      `rule is winning over .hidden`
+  );
+}
+
+// Regression test for a real bug found via live Chrome testing, not by
+// this test suite: popup.js's setState() correctly toggled the "hidden"
+// class on #analyzing/#error-state/#result, but #analyzing's ID selector
+// and .error-state's later-declared class selector both out-specificity
+// or out-order .hidden in popup.css, so the class was present in the DOM
+// while the element stayed visually rendered. Every prior test here only
+// asserted classList.contains("hidden"), which is exactly why this
+// shipped undetected -- this test asserts the actual computed style.
+async function test_hidden_class_actually_hides_every_state_section() {
+  const { chrome } = makeChromeMock({
+    tabUrl: "https://example.com/",
+    extractedFeatures: { num_forms: 0, _meta_url: "https://example.com/", _meta_title: "Example" },
+  });
+  const fetchMock = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ risk_score: 4, risk_band: "low", reasons: [], classifier_score: 0.01, judge_score: 0.0 }),
+  });
+  const dom = await buildPopup({ chromeMock: chrome, fetchMock });
+
+  // Before any click: analyzing/error/result all start hidden.
+  assertActuallyHidden(dom, dom.window.document.getElementById("analyzing"), "analyzing (initial)");
+  assertActuallyHidden(dom, dom.window.document.getElementById("error-state"), "error-state (initial)");
+  assertActuallyHidden(dom, dom.window.document.getElementById("result"), "result (initial)");
+
+  await dom.window.analyzeCurrentPage();
+  await flush();
+
+  // After a successful analysis: analyzing and error-state must both
+  // have actually disappeared, not just lost visibility to the human eye
+  // by coincidence -- this is what "there is a loading always going on"
+  // looked like in real Chrome.
+  assertActuallyHidden(dom, dom.window.document.getElementById("analyzing"), "analyzing (after success)");
+  assertActuallyHidden(dom, dom.window.document.getElementById("error-state"), "error-state (after success)");
+  assert.notEqual(
+    dom.window.getComputedStyle(dom.window.document.getElementById("result")).display,
+    "none",
+    "result should be visible (not display:none) once a result has rendered"
+  );
 }
 
 async function test_initial_load_enables_analyze_on_a_normal_page() {
@@ -257,6 +322,7 @@ async function test_retry_button_re_triggers_analysis() {
 }
 
 const tests = [
+  test_hidden_class_actually_hides_every_state_section,
   test_initial_load_enables_analyze_on_a_normal_page,
   test_initial_load_disables_analyze_on_a_restricted_page,
   test_low_risk_result_renders_correctly,

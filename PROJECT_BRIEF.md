@@ -1,4 +1,4 @@
-# PhishShield AI — Project Brief
+# [PROJECT_NAME] — Project Brief
 
 ## 1. What we're building
 

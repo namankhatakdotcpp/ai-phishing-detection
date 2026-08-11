@@ -32,7 +32,7 @@ logger = logging.getLogger("phishshield.api")
 config.assert_cors_configured_for_production(config.ENVIRONMENT, config.CORS_ORIGINS)
 
 app = FastAPI(
-    title="PhishShield AI demo API",
+    title="[PROJECT_NAME] demo API",
     description=(
         "Research-prototype demo endpoint. Scores either a precomputed "
         "feature set or one of a curated set of demo samples. Not a live "

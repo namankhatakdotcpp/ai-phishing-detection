@@ -1,0 +1,174 @@
+{
+  "A_hard_negatives_130": {
+    "v3": {
+      "n": 130,
+      "fpr_ge50": 0.0077,
+      "n_high": 0,
+      "n_medium": 2,
+      "n_low": 128,
+      "median": 6,
+      "p90": 19,
+      "max": 51
+    },
+    "v4": {
+      "n": 130,
+      "fpr_ge50": 0.0,
+      "n_high": 0,
+      "n_medium": 0,
+      "n_low": 130,
+      "median": 3,
+      "p90": 7,
+      "max": 28
+    }
+  },
+  "B_browser_heldout_31": {
+    "v3": {
+      "n": 31,
+      "fpr_ge50": 0.129,
+      "n_high": 3,
+      "n_medium": 1,
+      "n_low": 27,
+      "median": 8,
+      "max": 74
+    },
+    "v4": {
+      "n": 31,
+      "fpr_ge50": 0.0,
+      "n_high": 0,
+      "n_medium": 1,
+      "n_low": 30,
+      "median": 5,
+      "max": 43
+    }
+  },
+  "C_llm_phishing_144": {
+    "v3": {
+      "n": 144,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": null,
+      "n_high": 144,
+      "n_medium": 0,
+      "n_low": 0
+    },
+    "v4": {
+      "n": 144,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": null,
+      "n_high": 144,
+      "n_medium": 0,
+      "n_low": 0
+    }
+  },
+  "D_legacy_test_sampled": {
+    "v3": {
+      "n": 6300,
+      "precision": 0.8623,
+      "recall": 0.9752,
+      "f1": 0.9152,
+      "fpr": 0.1713,
+      "n_high": 2495,
+      "n_medium": 1631,
+      "n_low": 2174
+    },
+    "v4": {
+      "n": 6300,
+      "precision": 0.8628,
+      "recall": 0.9758,
+      "f1": 0.9158,
+      "fpr": 0.1707,
+      "n_high": 2503,
+      "n_medium": 1565,
+      "n_low": 2232
+    }
+  },
+  "E_live_problem_pages": {
+    "wellsfargo": {
+      "v3": {
+        "risk_score": 15,
+        "risk_band": "low",
+        "classifier_score": 0.1561,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 6,
+        "risk_band": "low",
+        "classifier_score": 0.0165,
+        "judge_score": 0.15
+      }
+    },
+    "bankofamerica": {
+      "v3": {
+        "risk_score": 30,
+        "risk_band": "low",
+        "classifier_score": 0.3666,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 7,
+        "risk_band": "low",
+        "classifier_score": 0.0399,
+        "judge_score": 0.15
+      }
+    },
+    "google_accounts": {
+      "v3": {
+        "risk_score": 74,
+        "risk_band": "high",
+        "classifier_score": 0.9967,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 10,
+        "risk_band": "low",
+        "classifier_score": 0.0768,
+        "judge_score": 0.15
+      }
+    },
+    "instagram": {
+      "v3": {
+        "risk_score": 14,
+        "risk_band": "low",
+        "classifier_score": 0.1404,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 6,
+        "risk_band": "low",
+        "classifier_score": 0.0163,
+        "judge_score": 0.15
+      }
+    },
+    "reddit_home": {
+      "v3": {
+        "risk_score": 74,
+        "risk_band": "high",
+        "classifier_score": 0.9991,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 15,
+        "risk_band": "low",
+        "classifier_score": 0.15,
+        "judge_score": 0.15
+      }
+    },
+    "youtube_watch": {
+      "v3": {
+        "risk_score": 35,
+        "risk_band": "low",
+        "classifier_score": 0.4388,
+        "judge_score": 0.15
+      },
+      "v4": {
+        "risk_score": 12,
+        "risk_band": "low",
+        "classifier_score": 0.108,
+        "judge_score": 0.15
+      }
+    }
+  }
+}
