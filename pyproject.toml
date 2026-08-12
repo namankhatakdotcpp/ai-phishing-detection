@@ -5,7 +5,7 @@ description = "Research pipeline measuring phishing-detector robustness on a con
 requires-python = ">=3.9"
 dependencies = [
     "pandas>=2.0",
-    "scikit-learn>=1.3",
+    "scikit-learn==1.6.1",  # pinned exact -- see requirements.txt's comment: the deployed model artifact is a version-specific pickle
     "beautifulsoup4>=4.12",
     "lxml>=4.9",
     "matplotlib>=3.7",

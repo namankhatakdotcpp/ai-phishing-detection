@@ -11,7 +11,20 @@
 fastapi>=0.110
 uvicorn[standard]>=0.29
 pydantic>=2.0
-scikit-learn>=1.3
+scikit-learn==1.6.1
+# Pinned exact (not >=) deliberately: artifacts/phishing_classifier.joblib
+# is a HistGradientBoostingClassifier pickle that embeds direct references
+# to scikit-learn's private, version-specific internals
+# (sklearn._loss.loss.HalfBinomialLoss, sklearn._loss.link.LogitLink --
+# confirmed by inspecting the raw pickle bytes). scikit-learn's own docs
+# state pickled estimators are only guaranteed to unpickle with the exact
+# version that created them. An unpinned `>=1.3` let Render resolve a
+# different scikit-learn build than the one that trained this artifact,
+# which failed with "ModuleNotFoundError: No module named '_loss'" on
+# /health. 1.6.1 is the version actually used to train/export the
+# current v4 artifact -- verify this still matches before re-training or
+# re-exporting a new artifact (`python -c "import sklearn;
+# print(sklearn.__version__)"` in the training environment).
 joblib>=1.3
 pandas>=2.0
 beautifulsoup4>=4.12

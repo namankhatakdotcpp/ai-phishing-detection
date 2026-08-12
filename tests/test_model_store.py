@@ -16,6 +16,45 @@ pytestmark = pytest.mark.skipif(
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
+def test_installed_sklearn_matches_the_pinned_deployment_version():
+    # Regression test for a real production incident: the deployed model
+    # artifact is a HistGradientBoostingClassifier pickle that embeds
+    # direct references to scikit-learn's private, version-specific
+    # internals (sklearn._loss.loss.HalfBinomialLoss,
+    # sklearn._loss.link.LogitLink -- confirmed by inspecting the raw
+    # pickle bytes). scikit-learn's own docs state pickled estimators are
+    # only guaranteed to unpickle with the exact version that created
+    # them. requirements.txt/pyproject.toml previously pinned
+    # `scikit-learn>=1.3` (unbounded), which let a deployment environment
+    # (Render) resolve a different scikit-learn build than the one that
+    # trained this artifact, failing with "ModuleNotFoundError: No module
+    # named '_loss'" on /health -- reproduced locally against sklearn
+    # 1.4.2 with the exact same error. This test fails loudly in CI/local
+    # dev the moment the installed sklearn version drifts from the pin,
+    # instead of only being discovered when a deployed /health check
+    # breaks.
+    import sklearn
+
+    pinned = None
+    for req_file in ("requirements.txt", "pyproject.toml"):
+        path = Path(__file__).resolve().parent.parent / req_file
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if line.startswith("scikit-learn==") or line.startswith('"scikit-learn=='):
+                pinned = line.split("==")[1].split('"')[0].strip().rstrip(",")
+                break
+        if pinned:
+            break
+
+    assert pinned is not None, "expected an exact scikit-learn==X.Y.Z pin in requirements.txt/pyproject.toml"
+    assert sklearn.__version__ == pinned, (
+        f"installed scikit-learn ({sklearn.__version__}) does not match the pinned "
+        f"version ({pinned}) that {DEFAULT_ARTIFACT_PATH} was trained with -- "
+        "either reinstall the pinned version, or if the artifact was legitimately "
+        "retrained under a new scikit-learn version, update the pin to match."
+    )
+
+
 def test_artifact_loads_as_a_classifier():
     model = get_demo_model()
     assert isinstance(model, HistGradientBoostingClassifier)
