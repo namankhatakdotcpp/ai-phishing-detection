@@ -9,7 +9,12 @@
 // See config.js (loaded before this file in popup.html) -- switch
 // PHISHSHIELD_CONFIG.API_BASE there for production, not here.
 const API_BASE = PHISHSHIELD_CONFIG.API_BASE;
-const REQUEST_TIMEOUT_MS = 10000;
+// 40s, not the more typical 10s: Render's free-tier backend spins down
+// after ~15min idle and a cold-start wake can take 20-50s, well past a
+// short timeout -- found via live testing (Google's first analyze after
+// idle timed out at 10s, then succeeded instantly once warm). See
+// DEPLOYMENT.md's free-tier cold-start note.
+const REQUEST_TIMEOUT_MS = 40000;
 
 // UI-only labels over the backend's risk_band() ("low"/"medium"/"high") --
 // reuses the backend's actual banding, never recomputes it client-side.

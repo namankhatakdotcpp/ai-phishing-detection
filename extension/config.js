@@ -9,13 +9,15 @@
 // instead of a hardcoded value buried in popup.js's request logic.
 
 const PHISHSHIELD_CONFIG = {
-  // Local development (default). Requires `uvicorn phishshield.api.app:app
-  // --port 8000` running on this machine -- see LOCAL_SETUP.md.
-  API_BASE: "http://127.0.0.1:8000",
+  // Production (Render). Verified 2026-08-12: /health and /analyze both
+  // confirmed against real fixtures, scores byte-identical to local
+  // (Wells Fargo 6/100 LOW, PayPal fixture 87/100 HIGH), CORS restricted
+  // to this extension's dev-mode origin -- see DEPLOYMENT.md.
+  API_BASE: "https://phishshield-api-urkx.onrender.com",
 
-  // Production example (uncomment and edit once deployed -- see
-  // DEPLOYMENT.md for exact settings; also add the real origin to
-  // manifest.json's host_permissions, since the localhost entries won't
-  // match a deployed HTTPS origin):
-  // API_BASE: "[PRODUCTION_API_URL]",
+  // Local development (uncomment to switch back -- requires `uvicorn
+  // phishshield.api.app:app --port 8000` running on this machine, see
+  // LOCAL_SETUP.md; also re-add the localhost origins to manifest.json's
+  // host_permissions if they were removed):
+  // API_BASE: "http://127.0.0.1:8000",
 };
