@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "[PROJECT_NAME] (Research Demo)",
   "version": "0.3.0",
-  "description": "Research-prototype security assistant: analyzes the current page's structural features (forms, external scripts, URL patterns -- never form contents or credentials) against a local [PROJECT_NAME] backend, only when you click Analyze. Shows an in-page warning for high-risk pages.",
+  "description": "Naman Khatak, IIT Mandi ISP project: analyzes page structure for phishing risk on request. Never reads passwords or form contents.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "[PROJECT_NAME] (Demo)",
