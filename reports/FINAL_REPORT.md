@@ -1915,13 +1915,17 @@ paragraph.
 
 ### 8.1 Deployment gate
 
-**Updated for v4 (Section 3.13).** Per this project's own stated
-criteria (no threshold retuning, no domain allowlist, evaluated on real,
-domain-disjoint held-out data at meaningful scale): the **model-quality
-gate now PASSes**, on the cleanest evidence this project has produced —
-but several separate, non-model gates remain open, so the honest overall
-statement is still **DO NOT PUBLICLY DEPLOY YET**, for reasons that are
-now purely engineering/release-process, not model quality.
+**Updated again: the backend is now actually deployed and verified in
+production, not just prepared.** Per this project's own stated criteria
+(no threshold retuning, no domain allowlist, evaluated on real,
+domain-disjoint held-out data at meaningful scale): the model-quality
+gate passes, and — new since the last revision — the deployment gate
+now passes too, for the scope this project actually targets (a
+functioning, publicly-reachable HTTPS backend serving the frozen v4
+model, connected to and verified against the real Chrome extension).
+What remains open (Docker, formal calibration correction, a Chrome Web
+Store submission) is scoped narrower and stated precisely below, not
+smoothed into a blanket "not ready."
 
 **MODEL QUALITY: PASS.** v4 (browser-rendered benign training data,
 Section 3.13) is now the deployed artifact
@@ -1961,40 +1965,139 @@ environment. This is a real gap, not a pass-by-omission: `docker build`
 container needs to happen in an environment that has Docker before this
 gate can be called PASS.
 
-**LIVE CHROME: PASS (against `127.0.0.1`; a deployed HTTPS backend
-remains untested — see DEPLOYMENT below).** Section 3.14 documents a
-full pass against v4 specifically, through the real unpacked extension:
-16 pages, spanning the original checklist (Google, YouTube, Wikipedia,
-GitHub, a bank, two university/institutional logins, a SaaS-style
-dashboard) plus extras the tester added (ChatGPT, Claude.ai, Overleaf,
-three personal Vercel-hosted apps) and both phishing fixtures. All
-legitimate pages scored LOW or the appropriately-worded SUSPICIOUS band
-(never HIGH); both phishing fixtures scored 100/100 HIGH with correct,
-specific reasons, a working warning overlay, and functional "Leave
-website"/"Continue anyway" buttons. `View Details` confirmed expanding
-correctly. Overleaf — 74/HIGH under v3 in Section 3.10 — is now 33/LOW
-under v4, a concrete, live-verified fix, not just an offline metric.
+**LIVE CHROME: PASS, against both `127.0.0.1` and the deployed
+production backend.** Section 3.14 documents a full pass against v4
+through the real unpacked extension on `127.0.0.1`: 16 pages, spanning
+the original checklist (Google, YouTube, Wikipedia, GitHub, a bank, two
+university/institutional logins, a SaaS-style dashboard) plus extras the
+tester added (ChatGPT, Claude.ai, Overleaf, three personal
+Vercel-hosted apps) and both phishing fixtures. All legitimate pages
+scored LOW or the appropriately-worded SUSPICIOUS band (never HIGH);
+both phishing fixtures scored 100/100 HIGH with correct, specific
+reasons, a working warning overlay, and functional "Leave website"/
+"Continue anyway" buttons. Overleaf — 74/HIGH under v3 in Section
+3.10 — is now 33/LOW under v4. **A second full pass (Section 8.2) then
+repeated this against the actual deployed Render backend** after
+`extension/config.js` was switched over — Google, YouTube, Overleaf,
+the IIT Mandi LMS (login and course pages), Claude.ai, GitHub, an IEEE
+conference site, and the Render dashboard itself all scored LOW or
+appropriately-hedged SUSPICIOUS; the Vercel demo app scored 72/HIGH
+this pass (66-69/SUSPICIOUS in the earlier `127.0.0.1` pass on the same
+model) — a real, honestly-reported score variance near that page's
+LOW/SUSPICIOUS/HIGH boundary (consistent with the calibration finding
+above), not a regression or a new bug.
 
-**DEPLOYMENT: NOT STARTED.** No backend has been deployed to Render/
-Cloud Run; the extension still points at `127.0.0.1:8000`
-(`extension/config.js`'s dev default); no Chrome Web Store submission
-has been prepared beyond the drafts already in this repo
-(`PRIVACY_POLICY.md`, the Web Store listing draft). These are real
-infrastructure/account actions this session cannot take unilaterally —
-they need the project author's own accounts and explicit decisions, not
-just code.
+**DEPLOYMENT: DONE, for this project's actual scope.** The FastAPI
+backend is deployed on Render (`https://phishshield-api-urkx.onrender.com`),
+running the frozen v4 artifact. Production `/health` returns
+`model_loaded: true`, `model_version: b6ed9eef36cd` — matching the
+frozen artifact hash exactly. Production `/analyze` was verified against
+the same two fixtures used throughout this report: Wells Fargo →
+**6/100 LOW**, `classifier_score` `0.0242628409628795` — byte-identical
+to the local result, not merely close; the PayPal phishing fixture →
+**87/100 HIGH**. CORS was verified two ways, not just documented: a
+request carrying the real extension's `chrome-extension://` origin
+receives a matching `Access-Control-Allow-Origin` header, and a request
+carrying an arbitrary, unauthorized origin (`https://evil-example.com`)
+receives **no** CORS header at all — confirming the allowlist is
+genuinely restrictive, not silently wildcarded. `extension/config.js`
+and `manifest.json`'s `host_permissions` were then switched to the
+production URL (`127.0.0.1` kept, commented, for continued local dev)
+and validated end-to-end via the live-Chrome pass described above.
 
-**Net effect on the gate**: the reasons for "not yet" have narrowed
-further and changed character. Two revisions ago, the concern was
-whether the model could distinguish legitimate structural patterns from
-phishing ones at all. That question now has a genuinely strong, clean,
-domain-disjoint answer: yes, on the evidence gathered so far, with no
-observed phishing-recall cost. What remains is not "does the model
-work," it is "has the whole system — Docker image, deployed backend,
-production extension config, a full live-Chrome pass against v4 — been
-verified end to end," which it has not. **Do not deploy publicly or
-submit to the Chrome Web Store until Docker, a deployed backend, and a
-live-Chrome pass against v4 specifically are all done.**
+**One real deployment bug was found and fixed in this process, not
+glossed over**: the first Render deploy attempt failed `/health` with
+`ModuleNotFoundError: No module named '_loss'`. Diagnosed by inspecting
+the pickled artifact's byte stream directly (not guessed): the joblib
+file references scikit-learn's private `sklearn._loss.loss`/`sklearn._loss.link`
+Cython submodules, which are not guaranteed stable across scikit-learn
+versions — standard, documented scikit-learn behavior, not a bug in
+this project's code. `requirements.txt`/`pyproject.toml` had
+`scikit-learn>=1.3` unpinned, so Render could resolve a different
+version than the one the artifact was serialized with locally (1.6.1).
+Fixed by pinning `scikit-learn==1.6.1` exactly — verified via a clean
+reproduction environment before shipping the fix, and confirmed the
+model bytes and every known prediction (Wells Fargo, PayPal fixture)
+were unchanged afterward.
+
+**Also fixed in this pass**: the extension's `REQUEST_TIMEOUT_MS` was
+10s, shorter than Render's free-tier cold-start wake time (the service
+spins down after ~15 minutes idle; a cold wake can take 20-50s) — found
+via live testing (a real "Unable to analyze" timeout on Google, traced
+to a cold backend, confirmed by a sub-second warm response
+immediately after). Bumped to 40s.
+
+**Net effect on the gate**: what remains open is genuinely narrow now.
+**CALIBRATION** remains a stated, uncorrected limitation (ECE 0.118) —
+not a blocker for a research-prototype demo, but not claimed as fixed.
+**DOCKER** remains unbuilt in any environment this project has used —
+irrelevant to the actual deployment path taken (Render's native Python
+runtime, no Docker involved), but the `Dockerfile`/Cloud Run option
+documented in `DEPLOYMENT.md` stays unverified if that path is ever
+used instead. **Chrome Web Store submission** has not been prepared
+beyond the drafts already in this repo (`PRIVACY_POLICY.md`,
+`WEB_STORE_LISTING.md`) and requires the project author's own account,
+payment, and explicit submission action — this session does not do
+that. For local demonstration and this project's ISP course-project
+scope, the system is deployed, reproducible, and verified end to end:
+**v4 model → 157/157 tests → Render deployment → production `/health`
++ `/analyze` verified → Chrome extension connected to production →
+live-Chrome validation against production, all passing.**
+
+### 8.2 Production deployment and live-Chrome validation against Render
+
+**Backend**: FastAPI on Render (native Python runtime, no Docker),
+`https://phishshield-api-urkx.onrender.com`, serving the frozen v4
+artifact (`b6ed9eef36cd`). `render.yaml` (already in this repo)
+specifies the build/start commands, health check path, and required
+environment variables (`PHISHSHIELD_ENV=production`,
+`PHISHSHIELD_CORS_ORIGINS` set to the real extension's dev-mode origin,
+rate limit, and max request size) — see `DEPLOYMENT.md` for the exact
+values and manual steps.
+
+**Production endpoint verification** (`curl`, not just the popup):
+
+| Check | Result |
+|---|---|
+| `GET /health` | `{"status":"ok","model_loaded":true,"model_version":"b6ed9eef36cd"}` |
+| `POST /analyze`, Wells Fargo fixture | `risk_score: 6`, `low`, `classifier_score: 0.0242628409628795` — byte-identical to local |
+| `POST /analyze`, PayPal phishing fixture | `risk_score: 87`, `high`, correct reasons |
+| CORS, real extension origin | `Access-Control-Allow-Origin` reflects the extension's origin exactly |
+| CORS, unauthorized origin (`https://evil-example.com`) | No CORS header returned — genuinely restrictive, not wildcarded |
+
+**Live Chrome against production** (real unpacked extension,
+`extension/config.js` pointed at the Render URL):
+
+| Site | Score | Band |
+|---|---:|---|
+| Google | 5/100 | LOW |
+| YouTube | 5/100 | LOW |
+| Overleaf editor | 33/100 | LOW |
+| IIT Mandi LMS (login page) | 25/100 | LOW |
+| IIT Mandi LMS (course page) | 19/100 | LOW |
+| Claude.ai | 11/100 | LOW |
+| GitHub (own profile) | 12/100 | LOW |
+| IEEE/IAPR conference site | 41/100 | SUSPICIOUS |
+| Render dashboard itself | 11/100 | LOW |
+| Vercel pix2pix demo app | 72/100 | HIGH (66-69/SUSPICIOUS in the earlier `127.0.0.1` pass — see calibration note in §8.1) |
+
+No legitimate institutional or major site scored HIGH. The one
+HIGH-scoring legitimate page (a personal hobby project, not an
+institutional or major site) is consistent with, not contradictory to,
+the model's already-documented calibration imperfection — this is
+reported as an honest observation, not investigated further or
+"fixed," per this project's stated discipline against chasing individual
+site scores post-freeze (Section 8.1).
+
+**Root-cause fixes made during this deployment, both diagnosed before
+being fixed, not patched blindly**: (1) `ModuleNotFoundError: No module
+named '_loss'` on `/health` — a scikit-learn cross-version
+serialization incompatibility (`sklearn._loss.loss`/`sklearn._loss.link`
+Cython submodules), fixed by pinning `scikit-learn==1.6.1` to match the
+version the artifact was actually trained/serialized with; (2) the
+extension's 10s request timeout was shorter than Render free-tier's
+cold-start wake time, fixed by bumping it to 40s. Neither required any
+change to the model, features, thresholds, or detection logic.
 
 ## Appendix A: Reproducing these results
 

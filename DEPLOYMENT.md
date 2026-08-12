@@ -1,23 +1,31 @@
 # Production deployment — exact settings
 
-This file is configuration and instructions only. **No deployment has
-been performed.** Creating the account, connecting the repo, setting
-secrets, and clicking deploy are yours to do (see
-`reports/FINAL_REPORT.md`'s final checklist for the exact split).
+**Status: deployed and verified.** The backend described below (Option
+A, Render) is live at `https://phishshield-api-urkx.onrender.com`,
+serving the frozen v4 model (`b6ed9eef36cd`). Production `/health` and
+`/analyze` have been verified directly (not just assumed from a
+successful build), CORS was verified restrictive (not wildcarded), and
+the Chrome extension has been switched over (`extension/config.js`) and
+validated with a full live-Chrome pass against this exact URL — see
+`reports/FINAL_REPORT.md` §8.2 for the complete verification record.
+This file is kept as the reference for the exact settings used and for
+reproducing/redeploying, not as a "not yet done" notice anymore.
 
-**Separate, more important gate**: the infrastructure below being ready
-does not mean the model is. A real evaluation against 46 real major
-websites found 13.0% FPR (`reports/FINAL_REPORT.md` Section 3.7);
-subsequent fixes for all three diagnosed causes and a rescale to 130
-real pages (Sections 3.8-3.9) brought that to **0.8% FPR at n=130, zero
-pages in the HIGH band**, with no measured phishing-recall cost. The
-model-quality gate is in materially better shape than earlier revisions
-of this file suggested. The remaining blocker is narrower now: live
-Chrome validation (an actual unpacked extension in an actual Chrome
-profile) has never been run — see Section 8.1's explicit DO NOT DEPLOY
-gate. Do not deploy based on this file alone; check Section 3.9 and the
-Limitations section first, and actually run the extension in Chrome
-before calling this deployment-ready.
+**Model-quality context**: the deployed v4 model reached **0% FPR on a
+domain-disjoint 28-page generalization set**, zero HIGH/MEDIUM false
+positives, with no measured phishing-recall cost — see
+`reports/FINAL_REPORT.md` §3.13 for the full v3-vs-v4 evaluation and
+§8.1 for the current, detailed release gate (Docker and a formal
+calibration correction remain open, neither blocking this project's
+actual deployment).
+
+**One real bug found and fixed during this deployment**: the first
+Render attempt failed `/health` with `ModuleNotFoundError: No module
+named '_loss'` — a scikit-learn cross-version pickle-compatibility
+issue (the artifact was serialized with 1.6.1 locally; `requirements.txt`
+had `scikit-learn>=1.3` unpinned, so Render could resolve a different
+version). Fixed by pinning `scikit-learn==1.6.1` exactly. See §8.2 for
+the full diagnosis.
 
 ## Option A: Render (Blueprint, `render.yaml` already in this repo)
 
@@ -127,6 +135,8 @@ place each:
    (the localhost entries can stay for continued local development, or
    be removed for a Store submission — your call).
 
-**Not done yet** — this session doesn't have your deployed URL. `config.js`
-exists specifically so this is a one-line change instead of hunting
-through `popup.js`'s request logic.
+**Done.** `extension/config.js`'s `API_BASE` points at
+`https://phishshield-api-urkx.onrender.com`; `manifest.json`'s
+`host_permissions` includes that origin alongside the localhost entries
+(kept for continued local development). Validated with a full
+live-Chrome pass — see `reports/FINAL_REPORT.md` §8.2.

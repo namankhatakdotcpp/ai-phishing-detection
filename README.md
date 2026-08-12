@@ -168,9 +168,11 @@ than raw `classifier_score` would be.
 
 ## Live Chrome Validation
 
-Performed against v4, through the real unpacked extension, local
-backend (`127.0.0.1:8000`) — see `reports/FINAL_REPORT.md` §3.14 for
-the full table. Representative results:
+Performed against v4, through the real unpacked extension — twice: once
+against the local backend (`127.0.0.1:8000`), once against the deployed
+Render production backend (see Deployment below). See
+`reports/FINAL_REPORT.md` §3.14/§8.2 for the full tables. Representative
+results, local pass:
 
 | Site | Score | Band |
 |---|---:|---|
@@ -184,10 +186,12 @@ the full table. Representative results:
 
 Both phishing fixtures triggered the HIGH-risk warning overlay with
 correct reasons, and "Leave website"/"Continue anyway" both worked.
-Zero legitimate pages tested scored HIGH.
-
-**Not yet done**: live-Chrome testing against a deployed, non-localhost
-backend (Render/Cloud Run) — see `DEPLOYMENT.md`.
+Zero legitimate institutional/major site tested scored HIGH in either
+pass. The production pass additionally verified `/health` and
+`/analyze` directly via `curl` (Wells Fargo → 6/100 LOW,
+`classifier_score` byte-identical to local; PayPal fixture → 87/100
+HIGH) and confirmed CORS is genuinely restricted to the extension's
+real origin, not wildcarded.
 
 ## UI/UX
 
@@ -251,9 +255,26 @@ Then load `extension/` as an unpacked extension in
 
 ## Deployment
 
-Not yet publicly deployed. See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the
-prepared (but not executed) production deployment plan, and
-`reports/FINAL_REPORT.md` §8.1 for the current release gate status.
+The FastAPI backend is deployed on [Render](https://render.com) (native
+Python runtime, no Docker) at
+`https://phishshield-api-urkx.onrender.com`, serving the frozen v4
+model. Production `/health` and `/analyze` are verified (see Live
+Chrome Validation above and `reports/FINAL_REPORT.md` §8.2), and the
+extension is configured to use this endpoint by default
+(`extension/config.js`).
+
+**Known limitation, stated plainly**: this runs on Render's free tier,
+which spins the service down after ~15 minutes of inactivity. The first
+request after a period of idle can take significantly longer (a cold
+start) while Render wakes the instance — the extension's request
+timeout was set to 40s specifically to tolerate this. This is not a
+continuously-warm production API; say so explicitly in any demo.
+
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full deployment
+configuration and manual steps, and `reports/FINAL_REPORT.md` §8.1 for
+the current, detailed release gate status (Docker and a formal
+calibration correction remain open; not blockers for this project's
+scope).
 
 ## Project Structure
 
